@@ -8,9 +8,9 @@ package view;
  * @author Bram Klein
  */
 public class MainConstants {
-    public static final String MYSQL_SERVER = "kleinprodesign.nl";
-    public static final String MYSQL_USERNAME = "doomrider_GTD";
-    public static final String MYSQL_PASSWORD = "xj4KAX33";
-    public static final String DB_NAME = "doomrider_GTD";
+    public static final String MYSQL_SERVER = "databases.aii.avans.nl";
+    public static final String MYSQL_USERNAME = "bklein";
+    public static final String MYSQL_PASSWORD = "jF4TJid5";
+    public static final String DB_NAME = "bklein_db2";
     
 }
