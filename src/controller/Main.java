@@ -20,7 +20,17 @@ public class Main {
     public static void main(String[] args) {
         // TODO code application logic here
     }
+<<<<<<< HEAD
 	
 	public void Bami(){
 	}
+=======
+    
+    
+    public int testfunctie()
+    {
+        return 0;
+    }
+
+>>>>>>> commit nummer 100
 }
