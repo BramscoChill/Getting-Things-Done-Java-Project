@@ -20,11 +20,10 @@ public class Main {
     public static void main(String[] args) {
         // TODO code application logic here
     }
-<<<<<<< HEAD
 	
 	public void Bami(){
 	}
-=======
+
     
     
     public int testfunctie()
@@ -32,5 +31,4 @@ public class Main {
         return 0;
     }
 
->>>>>>> commit nummer 100
 }
