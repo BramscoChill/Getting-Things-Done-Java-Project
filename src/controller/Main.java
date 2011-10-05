@@ -12,8 +12,6 @@ package controller;
 
 
 //sjors leaves a comment
-//sjors leaves a second comment
-//sjors leaved the last comment (orly?!)
 public class Main {
 
     /**
@@ -22,4 +20,7 @@ public class Main {
     public static void main(String[] args) {
         // TODO code application logic here
     }
+	
+	public void Bami(){
+	}
 }
