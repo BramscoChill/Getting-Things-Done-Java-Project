@@ -4,7 +4,9 @@
  */
 package Model;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
+
+
 
 /**
  *
@@ -12,6 +14,7 @@ import java.security.Timestamp;
  */
 public class Action {
 
+    private int ID;
     private String discription;
     private String note;
     private Status status = null;
@@ -19,6 +22,14 @@ public class Action {
     private Project project = null;
     private Timestamp datumtijd;
     private boolean done = false;
+    
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
     
     public Context getContext() {
         return context;

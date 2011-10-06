@@ -4,28 +4,24 @@
  */
 package Model;
 
+import model.NameItem;
+
 /**
  *
  * @author sjorsvanuden
  */
-public class Status {
-    private int ID;
-    private String name;
-
-    public int getID() {
-        return ID;
+public class Status extends NameItem {
+    
+    public Status(int id, String name){
+        super(id, name);
     }
-
-    public void setID(int ID) {
-        this.ID = ID;
+    
+    public Status(int id){
+        super(id);
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    
+    public Status(){
+        super();
     }
     
 }

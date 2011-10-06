@@ -4,28 +4,24 @@
  */
 package Model;
 
+import model.NameItem;
+
 /**
  *
  * @author sjorsvanuden
  */
-public class Context {
-    private int ID;
-
-    public int getID() {
-        return ID;
+public class Context extends NameItem {
+    
+    public Context(int id, String name){
+        super(id, name);
     }
-
-    public void setID(int ID) {
-        this.ID = ID;
+    
+    public Context(int id){
+        super(id);
     }
-
-    public String getName() {
-        return name;
+    
+    public Context(){
+        super();
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-    private String name;
     
 }

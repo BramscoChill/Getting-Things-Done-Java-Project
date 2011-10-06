@@ -4,29 +4,31 @@
  */
 package Model;
 
+import model.NameItem;
+
 /**
  *
  * @author sjorsvanuden
  */
-public class Project {
-    private int ID;
+public class Project extends NameItem {
+    
     private String note;
-    private String name;
-
-    public int getID() {
-        return ID;
+    
+    public Project(int id, String name, String note){
+        super(id, name);
+        setNote(note);
     }
-
-    public void setID(int ID) {
-        this.ID = ID;
+    
+    public Project(int id, String name){
+        super(id, name);
     }
-
-    public String getName() {
-        return name;
+    
+    public Project(int id){
+        super(id);
     }
-
-    public void setName(String name) {
-        this.name = name;
+    
+    public Project(){
+        super();
     }
 
     public String getNote() {
@@ -35,6 +37,11 @@ public class Project {
 
     public void setNote(String note) {
         this.note = note;
+    }
+    
+    @Override
+    public void PrintAll(){
+        System.out.println("ID: " + getID() + ", name: " + getName() + ", note: " + getNote());
     }
     
 }
