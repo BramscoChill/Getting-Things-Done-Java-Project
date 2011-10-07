@@ -4,7 +4,6 @@
  */
 package Model;
 
-import model.NameItem;
 
 /**
  *

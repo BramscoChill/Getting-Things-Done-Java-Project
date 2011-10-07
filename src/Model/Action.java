@@ -14,13 +14,15 @@ import java.sql.Timestamp;
  */
 public class Action {
 
-    private int ID;
-    private String discription;
+    private int ID = -1;
+    private String description;
     private String note;
     private Status status = null;
     private Context context = null;
     private Project project = null;
     private Timestamp datumtijd;
+    private Timestamp statusChanged;
+    
     private boolean done = false;
     
     public int getID() {
@@ -47,12 +49,12 @@ public class Action {
         this.datumtijd = datum;
     }
 
-    public String getDiscription() {
-        return discription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDiscription(String discription) {
-        this.discription = discription;
+    public void setDescription(String discription) {
+        this.description = discription;
     }
 
     public boolean isDone() {
@@ -87,6 +89,20 @@ public class Action {
         this.status = status;
     }
     
+    public Timestamp getStatusChanged() {
+        return statusChanged;
+    }
+
+    public void setStatusChanged(Timestamp statusChanged) {
+        this.statusChanged = statusChanged;
+    }
+    
+    public void PrintAll(){
+        System.out.println("ID: " + ID + ", description: " + description + ", note: " + note + ", context: " + 
+                context.getID() + " - " + context.getName() + ", status: " + status.getID() + " - " + status.getName() + ", project: "
+                + project.getID() + " - " + project.getName() + " - " + project.getNote() + ", action date: " + datumtijd  + 
+                ", status changed: " + statusChanged + ", done: " + done);
+    }
            
     
 }

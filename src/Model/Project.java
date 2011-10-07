@@ -4,8 +4,6 @@
  */
 package Model;
 
-import model.NameItem;
-
 /**
  *
  * @author sjorsvanuden
