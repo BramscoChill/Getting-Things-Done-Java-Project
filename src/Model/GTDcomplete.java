@@ -6,12 +6,13 @@ package Model;
 
 import Model.Database.DBhandler;
 import java.util.ArrayList;
+import java.util.Observable;
 
 /**
  *
  * @author Administrator
  */
-public class GTDcomplete {
+public class GTDcomplete extends Observable {
     private ArrayList<Action> actions = new ArrayList<Action>();
     private ArrayList<Thought> thoughts = new ArrayList<Thought>();
     private DBhandler dbHandler = new DBhandler();
@@ -23,6 +24,13 @@ public class GTDcomplete {
     
     public ArrayList<Thought> GetAllThoughtsAsArrayList(){
         return thoughts;
+    }
+    
+    public Thought GetThought(int index){
+        if(index > -1 && index < thoughts.size()){
+            return thoughts.get(index);
+        }
+        return null;
     }
     
     public Boolean AddThought(Thought thought){

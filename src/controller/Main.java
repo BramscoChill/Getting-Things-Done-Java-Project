@@ -6,9 +6,12 @@ import Model.Database.*;
 
 
 public class Main {
-
+    
+    public static final Controller controller = new Controller();
+    
     public static void main(String[] args) {
-        DBhandler test = new DBhandler();
+        
+        //DBhandler test = new DBhandler();
         //test.GetAllThoughts();
         //test.DeleteThought(test.AddThought("dddddddddddddddd"));
         

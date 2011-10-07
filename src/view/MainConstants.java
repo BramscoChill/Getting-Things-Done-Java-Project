@@ -6,6 +6,8 @@ package view;
 import Model.Context;
 import Model.Project;
 import Model.Status;
+import java.awt.Color;
+import java.awt.Font;
 import java.util.ArrayList;
 
 /**
@@ -28,6 +30,15 @@ public class MainConstants {
     //dan moet ie niet steeds de verbinding sluiten
     //zet hem op false voor een reeks acties en daarna weer op true, dan houd ie de verbinding open
     public static Boolean CloseConnectionAfterDatabaseAction = true;
+    
+    public static final Font FONT = new Font("Arial", Font.PLAIN, 14);
+    public static final Font FONTBUTTONS = new Font("Arial", Font.BOLD, 20);
+    public static final Color BACKGROUND = new Color(200, 220, 230);
+    public static final Boolean PRINTEMPTYTABLEROWS = false; //of de lege rijen in de UberTables ook gekleurt moeten worden
+    public static final Color TABLEROWCOLOR = Color.GRAY; // new Color(200, 220, 230);
+    public static final int HEIGHTOFCOMBOBOXESTABLE = 30;
+    public static final int HEIGHTOFTABLEHEADER = 30;
+    
     
     
     //public static ArrayList<Status> statussen = new ArrayList<Status>();
