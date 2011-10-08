@@ -26,6 +26,14 @@ public class MainConstants {
     public static final String TABLE_PROJECT = "project";
     public static final String TABLE_ACTION = "action";
     
+    public static final String MAINTITLE = "GTDne";
+    public static final String MAINVERSION = "V1.001";
+    
+    public static final String MAINMENUTITLE = MAINTITLE + " Main Menu - " + MAINVERSION;
+    public static final int MAINMENUBUTTONSMARGIN = 30;
+    
+    public static final String OPTIONSMENUTITLE = MAINTITLE + " Options - " + MAINVERSION;
+    
     //als er meerdere acties in de database achter elkaar moeten worden uitgevoerd
     //dan moet ie niet steeds de verbinding sluiten
     //zet hem op false voor een reeks acties en daarna weer op true, dan houd ie de verbinding open

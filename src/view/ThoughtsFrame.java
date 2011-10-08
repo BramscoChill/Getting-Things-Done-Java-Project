@@ -12,9 +12,9 @@ import javax.swing.JFrame;
  *
  * @author Administrator
  */
-public class MenuFrame extends JFrame {
+public class ThoughtsFrame extends JFrame {
     
-    public MenuFrame(){
+    public ThoughtsFrame(){
         super("GTD App");
         setLayout(null);
         

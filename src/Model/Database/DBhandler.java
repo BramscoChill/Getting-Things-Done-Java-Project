@@ -19,6 +19,8 @@ import com.mysql.jdbc.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.exceptions.*;
+
 import static view.MainConstants.*;
 /**
  *
@@ -28,7 +30,7 @@ public class DBhandler {
     private Connection connection;
     
     //maakt de verbinding met de database
-    private void MakeConnection(){
+    private void MakeConnection() throws NoConnectionException{
         //als er geen connectie is, dan maakt ie er eentje
         if(! CheckConnection()){
             String daURL = "jdbc:mysql://" + MYSQL_SERVER + "/" + DB_NAME;
@@ -41,6 +43,7 @@ public class DBhandler {
                 {
                     System.out.println("CONNECTIE GEFAALT!!!");
                     ex.printStackTrace();
+                    throw new NoConnectionException();
                 }
             }
         }
@@ -57,32 +60,36 @@ public class DBhandler {
     }
     
     //sluit de verbinding, indien nodig
-    private void CloseConnection(){
+    private void CloseConnection() throws NoConnectionException {
         try {
             if(CloseConnectionAfterDatabaseAction && CheckConnection()){
                 connection.close();
             }
         } catch (SQLException ex) {
+            
             ex.printStackTrace();
             Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
+            throw new NoConnectionException();
         }
     }
     
-    private ResultSet ExecuteSelectQuery(String query){
+    private ResultSet ExecuteSelectQuery(String query) throws DatabaseException{
         MakeConnection();
         try {
             Statement stmt = (Statement) connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,ResultSet.CONCUR_UPDATABLE );
             ResultSet uprs = stmt.executeQuery(query);
             return uprs;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
-            return null;
+            throw new QueryException(query);
         }
     }
     
-    private int GetRowCount(String tableName){
+    private int GetRowCount(String tableName) throws QueryException{
         int amount = 0;
-        try {
+        try{
+            MakeConnection();
+            
             ResultSet resultSet = ExecuteSelectQuery("SELECT COUNT(*) FROM " + tableName + ";"); 
             
             resultSet.next();
@@ -91,11 +98,8 @@ public class DBhandler {
             //System.out.println();
         
             resultSet.close();
-        } catch (SQLException ex) {
-            
-            System.out.println("ERRORRRRR in: DBHandler - GetRowCount:");
-            ex.printStackTrace();
-            //Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            throw new QueryException("getting rowcount");
         }
  
         return amount;
@@ -103,20 +107,21 @@ public class DBhandler {
     
     
     //<editor-fold defaultstate="collapsed" desc="Gedachten Publieke Functies">
-    private int GetColumnCount(ResultSet resultSet){
+    private int GetColumnCount(ResultSet resultSet) throws QueryException{
         ResultSetMetaData rsMetaData;
         try {
+            MakeConnection();
             rsMetaData = (ResultSetMetaData) resultSet.getMetaData();
             int amountColums = rsMetaData.getColumnCount();
             return amountColums;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
+            throw new QueryException("getting Colum count");
         }
-        return -1;
     }
     
     
-    public Thought[] GetAllThoughts(){
+    public Thought[] GetAllThoughts() throws ThingsException {
         
         Thought thoughts[] = null;
         
@@ -136,16 +141,14 @@ public class DBhandler {
             }
             resultSet.close();
             CloseConnection();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        
-        
-        CloseConnection();
-        return thoughts;
+            
+            return thoughts;
+        } catch (Exception ex){
+            throw new ThingsException("", new Thought(), ThingsException.ThingsWhat.GET);
+        } 
     }
     
-    public Boolean DeleteThought(Thought thought){
+    public Boolean DeleteThought(Thought thought) throws ThingsException, DatabaseException{
         try {
             MakeConnection(); //maakt database connectie indien nodig
             if(thought.GetID() > -1){
@@ -164,13 +167,14 @@ public class DBhandler {
             }
             
         } catch (SQLException ex) {
-            Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ThingsException("", new Thought(), ThingsException.ThingsWhat.DELETE);
+            //Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return false;
     }
     
-    public Thought AddThought(Thought thought){
+    public Thought AddThought(Thought thought) throws ThingsException, DatabaseException{
         try {
             MakeConnection(); //maakt database connectie indien nodig
             
@@ -234,13 +238,13 @@ public class DBhandler {
             
         } catch (SQLException ex) {
             Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ThingsException("", new Thought(), ThingsException.ThingsWhat.ADD);
         }
         
-        return null;
     }
     //</editor-fold>
     
-    public Action[] GetAllActions(){
+    public Action[] GetAllActions() throws DatabaseException, ThingsException{
         
         Action actions[] = null;
         
@@ -291,6 +295,7 @@ public class DBhandler {
             CloseConnection();
         } catch (SQLException ex) {
             ex.printStackTrace();
+            throw new ThingsException("", new Action(), ThingsException.ThingsWhat.GET);
         }
         
         
@@ -303,7 +308,7 @@ public class DBhandler {
      * dan is het een bestaande actie en word deze geupdate aan de hand van de waardes die
      * in de betreffende action staan (parameter)
      */
-    public Action AddAction(Action action){
+    public Action AddAction(Action action) throws ThingsException, DatabaseException{
         try {
             MakeConnection(); //maakt database connectie indien nodig
             
@@ -420,12 +425,11 @@ public class DBhandler {
             
         } catch (SQLException ex) {
             Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ThingsException("", new Action(), ThingsException.ThingsWhat.ADD);
         }
-        
-        return null;
     }
     
-    public Boolean DeleteAction(Action action){
+    public Boolean DeleteAction(Action action) throws ThingsException, DatabaseException{
         try {
             MakeConnection(); //maakt database connectie indien nodig
             if(action.getID() > -1){
@@ -445,6 +449,7 @@ public class DBhandler {
             
         } catch (SQLException ex) {
             Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ThingsException("", new Action(), ThingsException.ThingsWhat.ADD);
         }
         
         return false;
@@ -455,7 +460,7 @@ public class DBhandler {
      * de laatste parameter houd in of ie de connectie ook moet sluiten
      * standaard doet ie dit wel (zie 2e functie van: GetNameItem)
      */
-    public NameItem GetNameItem(int nameitemIndex, NameItem daItem){
+    public NameItem GetNameItem(int nameitemIndex, NameItem daItem) throws ThingsException, DatabaseException{
         try {
             NameItem result;
             String tableName = "";
@@ -504,15 +509,13 @@ public class DBhandler {
             return result;
         } catch (SQLException ex) {
             ex.printStackTrace();
+            CloseConnection();
+            throw new ThingsException("", daItem, ThingsException.ThingsWhat.GET);
         }
-        
-        
-        CloseConnection();
-        return null;
     }
     
     //<editor-fold defaultstate="collapsed" desc="Status DB handlers">
-    public Status[] GetAllStatuses(){
+    public Status[] GetAllStatuses() throws ThingsException, DatabaseException{
         try {
             
             MakeConnection(); //maakt database connectie indien nodig
@@ -538,14 +541,12 @@ public class DBhandler {
             return results;
         } catch (SQLException ex) {
             ex.printStackTrace();
+            CloseConnection();
+            throw new ThingsException("", new Status(), ThingsException.ThingsWhat.GET);
         }
-        
-        
-        CloseConnection();
-        return null;
     }
     
-    public Status AddStatus(Status status){
+    public Status AddStatus(Status status) throws ThingsException, DatabaseException{
         try {
             MakeConnection(); //maakt database connectie indien nodig
             
@@ -608,13 +609,14 @@ public class DBhandler {
             }
             
         } catch (SQLException ex) {
+            ex.printStackTrace();
             Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
+            CloseConnection();
+            throw new ThingsException("", new Status(), ThingsException.ThingsWhat.ADD);
         }
-        
-        return null;
     }
     
-    public Boolean DeleteStatus(Status status){
+    public Boolean DeleteStatus(Status status) throws ThingsException, DatabaseException{
         try {
             MakeConnection(); //maakt database connectie indien nodig
             if(status.getID() > -1){
@@ -634,6 +636,7 @@ public class DBhandler {
             
         } catch (SQLException ex) {
             Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ThingsException("", new Status(), ThingsException.ThingsWhat.DELETE);
         }
         
         return false;
@@ -641,7 +644,7 @@ public class DBhandler {
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Context DB Handlers">
-    public Context[] GetAllContexts(){
+    public Context[] GetAllContexts() throws ThingsException, DatabaseException{
         try {
             
             MakeConnection(); //maakt database connectie indien nodig
@@ -667,14 +670,12 @@ public class DBhandler {
             return results;
         } catch (SQLException ex) {
             ex.printStackTrace();
+            CloseConnection();
+            throw new ThingsException("", new Context(), ThingsException.ThingsWhat.GET);
         }
-        
-        
-        CloseConnection();
-        return null;
     }
     
-    public Context AddContext(Context context){
+    public Context AddContext(Context context) throws ThingsException, DatabaseException{
         try {
             MakeConnection(); //maakt database connectie indien nodig
             
@@ -738,12 +739,13 @@ public class DBhandler {
             
         } catch (SQLException ex) {
             Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+            CloseConnection();
+            throw new ThingsException("", new Context(), ThingsException.ThingsWhat.ADD);
         }
-        
-        return null;
     }
     
-    public Boolean DeleteContext(Context context){
+    public Boolean DeleteContext(Context context) throws ThingsException, DatabaseException{
         try {
             MakeConnection(); //maakt database connectie indien nodig
             if(context.getID() > -1){
@@ -763,6 +765,9 @@ public class DBhandler {
             
         } catch (SQLException ex) {
             Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+            CloseConnection();
+            throw new ThingsException("", new Context(), ThingsException.ThingsWhat.DELETE);
         }
         
         return false;
@@ -770,7 +775,7 @@ public class DBhandler {
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Project DB Handlers">
-    public Project[] GetAllProjects(){
+    public Project[] GetAllProjects() throws ThingsException, DatabaseException{
         try {
             
             MakeConnection(); //maakt database connectie indien nodig
@@ -797,14 +802,12 @@ public class DBhandler {
             return results;
         } catch (SQLException ex) {
             ex.printStackTrace();
+            CloseConnection();
+            throw new ThingsException("", new Project(), ThingsException.ThingsWhat.GET);
         }
-        
-        
-        CloseConnection();
-        return null;
     }
     
-    public Project AddProject(Project project){
+    public Project AddProject(Project project) throws ThingsException, DatabaseException{
         try {
             MakeConnection(); //maakt database connectie indien nodig
             
@@ -870,12 +873,14 @@ public class DBhandler {
             
         } catch (SQLException ex) {
             Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+            CloseConnection();
+            throw new ThingsException("", new Project(), ThingsException.ThingsWhat.ADD);
         }
         
-        return null;
     }
     
-    public Boolean DeleteProject(Project project){
+    public Boolean DeleteProject(Project project) throws ThingsException, DatabaseException{
         try {
             MakeConnection(); //maakt database connectie indien nodig
             if(project.getID() > -1){
@@ -895,11 +900,26 @@ public class DBhandler {
             
         } catch (SQLException ex) {
             Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+            CloseConnection();
+            throw new ThingsException("", new Project(), ThingsException.ThingsWhat.DELETE);
         }
         
         return false;
     }
     //</editor-fold>
+    
+    //@TODO ValidateDatabase afmaken
+    //checkt of de database valide is
+    public Boolean ValidateDatabase() throws ThingsException, DatabaseException{
+        return true;
+    }
+    
+    //@TODO ResetDatabase afmaken
+    //reset de database naar zijn begin tabellen
+    public Boolean ResetDatabase() throws ThingsException, DatabaseException{
+        return true;
+    }
     
     public void test(){
         NameItem daItem = new Status();

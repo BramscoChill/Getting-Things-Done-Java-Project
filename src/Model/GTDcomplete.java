@@ -7,6 +7,8 @@ package Model;
 import Model.Database.DBhandler;
 import java.util.ArrayList;
 import java.util.Observable;
+import model.exceptions.DatabaseException;
+import model.exceptions.ThingsException;
 
 /**
  *
@@ -33,7 +35,7 @@ public class GTDcomplete extends Observable {
         return null;
     }
     
-    public Boolean AddThought(Thought thought){
+    public Boolean AddThought(Thought thought) throws ThingsException, DatabaseException{
         Thought newThought = dbHandler.AddThought(thought);
         if(newThought != null)
         {
@@ -42,15 +44,15 @@ public class GTDcomplete extends Observable {
         return (newThought != null);
     }
     
-    public Boolean AddThought(String thought){
+    public Boolean AddThought(String thought) throws ThingsException, DatabaseException{
         return AddThought(new Thought(thought));
     }
     
-    public Boolean UpdateThought(Thought thought){
+    public Boolean UpdateThought(Thought thought) throws ThingsException, DatabaseException{
         return AddThought(thought);
     }
     
-    public Boolean DeleteThought(Thought thought){
+    public Boolean DeleteThought(Thought thought) throws ThingsException, DatabaseException{
         thoughts.remove(thought);
         return dbHandler.DeleteThought(thought);
     }
@@ -65,7 +67,7 @@ public class GTDcomplete extends Observable {
         return actions;
     }
     
-    public Boolean AddAction(Action action){
+    public Boolean AddAction(Action action) throws ThingsException, DatabaseException{
         Action newAction = dbHandler.AddAction(action);
         if(newAction != null)
         {
@@ -74,56 +76,56 @@ public class GTDcomplete extends Observable {
         return (newAction != null);
     }
     
-    public Boolean UpdateAction(Action action){
+    public Boolean UpdateAction(Action action) throws ThingsException, DatabaseException{
         return AddAction(action);
     }
     
-    public Boolean DeleteAction(Action action){
+    public Boolean DeleteAction(Action action) throws ThingsException, DatabaseException{
         actions.remove(action);
         return dbHandler.DeleteAction(action);
     }
     //</editor-fold>
     
-    public Boolean AddProject(Project project){
+    public Boolean AddProject(Project project) throws ThingsException, DatabaseException{
         Project newProject = dbHandler.AddProject(project);
         return (newProject != null);
     }
     
-    public Boolean UpdateProject(Project project) {
+    public Boolean UpdateProject(Project project) throws ThingsException, DatabaseException{
         return AddProject(project);
     }
     
-    public Boolean DeleteProject(Project project){
+    public Boolean DeleteProject(Project project) throws ThingsException, DatabaseException{
         return dbHandler.DeleteProject(project);
     }
     
-    public Project[] GetProjects(){
+    public Project[] GetProjects() throws ThingsException, DatabaseException{
         return dbHandler.GetAllProjects();
     }
     
-    public Boolean AddStatus(Status status){
+    public Boolean AddStatus(Status status) throws ThingsException, DatabaseException{
         Status newStatus = dbHandler.AddStatus(status);
         return (newStatus != null);
     }
     
-    public Boolean UpdateStatus(Status status){
+    public Boolean UpdateStatus(Status status) throws ThingsException, DatabaseException{
         return AddStatus(status);
     }
     
-    public Boolean DeleteStatus(Status status){
+    public Boolean DeleteStatus(Status status) throws ThingsException, DatabaseException{
         return dbHandler.DeleteStatus(status);
     }
     
-    public Boolean AddContext(Context context){
+    public Boolean AddContext(Context context) throws ThingsException, DatabaseException{
         Context newContext = dbHandler.AddContext(context);
         return (newContext != null);
     }
     
-    public Boolean UpdateContext(Context context){
+    public Boolean UpdateContext(Context context) throws ThingsException, DatabaseException{
         return AddContext(context);
     }
     
-    public Boolean DeleteContext(Context context){
+    public Boolean DeleteContext(Context context) throws ThingsException, DatabaseException{
         return dbHandler.DeleteContext(context);
     }
     
