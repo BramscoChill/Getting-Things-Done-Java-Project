@@ -28,11 +28,17 @@ public class MainConstants {
     
     public static final String MAINTITLE = "GTDne";
     public static final String MAINVERSION = "V1.001";
+    public static final String CURRENTDIR = System.getProperty("user.dir");
+    public static final String PATHSEPARATOR = System.getProperty("file.separator");
+
     
     public static final String MAINMENUTITLE = MAINTITLE + " Main Menu - " + MAINVERSION;
     public static final int MAINMENUBUTTONSMARGIN = 30;
     
     public static final String OPTIONSMENUTITLE = MAINTITLE + " Options - " + MAINVERSION;
+    public static final int OPTIONSMENUMARGIN = 20;
+    public static final Font OPTIONSMENUFONTTEXTFIELDS = new Font("Arial", Font.BOLD, 18);
+    public static final String[] OPTIONSSTARTUPSCREENVALUES = {"Hoofdscherm","Laatst Geopend","Projecten","Acties","History"};
     
     //als er meerdere acties in de database achter elkaar moeten worden uitgevoerd
     //dan moet ie niet steeds de verbinding sluiten
@@ -41,6 +47,7 @@ public class MainConstants {
     
     public static final Font FONT = new Font("Arial", Font.PLAIN, 14);
     public static final Font FONTBUTTONS = new Font("Arial", Font.BOLD, 20);
+    public static final Font FONTTITLE = new Font("Arial", Font.BOLD, 40);
     public static final Color BACKGROUND = new Color(200, 220, 230);
     public static final Boolean PRINTEMPTYTABLEROWS = false; //of de lege rijen in de UberTables ook gekleurt moeten worden
     public static final Color TABLEROWCOLOR = Color.GRAY; // new Color(200, 220, 230);

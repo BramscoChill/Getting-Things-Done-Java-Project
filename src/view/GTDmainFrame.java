@@ -19,13 +19,15 @@ import model.Options;
 public class GTDmainFrame implements Observer {
 
     //private ThoughtsFrame thoughtsFrame = new ThoughtsFrame();
-    private MainMenuFrame mainMenuFrame = new MainMenuFrame();
-    private OptionsFrame optionsMenuFrame = new OptionsFrame();
-    private static Options opties = new Options();
+    private MainMenuFrame mainMenuFrame;
+    private OptionsFrame optionsMenuFrame;
+    private static Options options = new Options();
     
     public GTDmainFrame(){
         //thoughtsFrame.setVisible(false);
         //mainMenu.setVisible(false);
+        mainMenuFrame = new MainMenuFrame();
+        optionsMenuFrame = new OptionsFrame(options);
         
         AddMainMenuListeners();
     }

@@ -4,6 +4,7 @@
  */
 package view;
 
+import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
 import javax.swing.KeyStroke;
@@ -58,15 +59,7 @@ public class MainMenuFrame extends JFrame {
         
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
-        addWindowListener(new WindowAdapter(){
-           public void windowOpened( WindowEvent e ){
-                //field1.requestFocus();
-             }
-           public void windowClosing( WindowEvent e ){
-                   setVisible(false);
-                   dispose();
-           }
-        }); 
+        setMinimumSize(new Dimension(350,350));
     }
     
     private void AddListeners(){
@@ -117,7 +110,15 @@ public class MainMenuFrame extends JFrame {
         
         
         
-        
+        addWindowListener(new WindowAdapter(){
+           public void windowOpened( WindowEvent e ){
+                //field1.requestFocus();
+             }
+           public void windowClosing( WindowEvent e ){
+                   setVisible(false);
+                   dispose();
+           }
+        }); 
         
     }
     
