@@ -9,6 +9,8 @@ import Model.Status;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.HashMap;
+import model.Options;
 
 /**
  *
@@ -27,18 +29,42 @@ public class MainConstants {
     public static final String TABLE_ACTION = "action";
     
     public static final String MAINTITLE = "GTDne";
-    public static final String MAINVERSION = "V1.001";
+    public static final String MAINVERSION = "1.001";
     public static final String CURRENTDIR = System.getProperty("user.dir");
     public static final String PATHSEPARATOR = System.getProperty("file.separator");
 
     
-    public static final String MAINMENUTITLE = MAINTITLE + " Main Menu - " + MAINVERSION;
+    public static final String MAINMENUTITLE = MAINTITLE + " Main Menu - V" + MAINVERSION;
     public static final int MAINMENUBUTTONSMARGIN = 30;
     
-    public static final String OPTIONSMENUTITLE = MAINTITLE + " Options - " + MAINVERSION;
+    public static Options OPTIONS = new Options();
+    public static enum MenuScreen{MAIN, LASTOPENED, THOUGHTS, PROJECTS, ACTIONS, HISTORY, OPTIONS}
+    public static final String[] OPTIONSSTARTUPSCREENVALUES = {"Hoofdscherm","Laatst Geopend","Gedachten", "Projecten","Acties","History"};
+    public static final HashMap<String,MenuScreen> OPTIONSMENUSCREENVALUES = new HashMap<String, MenuScreen>() {
+
+        {
+            put(OPTIONSSTARTUPSCREENVALUES[0], MenuScreen.MAIN);
+            put(OPTIONSSTARTUPSCREENVALUES[1], MenuScreen.LASTOPENED);
+            put(OPTIONSSTARTUPSCREENVALUES[2], MenuScreen.THOUGHTS);
+            put(OPTIONSSTARTUPSCREENVALUES[3], MenuScreen.PROJECTS);
+            put(OPTIONSSTARTUPSCREENVALUES[4], MenuScreen.ACTIONS);
+            put(OPTIONSSTARTUPSCREENVALUES[5], MenuScreen.HISTORY);
+        }
+
+        ;
+    };
+
+    public static final String OPTIONSMENUTITLE = MAINTITLE + " Options - V" + MAINVERSION;
     public static final int OPTIONSMENUMARGIN = 20;
     public static final Font OPTIONSMENUFONTTEXTFIELDS = new Font("Arial", Font.BOLD, 18);
-    public static final String[] OPTIONSSTARTUPSCREENVALUES = {"Hoofdscherm","Laatst Geopend","Projecten","Acties","History"};
+    
+    public static final String ACTIONSMENUTITLE = MAINTITLE + " Acties - " + "V" + MAINVERSION;
+    
+    public static final String PROJECTSMENUTITLE = MAINTITLE + " Projecten - " + "V" + MAINVERSION;
+    
+    public static final String HISTORYMENUTITLE = MAINTITLE + " Geschiedenis - " + "V" + MAINVERSION;
+    
+    public static final String THOUGHTSMENUTITLE = MAINTITLE + " Gedachten - " + "V" + MAINVERSION;
     
     //als er meerdere acties in de database achter elkaar moeten worden uitgevoerd
     //dan moet ie niet steeds de verbinding sluiten

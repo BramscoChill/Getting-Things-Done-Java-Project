@@ -16,24 +16,22 @@ import static view.MainConstants.*;
  * @author 
  */
 public class Options {
-    private String gmailUsername = "";
-    private String gmailPassword = "";
+    private String gcUsername = "";
+    private String gcPassword = "";
     private MenuScreen lastOpenedScreen = MenuScreen.MAIN;
+    public static String gcLink = "https://www.google.com/calendar/feeds/default/owncalendars/full";
+    public String gcPersonalURL = "";
     
     private Properties properties = new Properties();
     private String optionsPath = CURRENTDIR + PATHSEPARATOR + "gtd.properties";        
-    
-    public enum MenuScreen{
-        MAIN, THOUGHTS, OPTIONS, ACTIONS, HISTORY, PROJECTS
-    }
     
     public void LoadOptions(){
         // Read properties file.
         if(OptionsFileExists()){
             try {
                 properties.load(new FileInputStream(optionsPath));
-                gmailUsername = properties.getProperty("gmailUsername");
-                gmailPassword = properties.getProperty("gmailPassword");
+                gcUsername = properties.getProperty("gcUsername");
+                gcPassword = properties.getProperty("gcPassword");
                 try{
                     lastOpenedScreen = MenuScreen.valueOf(properties.getProperty("LOS"));
                 } catch (Exception ex){
@@ -52,8 +50,8 @@ public class Options {
     
     public void SaveOptions(){
         try {
-            properties.setProperty("gmailUsername", gmailUsername);
-            properties.setProperty("gmailPassword", gmailPassword);
+            properties.setProperty("gcUsername", gcUsername);
+            properties.setProperty("gcPassword", gcPassword);
             properties.setProperty("LOS", lastOpenedScreen.name());
             properties.store(new FileOutputStream(optionsPath), null);
         } catch (IOException e) {
@@ -65,8 +63,8 @@ public class Options {
     public void CreateDefaultOptionsFile(){
         try {
             properties = new Properties();
-            properties.setProperty("gmailUsername", gmailUsername);
-            properties.setProperty("gmailPassword", gmailPassword);
+            properties.setProperty("gcUsername", gcUsername);
+            properties.setProperty("gcPassword", gcPassword);
             properties.setProperty("LOS", lastOpenedScreen.name());
             properties.store(new FileOutputStream(optionsPath), null);
         } catch (IOException e) {
@@ -85,20 +83,21 @@ public class Options {
         }
     }
     
-    public String getGmailPassword() {
-        return gmailPassword;
+    public String getGClPassword() {
+        return gcPassword;
     }
 
-    public void setGmailPassword(String gmailPassword) {
-        this.gmailPassword = gmailPassword;
+    public void setGCPassword(String gmailPassword) {
+        this.gcPassword = gmailPassword;
     }
 
-    public String getGmailUsername() {
-        return gmailUsername;
+    public String getGClUsername() {
+        return gcUsername;
     }
 
-    public void setGmailUsername(String gmailUsername) {
-        this.gmailUsername = gmailUsername;
+    public void setGCUsername(String gmailUsername) {
+        this.gcUsername = gmailUsername;
+        //System.out.println("gcUuser: " + gmailUsername);
     }
 
     public MenuScreen getLastOpenedScreen() {
@@ -107,5 +106,13 @@ public class Options {
 
     public void setLastOpenedScreen(MenuScreen lastOpenedScreen) {
         this.lastOpenedScreen = lastOpenedScreen;
+    }
+    
+    public String getGcPersonalURL() {
+        return gcPersonalURL;
+    }
+
+    public void setGcPersonalURL(String gcPersonalURL) {
+        this.gcPersonalURL = gcPersonalURL;
     }
 }

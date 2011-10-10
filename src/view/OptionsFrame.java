@@ -4,6 +4,9 @@
  */
 package view;
 
+import java.util.Map;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.AWTException;
@@ -29,19 +32,19 @@ import static view.MainConstants.*;
  */
 public class OptionsFrame extends JFrame {
     
-    private Options options;
     private JButton saveButton, cancelButton, previousButton;
     private JLabel optionsTitle, googleUsernameLBL, googlePasswordLBL, startupScreenLBL;
     private JTextField googleUsername, googlePassword;
     private JComboBox startupScreen;
     
-    public OptionsFrame(Options options){
+    //om ervoor te zorgen dat alle instellingen opgeslagen worden als het scherm gesloten wordt
+    private Boolean doSave = true;
+    
+    public OptionsFrame(){
         super(OPTIONSMENUTITLE);
         setLayout(null);
         this.setResizable(true);
         setBounds(100,new Random().nextInt(200)+50,700,399);
-
-        this.options = options;
         
         setVisible(true);
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -54,7 +57,8 @@ public class OptionsFrame extends JFrame {
         //1ex update, laat alles dus zien
         UpdateScreenBounds();
         
-        options.LoadOptions();
+        LoadOptions();
+        
     }
     
     private void SetButtons(){
@@ -116,7 +120,8 @@ public class OptionsFrame extends JFrame {
                 int labelsHeight = 30;
                 int labelsWidth = 300;
                 
-                
+                int bHeight = 30;
+                int bWidth = 100;
                 
                 int previousButWH = 72;
                 int previousButXpos = (int) (frameW - margin - previousButWH);
@@ -138,7 +143,10 @@ public class OptionsFrame extends JFrame {
                 
                 startupScreenLBL.setBounds(gULx,(int) (googlePassword.getLocation().y + margin + labelsHeight),labelsWidth, labelsHeight);
                 startupScreen.setBounds(gULx,(int) (startupScreenLBL.getLocation().y + labelsHeight),labelsWidth, labelsHeight);
-                System.out.println(" --- Resized " + "fW: " + frameW + "fH: " + frameH + ", optX: " + optionsX);  
+                
+                saveButton.setBounds((int)(frameW - bWidth - bWidth - margin - margin),(int) (frameH - (bHeight * 2.5)),bWidth, bHeight);
+                cancelButton.setBounds((int)(frameW - bWidth - margin - 5),(int) (frameH - (bHeight * 2.5)),bWidth,bHeight);
+                //System.out.println(" --- Resized " + "fW: " + frameW + "fH: " + frameH + ", optX: " + optionsX);  
                 
                 
                 //zit een bug in setMaximumSize, dit is de workarround
@@ -193,49 +201,58 @@ public class OptionsFrame extends JFrame {
             }
         });
         
-        
-        addWindowListener(new WindowAdapter(){
-           public void windowOpened( WindowEvent e ){
-                //field1.requestFocus();
-             }
-           public void windowClosing( WindowEvent e ){
-               SetOptionsValues();
-               options.SaveOptions(); //slaat de opties op voor het scherm gesloten word
-                   setVisible(false);
-                   dispose();
-           }
+        saveButton.addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                doSave = true;
+                DoExit();
+            }
         });
         
-
-
+        cancelButton.addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                doSave = false;
+                DoExit();
+            }
+        });
 
         
+    }
+    
+    //sluit dit scherm af en slaat van te voren alles op als dat moet
+    public void DoExit(){
+        if(doSave){
+            SetOptionsValues();
+            OPTIONS.SaveOptions(); //slaat de opties op voor het scherm gesloten word
+        }
+        setVisible(false);
+        this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+        //dispose();
     }
     
     //knalt alle waardes uit het scherm in de opties
     private void SetOptionsValues(){
-       options.setGmailUsername(googleUsername.getText());
-       options.setGmailPassword(googlePassword.getText());
+       OPTIONS.setGCUsername(googleUsername.getText());
+       OPTIONS.setGCPassword(googlePassword.getText());
        //options.setLastOpenedScreen(Options.MenuScreen.THOUGHTS);
-        int selectedIndex = startupScreen.getSelectedIndex();
         
-        // {"Hoofdscherm","Laatst Geopend","Projecten","Acties","History"};
-        switch(selectedIndex){
-            case 0:
-                break;
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            
-        }
-    }
-    public JButton GetSaveButton(){
-        return saveButton;
+       //System.out.println(OPTIONSMENUSCREENVALUES.get((String)startupScreen.getSelectedItem()));
+       OPTIONS.setLastOpenedScreen(OPTIONSMENUSCREENVALUES.get((String)startupScreen.getSelectedItem()));
     }
     
+    private void LoadOptions(){
+        googleUsername.setText(OPTIONS.getGClUsername());
+        googlePassword.setText(OPTIONS.getGClPassword());
+        for (Map.Entry<String,MenuScreen> entry : OPTIONSMENUSCREENVALUES.entrySet()) {
+            if(entry.getValue() == OPTIONS.getLastOpenedScreen()){
+                startupScreen.setSelectedItem(entry.getKey());
+                System.out.println("selected item: " + OPTIONS.getLastOpenedScreen().name() + ", " + OPTIONSMENUSCREENVALUES.get(entry.getKey()));
+                break;
+            }
+        }
+    }
+
 }

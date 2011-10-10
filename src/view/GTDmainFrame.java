@@ -4,6 +4,9 @@
  */
 package view;
 
+import Model.GoogleCalendar;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Observable;
@@ -12,26 +15,33 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import model.Options;
 
+import static view.MainConstants.*;
+
 /**
- *
- * @author Administrator
+ * Houd alles bij van alle schermen. Is een soort van totaaloverzicht omdat alle schermen los van elkaar moeten werken
+ * @author 
  */
 public class GTDmainFrame implements Observer {
 
     //private ThoughtsFrame thoughtsFrame = new ThoughtsFrame();
     private MainMenuFrame mainMenuFrame;
     private OptionsFrame optionsMenuFrame;
-    private static Options options = new Options();
     
     public GTDmainFrame(){
         //thoughtsFrame.setVisible(false);
         //mainMenu.setVisible(false);
         mainMenuFrame = new MainMenuFrame();
-        optionsMenuFrame = new OptionsFrame(options);
         
+        //voiegt listeners toe
         AddMainMenuListeners();
+        
+        //laad alle opties in
+        OPTIONS.LoadOptions();
+        
+        GoogleCalendar calen = new GoogleCalendar();
     }
     
+    //voegt de actionlisteners toe aan het mainframe en andere JFrames
     private void AddMainMenuListeners(){
         JButton[] buttons = mainMenuFrame.GetButtons();
         buttons[0].addActionListener(new ActionListener() {
@@ -39,6 +49,7 @@ public class GTDmainFrame implements Observer {
             public void actionPerformed(ActionEvent e)
             {
                 System.out.println("PUSH DA BUTTON BUTTON 1");
+                System.out.println("save button - gUser: " + OPTIONS.getGClUsername());
             }
         });
         
@@ -66,30 +77,87 @@ public class GTDmainFrame implements Observer {
             }
         });
         
+        //haalt het optionsmenuitem op uit de het mainMenu en koppelt hier weer een actionlistener aan
         mainMenuFrame.GetOptionsMenuItem().addActionListener(new ActionListener() {
  
             public void actionPerformed(ActionEvent e)
             {
                 System.out.println("menu opties3");
-            }
-        });
+                //laat het options scherm en schakelt het hoofdscherm uit
+                optionsMenuFrame = new OptionsFrame();
+                mainMenuFrame.setEnabled(false);
+                System.out.println("fap fap fap 1");
+                
+                //de listener voor het optionsMenu (Ander JFrame) om ervoor te zorgen
+                //dat als het options scherm sluit, je het main scherm weer kan bewerken
+                optionsMenuFrame.addWindowListener(new WindowAdapter(){
+                   public void windowOpened( WindowEvent e ){
+                        //field1.requestFocus();
+                       System.out.println("fap fap fap 3");
+                     }
+                   public void windowClosing( WindowEvent e ){
+                       mainMenuFrame.setEnabled(true);
+                       mainMenuFrame.toFront();
+                       optionsMenuFrame.dispose();
+                       optionsMenuFrame = null;
+                   }
+                });
+                    }
+                });
         
+        //de exit knop uit het hoofdscherm
         mainMenuFrame.GetExitMenuItem().addActionListener(new ActionListener() {
  
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("menu afsluiten");
+                System.exit(0);
             }
         });
         
-        optionsMenuFrame.GetSaveButton().addActionListener(new ActionListener() {
- 
-            public void actionPerformed(ActionEvent e)
-            {
-                System.out.println("save button");
-            }
-        });
+
         
+    }
+    
+    private void OpenWindow(MenuScreen windowType){
+        //@TODO OpenWindow afmaken
+        switch(windowType){
+            case ACTIONS:
+                break;
+            case OPTIONS:
+                break;
+            case LASTOPENED:
+                break;
+            case THOUGHTS:
+                break;
+            case PROJECTS:
+                break;
+            case HISTORY:
+                break;
+            default: //MAIN
+                break;
+        }
+    }
+    
+    private void CloseWindow(MenuScreen windowType){
+        //@TODO CloseWindow afmaken
+        switch(windowType){
+            case ACTIONS:
+                break;
+            case OPTIONS:
+                break;
+            case LASTOPENED:
+                break;
+            case THOUGHTS:
+                break;
+            case PROJECTS:
+                break;
+            case HISTORY:
+                break;
+            default: //MAIN
+                break;
+        }
+        
+        //check all windows closed, exit app
     }
     
     @Override
