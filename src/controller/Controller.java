@@ -4,23 +4,174 @@
  */
 package controller;
 
+
 import model.GTDcomplete;
-import view.GTDmainFrame;
+import view.OptionsFrame;
+import view.MainMenuFrame;
+import model.GoogleCalendar;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Observable;
+import java.util.Observer;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import model.Options;
+
+import static view.MainConstants.*;
 
 /**
- *
- * @author Administrator
+ * Houd alles bij van alle schermen. Is een soort van totaaloverzicht omdat alle schermen los van elkaar moeten werken
+ * @author 
  */
-public class Controller {
+public class Controller implements Observer {
+
+    //private ThoughtsFrame thoughtsFrame = new ThoughtsFrame();
     private GTDcomplete gtd = new GTDcomplete();
-    private GTDmainFrame mainFrames = new GTDmainFrame();
+    
+    private MainMenuFrame mainMenuFrame;
+    private OptionsFrame optionsMenuFrame;
     
     public Controller(){
+        //thoughtsFrame.setVisible(false);
+        //mainMenu.setVisible(false);
+        mainMenuFrame = new MainMenuFrame();
+        
+        //voiegt listeners toe
+        AddMainMenuListeners();
+        
+        //laad alle opties in
+        OPTIONS.LoadOptions();
+        
+        GoogleCalendar calen = new GoogleCalendar();
+    }
+    
+    //voegt de actionlisteners toe aan het mainframe en andere JFrames
+    private void AddMainMenuListeners(){
+        JButton[] buttons = mainMenuFrame.GetButtons();
+        buttons[0].addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println("PUSH DA BUTTON BUTTON 1");
+                System.out.println("save button - gUser: " + OPTIONS.getGCUsername());
+            }
+        });
+        
+        buttons[1].addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println("PUSH DA BUTTON BUTTON 2");
+            }
+        });
+        
+        buttons[2].addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println("PUSH DA BUTTON BUTTON 2");
+            }
+        });
+        
+        buttons[3].addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println("PUSH DA BUTTON BUTTON 3");
+            }
+        });
+        
+        //haalt het optionsmenuitem op uit de het mainMenu en koppelt hier weer een actionlistener aan
+        mainMenuFrame.GetOptionsMenuItem().addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println("menu opties3");
+                //laat het options scherm en schakelt het hoofdscherm uit
+                optionsMenuFrame = new OptionsFrame();
+                mainMenuFrame.setEnabled(false);
+                System.out.println("fap fap fap 1");
+                
+                //de listener voor het optionsMenu (Ander JFrame) om ervoor te zorgen
+                //dat als het options scherm sluit, je het main scherm weer kan bewerken
+                optionsMenuFrame.addWindowListener(new WindowAdapter(){
+                   public void windowOpened( WindowEvent e ){
+                        //field1.requestFocus();
+                       System.out.println("fap fap fap 3");
+                     }
+                   public void windowClosing( WindowEvent e ){
+                       mainMenuFrame.setEnabled(true);
+                       optionsMenuFrame.dispose();
+                       optionsMenuFrame = null;
+                       mainMenuFrame.toFront();
+                       
+                   }
+                });
+                    }
+                });
+        
+        //de exit knop uit het hoofdscherm
+        mainMenuFrame.GetExitMenuItem().addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                System.exit(0);
+            }
+        });
+        
+
         
     }
     
-    public GTDcomplete getModel(){
-        return gtd;
+    private void OpenWindow(MenuScreen windowType){
+        //@TODO OpenWindow afmaken
+        switch(windowType){
+            case ACTIONS:
+                break;
+            case OPTIONS:
+                break;
+            case LASTOPENED:
+                break;
+            case THOUGHTS:
+                break;
+            case PROJECTS:
+                break;
+            case HISTORY:
+                break;
+            default: //MAIN
+                break;
+        }
+    }
+    
+    private void CloseWindow(MenuScreen windowType){
+        //@TODO CloseWindow afmaken
+        switch(windowType){
+            case ACTIONS:
+                break;
+            case OPTIONS:
+                break;
+            case LASTOPENED:
+                break;
+            case THOUGHTS:
+                break;
+            case PROJECTS:
+                break;
+            case HISTORY:
+                break;
+            default: //MAIN
+                break;
+        }
+        
+        //check all windows closed, exit app
+    }
+    
+    @Override
+    public void update(Observable o, Object arg) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
     
 }
+
+    

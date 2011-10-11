@@ -4,6 +4,7 @@
  */
 package view;
 
+import model.GoogleCalendar;
 import java.util.Map;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,6 +40,8 @@ public class OptionsFrame extends JFrame {
     
     //om ervoor te zorgen dat alle instellingen opgeslagen worden als het scherm gesloten wordt
     private Boolean doSave = true;
+    
+    private GoogleCalendar gcTransferer = new GoogleCalendar();
     
     public OptionsFrame(){
         super(OPTIONSMENUTITLE);
@@ -241,6 +244,13 @@ public class OptionsFrame extends JFrame {
             }
         });
 
+        gcCheckConnectionDB.addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                DoCheckGCConnection();
+            }
+        });
         
     }
     
@@ -259,15 +269,15 @@ public class OptionsFrame extends JFrame {
     private void SetOptionsValues(){
        OPTIONS.setGCUsername(googleUsername.getText());
        OPTIONS.setGCPassword(googlePassword.getText());
-       //options.setLastOpenedScreen(Options.MenuScreen.THOUGHTS);
-        
+       
        //System.out.println(OPTIONSMENUSCREENVALUES.get((String)startupScreen.getSelectedItem()));
        OPTIONS.setLastOpenedScreen(OPTIONSMENUSCREENVALUES.get((String)startupScreen.getSelectedItem()));
+       OPTIONS.setGcSynxType((String)gcSyncOptions.getSelectedItem());
     }
     
     private void LoadOptions(){
         googleUsername.setText(OPTIONS.getGCUsername());
-        googlePassword.setText(OPTIONS.getGClPassword());
+        googlePassword.setText(OPTIONS.getGCPassword());
         for (Map.Entry<String,MenuScreen> entry : OPTIONSMENUSCREENVALUES.entrySet()) {
             if(entry.getValue() == OPTIONS.getLastOpenedScreen()){
                 startupScreen.setSelectedItem(entry.getKey());
@@ -275,6 +285,11 @@ public class OptionsFrame extends JFrame {
                 break;
             }
         }
+        gcSyncOptions.setSelectedItem(OPTIONS.getGcSynxType());
+    }
+    
+    private void DoCheckGCConnection(){
+        
     }
 
 }

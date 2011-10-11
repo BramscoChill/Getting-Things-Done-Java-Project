@@ -7,6 +7,7 @@ package model;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Properties;
 
 import static view.MainConstants.*;
@@ -19,6 +20,8 @@ public class Options {
     private String gcUsername = "";
     private String gcPassword = "";
     private MenuScreen lastOpenedScreen = MenuScreen.MAIN;
+    private String gcSynxType = OPTIONSGCSYNCTYPRVALUES[0];
+
     public static String gcLink = "https://www.google.com/calendar/feeds/default/owncalendars/full";
     public String gcPersonalURL = "";
     
@@ -30,13 +33,18 @@ public class Options {
         if(OptionsFileExists()){
             try {
                 properties.load(new FileInputStream(optionsPath));
-                gcUsername = properties.getProperty("gcUsername");
-                gcPassword = properties.getProperty("gcPassword");
+                setGCUsername(properties.getProperty("gcUsername"));
+                setGCPassword(properties.getProperty("gcPassword"));
                 try{
-                    lastOpenedScreen = MenuScreen.valueOf(properties.getProperty("LOS"));
+                    setLastOpenedScreen(MenuScreen.valueOf(properties.getProperty("LOS")));
                 } catch (Exception ex){
-                    lastOpenedScreen = MenuScreen.MAIN;
+                    setLastOpenedScreen(MenuScreen.MAIN);
                 }
+                
+                //properties.getProperty("gcSyncType")
+                setGcSynxType((Arrays.asList(OPTIONSGCSYNCTYPRVALUES).contains(properties.getProperty("gcSyncType"))) ? 
+                        properties.getProperty("gcSyncType") : OPTIONSGCSYNCTYPRVALUES[0]);
+                
                 
                 System.out.println("Sucessfully opnened options file! - " + optionsPath);
                 //System.out.println("" + lastOpenedScreen.name());
@@ -50,9 +58,10 @@ public class Options {
     
     public void SaveOptions(){
         try {
-            properties.setProperty("gcUsername", gcUsername);
-            properties.setProperty("gcPassword", gcPassword);
-            properties.setProperty("LOS", lastOpenedScreen.name());
+            properties.setProperty("gcUsername", getGCUsername());
+            properties.setProperty("gcPassword", getGCPassword());
+            properties.setProperty("LOS", getLastOpenedScreen().name());
+            properties.setProperty("gcSyncType",getGcSynxType());
             properties.store(new FileOutputStream(optionsPath), null);
         } catch (IOException e) {
             System.out.println(optionsPath);
@@ -61,16 +70,9 @@ public class Options {
     }
     
     public void CreateDefaultOptionsFile(){
-        try {
             properties = new Properties();
-            properties.setProperty("gcUsername", gcUsername);
-            properties.setProperty("gcPassword", gcPassword);
-            properties.setProperty("LOS", lastOpenedScreen.name());
-            properties.store(new FileOutputStream(optionsPath), null);
-        } catch (IOException e) {
-            System.out.println(optionsPath);
-            e.printStackTrace();
-        }
+            SaveOptions();
+
     }
     
     private Boolean OptionsFileExists(){
@@ -83,7 +85,7 @@ public class Options {
         }
     }
     
-    public String getGClPassword() {
+    public String getGCPassword() {
         return gcPassword;
     }
 
@@ -114,5 +116,13 @@ public class Options {
 
     public void setGcPersonalURL(String gcPersonalURL) {
         this.gcPersonalURL = gcPersonalURL;
+    }
+    
+    public String getGcSynxType() {
+        return gcSynxType;
+    }
+
+    public void setGcSynxType(String gcSynxType) {
+        this.gcSynxType = gcSynxType;
     }
 }

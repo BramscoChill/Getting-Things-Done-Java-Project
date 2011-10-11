@@ -37,7 +37,6 @@ public class MainConstants {
     public static final String MAINMENUTITLE = MAINTITLE + " Main Menu - V" + MAINVERSION;
     public static final int MAINMENUBUTTONSMARGIN = 30;
     
-    public static Options OPTIONS = new Options();
     public static enum MenuScreen{MAIN, LASTOPENED, THOUGHTS, PROJECTS, ACTIONS, HISTORY, OPTIONS}
     public static final String[] OPTIONSSTARTUPSCREENVALUES = {"Hoofdscherm","Laatst Geopend","Gedachten", "Projecten","Acties","History"};
     public static final String[] OPTIONSGCSYNCTYPRVALUES = {"Alles","Alleen acties in het heden"};
@@ -54,10 +53,11 @@ public class MainConstants {
 
         ;
     };
-
+    
     public static final String OPTIONSMENUTITLE = MAINTITLE + " Options - V" + MAINVERSION;
     public static final int OPTIONSMENUMARGIN = 20;
     public static final Font OPTIONSMENUFONTTEXTFIELDS = new Font("Arial", Font.BOLD, 18);
+    public static Options OPTIONS = new Options();
     
     public static final String ACTIONSMENUTITLE = MAINTITLE + " Acties - " + "V" + MAINVERSION;
     
