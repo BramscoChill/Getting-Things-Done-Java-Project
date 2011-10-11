@@ -1,2 +1,0 @@
-model.exceptions.ThingsException
-model.exceptions.ThingsException$ThingsWhat
