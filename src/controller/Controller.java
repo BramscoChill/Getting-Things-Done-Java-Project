@@ -4,7 +4,7 @@
  */
 package controller;
 
-import Model.GTDcomplete;
+import model.GTDcomplete;
 import view.GTDmainFrame;
 
 /**

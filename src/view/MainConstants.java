@@ -3,9 +3,9 @@
  */
 package view;
 
-import Model.Context;
-import Model.Project;
-import Model.Status;
+import model.Context;
+import model.Project;
+import model.Status;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;

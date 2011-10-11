@@ -5,7 +5,7 @@
 package view;
 
 import java.awt.Dimension;
-import Model.Action;
+import model.Action;
 import java.util.Random;
 import javax.swing.JFrame;
 

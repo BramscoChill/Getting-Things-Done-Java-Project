@@ -1,8 +1,8 @@
 
 package controller;
 
-import Model.*;
-import Model.Database.*;
+import model.*;
+import model.Database.*;
 
 
 public class Main {

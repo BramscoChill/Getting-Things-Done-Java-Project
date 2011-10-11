@@ -4,8 +4,8 @@
  */
 package Model.TableMeuk;
 
-import Model.Action;
-import Model.Thought;
+import model.Action;
+import model.Thought;
 import javax.swing.table.AbstractTableModel;
 
 /**

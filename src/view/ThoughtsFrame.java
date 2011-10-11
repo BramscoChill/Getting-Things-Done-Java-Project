@@ -7,7 +7,7 @@ package view;
 import java.awt.Dimension;
 import java.util.Random;
 import Model.TableMeuk.UberTablePanel;
-import Model.Thought;
+import model.Thought;
 import javax.swing.JFrame;
 
 import static view.MainConstants.*;

@@ -4,7 +4,7 @@
  */
 package view;
 
-import Model.GoogleCalendar;
+import model.GoogleCalendar;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.ActionEvent;

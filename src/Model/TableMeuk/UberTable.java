@@ -6,8 +6,8 @@ package Model.TableMeuk;
 
 import javax.swing.ListSelectionModel;
 import java.awt.Toolkit;
-import Model.Action;
-import Model.Thought;
+import model.Action;
+import model.Thought;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;

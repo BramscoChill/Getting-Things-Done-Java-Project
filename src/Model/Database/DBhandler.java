@@ -8,9 +8,8 @@ package Model.Database;
 
 import java.util.Calendar;
 import java.util.ArrayList;
-import Model.*;
+import model.*;
 import com.mysql.jdbc.PreparedStatement;
-import Model.Thought;
 import com.mysql.jdbc.ResultSetMetaData;
 import java.sql.ResultSet;
 import com.mysql.jdbc.Statement;
