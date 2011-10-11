@@ -91,7 +91,7 @@ public class Options {
         this.gcPassword = gmailPassword;
     }
 
-    public String getGClUsername() {
+    public String getGCUsername() {
         return gcUsername;
     }
 

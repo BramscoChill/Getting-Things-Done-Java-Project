@@ -32,10 +32,10 @@ import static view.MainConstants.*;
  */
 public class OptionsFrame extends JFrame {
     
-    private JButton saveButton, cancelButton, previousButton;
-    private JLabel optionsTitle, googleUsernameLBL, googlePasswordLBL, startupScreenLBL;
+    private JButton saveButton, cancelButton, previousButton, gcCheckConnectionDB, gcSyncActions;
+    private JLabel optionsTitle, googleUsernameLBL, googlePasswordLBL, startupScreenLBL, gcSyncOptionsLBL;
     private JTextField googleUsername, googlePassword;
-    private JComboBox startupScreen;
+    private JComboBox startupScreen, gcSyncOptions;
     
     //om ervoor te zorgen dat alle instellingen opgeslagen worden als het scherm gesloten wordt
     private Boolean doSave = true;
@@ -62,11 +62,16 @@ public class OptionsFrame extends JFrame {
     }
     
     private void SetButtons(){
-        setMinimumSize(new Dimension(400,350));
-        setMaximumSize(new Dimension(9999,400));
+        setMinimumSize(new Dimension(600,350));
+        setMaximumSize(new Dimension(800,400));
         
         saveButton = new JButton("Opslaan");
         cancelButton = new JButton("Annuleren");
+        gcCheckConnectionDB = new JButton("Test Verbinding en Database");
+        gcSyncActions = new JButton("Synchroniseer Acties");
+        gcSyncOptionsLBL = new JLabel("Google Calandar synchronisatie type:");
+        gcSyncOptions = new JComboBox();
+        gcSyncOptions.setBackground(Color.WHITE);
         previousButton = new JButton();
         googleUsername = new JTextField();
         googleUsername.setFont(OPTIONSMENUFONTTEXTFIELDS);
@@ -79,7 +84,12 @@ public class OptionsFrame extends JFrame {
             startupScreen.addItem(OPTIONSSTARTUPSCREENVALUES[i]);
         }
         
+        for(int i = 0; i < OPTIONSGCSYNCTYPRVALUES.length; i++){
+            gcSyncOptions.addItem(OPTIONSGCSYNCTYPRVALUES[i]);
+        }
+        
         startupScreen.setSelectedIndex(0);
+        gcSyncOptions.setSelectedIndex(0);
         
         optionsTitle = new JLabel("Opties",JLabel.CENTER);
         optionsTitle.setFont(FONTTITLE);
@@ -97,10 +107,14 @@ public class OptionsFrame extends JFrame {
         add(startupScreenLBL);
         add(saveButton);
         add(cancelButton);
+        add(gcCheckConnectionDB);
+        add(gcSyncActions);
         add(previousButton);
         add(googleUsername);
         add(googlePassword);
         add(startupScreen);
+        add(gcSyncOptionsLBL);
+        add(gcSyncOptions);
         
         previousButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/buttonicons/Actions-go-previous-icon2.png"))); // NOI18N
     }
@@ -123,9 +137,9 @@ public class OptionsFrame extends JFrame {
                 int bHeight = 30;
                 int bWidth = 100;
                 
-                int previousButWH = 72;
+                int previousButWH = 55;
                 int previousButXpos = (int) (frameW - margin - previousButWH);
-                previousButton.setBounds(previousButXpos - 5, (int)margin, previousButWH, previousButWH);
+                previousButton.setBounds(previousButXpos - 5, (int)(margin/2), previousButWH, previousButWH);
                 
                 //googleUsername.setBounds(null);
                 
@@ -135,14 +149,22 @@ public class OptionsFrame extends JFrame {
                 optionsTitle.setBounds(optionsX,(int)margin,optionsTitleW,optionsTitleH);
                 
                 int gULx = (int) margin;
-                int textfieldsWith = (int)(frameW - margin - margin) - 4;
+                int textfieldsWith = (int)((frameW/2) - margin - margin);
                 googleUsernameLBL.setBounds(gULx,(int) (optionsTitle.getLocation().y + margin + labelsHeight),labelsWidth, labelsHeight);
                 googleUsername.setBounds(gULx,(int) (googleUsernameLBL.getLocation().y + labelsHeight),textfieldsWith, labelsHeight);
                 googlePasswordLBL.setBounds(gULx,(int) (googleUsername.getLocation().y + margin + labelsHeight),labelsWidth, labelsHeight);
                 googlePassword.setBounds(gULx,(int) (googlePasswordLBL.getLocation().y + labelsHeight),textfieldsWith, labelsHeight);
                 
+                
+                
                 startupScreenLBL.setBounds(gULx,(int) (googlePassword.getLocation().y + margin + labelsHeight),labelsWidth, labelsHeight);
-                startupScreen.setBounds(gULx,(int) (startupScreenLBL.getLocation().y + labelsHeight),labelsWidth, labelsHeight);
+                startupScreen.setBounds(gULx,(int) (startupScreenLBL.getLocation().y + labelsHeight),(int)(labelsWidth / 1.5), labelsHeight);
+                
+                
+                gcCheckConnectionDB.setBounds((int)(textfieldsWith + (margin * 2)),(int) (googlePassword.getLocation().y),250, labelsHeight);
+                gcSyncActions.setBounds((int)(textfieldsWith + (margin * 2)),(int) (gcCheckConnectionDB.getLocation().y - labelsHeight - (margin / 2)),250, labelsHeight);
+                gcSyncOptionsLBL.setBounds((int)(textfieldsWith + (margin * 2)),(int) (googleUsernameLBL.getLocation().y),250, labelsHeight);
+                gcSyncOptions.setBounds((int)(textfieldsWith + (margin * 2)),(int) (googleUsernameLBL.getLocation().y + labelsHeight),250, labelsHeight);
                 
                 saveButton.setBounds((int)(frameW - bWidth - bWidth - margin - margin),(int) (frameH - (bHeight * 2.5)),bWidth, bHeight);
                 cancelButton.setBounds((int)(frameW - bWidth - margin - 5),(int) (frameH - (bHeight * 2.5)),bWidth,bHeight);
@@ -244,7 +266,7 @@ public class OptionsFrame extends JFrame {
     }
     
     private void LoadOptions(){
-        googleUsername.setText(OPTIONS.getGClUsername());
+        googleUsername.setText(OPTIONS.getGCUsername());
         googlePassword.setText(OPTIONS.getGClPassword());
         for (Map.Entry<String,MenuScreen> entry : OPTIONSMENUSCREENVALUES.entrySet()) {
             if(entry.getValue() == OPTIONS.getLastOpenedScreen()){

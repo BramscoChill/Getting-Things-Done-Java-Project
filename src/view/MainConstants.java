@@ -40,6 +40,7 @@ public class MainConstants {
     public static Options OPTIONS = new Options();
     public static enum MenuScreen{MAIN, LASTOPENED, THOUGHTS, PROJECTS, ACTIONS, HISTORY, OPTIONS}
     public static final String[] OPTIONSSTARTUPSCREENVALUES = {"Hoofdscherm","Laatst Geopend","Gedachten", "Projecten","Acties","History"};
+    public static final String[] OPTIONSGCSYNCTYPRVALUES = {"Alles","Alleen acties in het heden"};
     public static final HashMap<String,MenuScreen> OPTIONSMENUSCREENVALUES = new HashMap<String, MenuScreen>() {
 
         {

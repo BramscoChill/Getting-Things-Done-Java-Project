@@ -61,7 +61,7 @@ public class GoogleCalendar {
         CalendarFeed resultFeed = null;
         
         try {
-            daCalendarService.setUserCredentials(OPTIONS.getGClUsername(), OPTIONS.getGClPassword());
+            daCalendarService.setUserCredentials(OPTIONS.getGCUsername(), OPTIONS.getGClPassword());
             URL feedUrl = new URL(OPTIONS.gcLink);
             resultFeed = daCalendarService.getFeed(feedUrl, CalendarFeed.class);
             return true;
@@ -84,7 +84,7 @@ public class GoogleCalendar {
         CalendarFeed resultFeed = null;
         
         try {
-            daCalendarService.setUserCredentials(OPTIONS.getGClUsername(), OPTIONS.getGClPassword());
+            daCalendarService.setUserCredentials(OPTIONS.getGCUsername(), OPTIONS.getGClPassword());
             URL feedUrl = new URL(OPTIONS.gcLink);
             resultFeed = daCalendarService.getFeed(feedUrl, CalendarFeed.class);
             
@@ -117,7 +117,7 @@ public class GoogleCalendar {
         CalendarFeed resultFeed = null;
         
         try {
-            daCalendarService.setUserCredentials(OPTIONS.getGClUsername(), OPTIONS.getGClPassword());
+            daCalendarService.setUserCredentials(OPTIONS.getGCUsername(), OPTIONS.getGClPassword());
             URL feedUrl = new URL(OPTIONS.gcLink);
             resultFeed = daCalendarService.getFeed(feedUrl, CalendarFeed.class);
             

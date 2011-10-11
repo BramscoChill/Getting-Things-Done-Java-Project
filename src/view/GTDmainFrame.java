@@ -49,7 +49,7 @@ public class GTDmainFrame implements Observer {
             public void actionPerformed(ActionEvent e)
             {
                 System.out.println("PUSH DA BUTTON BUTTON 1");
-                System.out.println("save button - gUser: " + OPTIONS.getGClUsername());
+                System.out.println("save button - gUser: " + OPTIONS.getGCUsername());
             }
         });
         
