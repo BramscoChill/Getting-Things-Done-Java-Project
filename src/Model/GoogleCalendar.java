@@ -4,6 +4,7 @@
  */
 package model;
 
+import java.sql.Timestamp;
 import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.data.calendar.ColorProperty;
 import com.google.gdata.data.calendar.HiddenProperty;
@@ -49,41 +50,50 @@ public class GoogleCalendar {
 //        }
         
         //System.out.println("creating calendar: " + CreateCalendar());
-        CheckCalendarExists();
-        DeleteAction(new Action());
+        //CheckCalendarExists();
+        //DeleteAction(new Action());
     }
     
     public void DoStuff() throws AuthenticationException, MalformedURLException, IOException, ServiceException{
         
     }
     
-    private Boolean CheckConnection(){
+    public Boolean CheckConnection() throws IOException, ServiceException{
         CalendarFeed resultFeed = null;
         
-        try {
             daCalendarService.setUserCredentials(OPTIONS.getGCUsername(), OPTIONS.getGCPassword());
             URL feedUrl = new URL(OPTIONS.gcLink);
             resultFeed = daCalendarService.getFeed(feedUrl, CalendarFeed.class);
             return true;
-        } catch (IOException iOException) {
-            Logger.getLogger(GoogleCalendar.class.getName()).log(Level.SEVERE, null, iOException);
-        } catch (ServiceException serviceException) {
-            if(serviceException instanceof com.google.gdata.util.InvalidEntryException){
-                System.out.println("URL klopt niet waarmee verbinding wordt gemaakt!");
-            } else if(serviceException instanceof com.google.gdata.client.GoogleService.InvalidCredentialsException){
-                System.out.println("Gebruikersnaam en/of wachtwoord klopt niet!");
-            }
-            Logger.getLogger(GoogleCalendar.class.getName()).log(Level.SEVERE, null, serviceException);
-        } catch (Exception ex){
-            Logger.getLogger(GoogleCalendar.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return false;
+        
     }
     
-    private Boolean CheckCalendarExists(){
+//    public Boolean CheckConnection(){
+//        CalendarFeed resultFeed = null;
+//        
+//        try {
+//            daCalendarService.setUserCredentials(OPTIONS.getGCUsername(), OPTIONS.getGCPassword());
+//            URL feedUrl = new URL(OPTIONS.gcLink);
+//            resultFeed = daCalendarService.getFeed(feedUrl, CalendarFeed.class);
+//            return true;
+//        } catch (IOException iOException) {
+//            Logger.getLogger(GoogleCalendar.class.getName()).log(Level.SEVERE, null, iOException);
+//        } catch (ServiceException serviceException) {
+//            if(serviceException instanceof com.google.gdata.util.InvalidEntryException){
+//                System.out.println("URL klopt niet waarmee verbinding wordt gemaakt!");
+//            } else if(serviceException instanceof com.google.gdata.client.GoogleService.InvalidCredentialsException){
+//                System.out.println("Gebruikersnaam en/of wachtwoord klopt niet!");
+//            }
+//            Logger.getLogger(GoogleCalendar.class.getName()).log(Level.SEVERE, null, serviceException);
+//        } catch (Exception ex){
+//            Logger.getLogger(GoogleCalendar.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        return false;
+//    }
+    
+    public Boolean CheckCalendarExists() throws IOException, ServiceException{
         CalendarFeed resultFeed = null;
-        
-        try {
+
             daCalendarService.setUserCredentials(OPTIONS.getGCUsername(), OPTIONS.getGCPassword());
             URL feedUrl = new URL(OPTIONS.gcLink);
             resultFeed = daCalendarService.getFeed(feedUrl, CalendarFeed.class);
@@ -98,22 +108,45 @@ public class GoogleCalendar {
               return true;
           }
         }
-        } catch (IOException iOException) {
-            Logger.getLogger(GoogleCalendar.class.getName()).log(Level.SEVERE, null, iOException);
-        } catch (ServiceException serviceException) {
-            if(serviceException instanceof com.google.gdata.util.InvalidEntryException){
-                System.out.println("URL klopt niet waarmee verbinding wordt gemaakt!");
-            } else if(serviceException instanceof com.google.gdata.client.GoogleService.InvalidCredentialsException){
-                System.out.println("Gebruikersnaam en/of wachtwoord klopt niet!");
-            }
-            Logger.getLogger(GoogleCalendar.class.getName()).log(Level.SEVERE, null, serviceException);
-        } catch (Exception ex){
-            Logger.getLogger(GoogleCalendar.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
         return false;
     }
     
-    private Boolean CreateCalendar(){
+    
+//    public Boolean CheckCalendarExists(){
+//        CalendarFeed resultFeed = null;
+//        
+//        try {
+//            daCalendarService.setUserCredentials(OPTIONS.getGCUsername(), OPTIONS.getGCPassword());
+//            URL feedUrl = new URL(OPTIONS.gcLink);
+//            resultFeed = daCalendarService.getFeed(feedUrl, CalendarFeed.class);
+//            
+//        for (int i = 0; i < resultFeed.getEntries().size(); i++) {
+//          CalendarEntry entry = resultFeed.getEntries().get(i);
+//          System.out.println("\t" + entry.getTitle().getPlainText() + " - '" + entry.getLinks().get(0).getHref() + "'");
+//          if(entry.getTitle().getPlainText().trim().toLowerCase().startsWith("gtd")){
+//              //strNewURL = entry.getLinks().get(0).getHref();
+//              OPTIONS.setGcPersonalURL(entry.getLinks().get(0).getHref());
+//              //System.out.println(OPTIONS.getGcPersonalURL());
+//              return true;
+//          }
+//        }
+//        } catch (IOException iOException) {
+//            Logger.getLogger(GoogleCalendar.class.getName()).log(Level.SEVERE, null, iOException);
+//        } catch (ServiceException serviceException) {
+//            if(serviceException instanceof com.google.gdata.util.InvalidEntryException){
+//                System.out.println("URL klopt niet waarmee verbinding wordt gemaakt!");
+//            } else if(serviceException instanceof com.google.gdata.client.GoogleService.InvalidCredentialsException){
+//                System.out.println("Gebruikersnaam en/of wachtwoord klopt niet!");
+//            }
+//            Logger.getLogger(GoogleCalendar.class.getName()).log(Level.SEVERE, null, serviceException);
+//        } catch (Exception ex){
+//            Logger.getLogger(GoogleCalendar.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        return false;
+//    }
+    
+    public Boolean CreateCalendar(){
         CalendarFeed resultFeed = null;
         
         try {
@@ -169,11 +202,22 @@ public class GoogleCalendar {
         
         CalendarEventEntry myEntry = new CalendarEventEntry();
 
-        myEntry.setTitle(new PlainTextConstruct("Tennis with Beth"));
-        myEntry.setContent(new PlainTextConstruct("Meet for a quick lesson."));
+        myEntry.setTitle(new PlainTextConstruct(action.getDescription()));
+        myEntry.setContent(new PlainTextConstruct(action.getDescription() + "\nProject: " + action.getProject().getName()
+                + "\nContext: " + action.getContext().getName() + "\nStatus: " + action.getStatus().getName()
+                + "\n\nBeschrijving: " + action.getNote()
+                ));
 
-        DateTime startTime = DateTime.parseDateTime("2006-04-17T15:00:00-08:00");
-        DateTime endTime = DateTime.parseDateTime("2006-04-17T17:00:00-08:00");
+//        DateTime startTime = DateTime.parseDateTime("2006-04-17T15:00:00-08:00");
+//        DateTime endTime = DateTime.parseDateTime("2006-04-17T17:00:00-08:00");
+        DateTime startTime = DateTime.parseDateTime(action.getDatumTijd().toString());
+        
+        long oneDay = 1 * 24 * 60 * 60 * 1000;
+        long oneHour = 60 * 60 * 1000;
+        Timestamp newTimeStamp = action.getDatumTijd();
+        newTimeStamp.setTime(newTimeStamp.getTime() + oneHour);
+        DateTime endTime = DateTime.parseDateTime(newTimeStamp.toString());
+        
         When eventTimes = new When();
         eventTimes.setStartTime(startTime);
         eventTimes.setEndTime(endTime);
@@ -236,6 +280,11 @@ public class GoogleCalendar {
     public Boolean UpdateAction(Action action){
         //@TODO UpdatetAction calendar functie afmaken
         return true;
+    }
+    
+    public Boolean UpdateActions(Action[] actions){
+        //@TODO UpdateActions afmaken
+        return false;
     }
     
 }

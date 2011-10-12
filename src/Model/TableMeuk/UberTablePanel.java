@@ -68,6 +68,7 @@ public class UberTablePanel extends JPanel {
         setVisible(true);
     }
     
+    
     //update alle componenten aan de hand van de size
     public void UpdateSize(int w, int h){
         setBounds(0,0,w,h);
@@ -80,6 +81,14 @@ public class UberTablePanel extends JPanel {
             filterBoxes[i].setBounds(posx, 0, comboWidth, HEIGHTOFCOMBOBOXESTABLE);
             posx += comboWidth;
         }
+    }
+    
+    public void UpdateActions(Action[] data){
+        table = new UberTable(data);
+    }
+    
+    public void UpdateThoughts(Thought[] data){
+        table = new UberTable(data);
     }
     
     private void SetListeners(){

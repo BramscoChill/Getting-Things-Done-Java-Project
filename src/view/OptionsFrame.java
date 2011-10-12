@@ -4,6 +4,7 @@
  */
 package view;
 
+import java.awt.Font;
 import model.GoogleCalendar;
 import java.util.Map;
 import java.awt.event.ActionEvent;
@@ -33,15 +34,15 @@ import static view.MainConstants.*;
  */
 public class OptionsFrame extends JFrame {
     
-    private JButton saveButton, cancelButton, previousButton, gcCheckConnectionDB, gcSyncActions;
-    private JLabel optionsTitle, googleUsernameLBL, googlePasswordLBL, startupScreenLBL, gcSyncOptionsLBL;
+    public JButton gcSyncActions,gcCheckConnectionDB;
+    
+    private JButton saveButton, cancelButton, previousButton;
+    private JLabel optionsTitle, googleUsernameLBL, googlePasswordLBL, startupScreenLBL, gcSyncOptionsLBL, errorMessageLBL;
     private JTextField googleUsername, googlePassword;
     private JComboBox startupScreen, gcSyncOptions;
     
     //om ervoor te zorgen dat alle instellingen opgeslagen worden als het scherm gesloten wordt
     private Boolean doSave = true;
-    
-    private GoogleCalendar gcTransferer = new GoogleCalendar();
     
     public OptionsFrame(){
         super(OPTIONSMENUTITLE);
@@ -65,14 +66,19 @@ public class OptionsFrame extends JFrame {
     }
     
     private void SetButtons(){
-        setMinimumSize(new Dimension(600,350));
-        setMaximumSize(new Dimension(800,400));
+        setMinimumSize(new Dimension(600,450));
+        setMaximumSize(new Dimension(900,500));
         
         saveButton = new JButton("Opslaan");
         cancelButton = new JButton("Annuleren");
-        gcCheckConnectionDB = new JButton("Test Verbinding en Database");
+        gcCheckConnectionDB = new JButton("Test Verbinding en Kalender");
         gcSyncActions = new JButton("Synchroniseer Acties");
         gcSyncOptionsLBL = new JLabel("Google Calandar synchronisatie type:");
+        errorMessageLBL = new JLabel();
+        errorMessageLBL.setFont(FONTBUTTONS);
+        errorMessageLBL.setForeground(Color.RED);
+//        errorMessageLBL.setOpaque(true);
+//        errorMessageLBL.setBackground(Color.GREEN);
         gcSyncOptions = new JComboBox();
         gcSyncOptions.setBackground(Color.WHITE);
         previousButton = new JButton();
@@ -118,6 +124,7 @@ public class OptionsFrame extends JFrame {
         add(startupScreen);
         add(gcSyncOptionsLBL);
         add(gcSyncOptions);
+        add(errorMessageLBL);
         
         previousButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/buttonicons/Actions-go-previous-icon2.png"))); // NOI18N
     }
@@ -173,6 +180,8 @@ public class OptionsFrame extends JFrame {
                 cancelButton.setBounds((int)(frameW - bWidth - margin - 5),(int) (frameH - (bHeight * 2.5)),bWidth,bHeight);
                 //System.out.println(" --- Resized " + "fW: " + frameW + "fH: " + frameH + ", optX: " + optionsX);  
                 
+                
+                errorMessageLBL.setBounds((int)(gULx),(int) (startupScreen.getLocation().getY() + margin + startupScreen.getSize().getHeight()),(int)(frameW - (margin * 3)),bHeight);
                 
                 //zit een bug in setMaximumSize, dit is de workarround
                 Robot robbie;
@@ -244,13 +253,6 @@ public class OptionsFrame extends JFrame {
             }
         });
 
-        gcCheckConnectionDB.addActionListener(new ActionListener() {
- 
-            public void actionPerformed(ActionEvent e)
-            {
-                DoCheckGCConnection();
-            }
-        });
         
     }
     
@@ -288,8 +290,9 @@ public class OptionsFrame extends JFrame {
         gcSyncOptions.setSelectedItem(OPTIONS.getGcSynxType());
     }
     
-    private void DoCheckGCConnection(){
-        
+    public void SetErrorMessage(String txt, Boolean isError){
+        errorMessageLBL.setText(txt);
+        errorMessageLBL.setForeground((isError) ? Color.RED : new Color(1,153,1));
     }
 
 }
