@@ -19,7 +19,7 @@ import static view.MainConstants.*;
 public class ThoughtsFrame extends JFrame {
     private UberTablePanel tablePanel;
     
-    public ThoughtsFrame(){
+    public ThoughtsFrame(Thought[] thoughts){
         super(THOUGHTSMENUTITLE);
         setLayout(null);
         this.setResizable(true);
@@ -35,12 +35,12 @@ public class ThoughtsFrame extends JFrame {
         //************TEST**************//
         setBounds(100,100,500,500);
         
-        Thought[] thoughts = new Thought[5];
-        for(int i = 0; i < thoughts.length; i++){
-            thoughts[i] = new Thought(i+1, "" + i + "bamiii " + i+3*34334, java.sql.Timestamp.valueOf("2011-10-06 11:04:49"));
-        }
+//        Thought[] thoughts = new Thought[5];
+//        for(int i = 0; i < thoughts.length; i++){
+//            thoughts[i] = new Thought(i+1, "" + i + "bamiii " + i+3*34334, java.sql.Timestamp.valueOf("2011-10-06 11:04:49"));
+//        }
         
-        UberTablePanel tablePanel = new UberTablePanel(new Thought[]{new Thought()},300,300);
+        UberTablePanel tablePanel = new UberTablePanel(thoughts,300,300);
         
         add(tablePanel);
         

@@ -6,6 +6,7 @@ package model;
 
 import Model.Database.DBhandler;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Observable;
 import model.exceptions.DatabaseException;
 import model.exceptions.ThingsException;
@@ -21,7 +22,21 @@ public class GTDcomplete extends Observable {
     
     //<editor-fold defaultstate="collapsed" desc="Gedachten">
     public Thought[] GetAllThoughtsAsArray(){
-        return (Thought[]) thoughts.toArray();
+        try{
+            SetAllThoughts();
+        } catch (Exception ex){
+            ex.printStackTrace();
+            System.out.println();
+        }
+        Thought[] thoughtsArray = new Thought[thoughts.size()];
+        for(int i = 0; i < thoughts.size(); i++){
+            thoughtsArray[i] = thoughts.get(i);
+        }
+        return thoughtsArray;
+    }
+    
+    public void SetAllThoughts() throws ThingsException{
+        thoughts = new ArrayList<Thought>(Arrays.asList(dbHandler.GetAllThoughts()));
     }
     
     public ArrayList<Thought> GetAllThoughtsAsArrayList(){

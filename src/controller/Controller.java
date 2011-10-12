@@ -58,13 +58,14 @@ public class Controller implements Observer {
     //voegt de actionlisteners toe aan het mainframe en andere JFrames
     private void AddMainMenuListeners(){
         JButton[] buttons = mainMenuFrame.GetButtons();
+        //thoughts scherm buttons
         buttons[0].addActionListener(new ActionListener() {
  
             public void actionPerformed(ActionEvent e)
             {
                 System.out.println("PUSH DA BUTTON BUTTON 1");
                 System.out.println("save button - gUser: " + OPTIONS.getGCUsername());
-                thoughtsFrame = new ThoughtsFrame();
+                thoughtsFrame = new ThoughtsFrame(gtd.GetAllThoughtsAsArray());
             }
         });
         
