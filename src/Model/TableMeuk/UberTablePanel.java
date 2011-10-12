@@ -4,6 +4,7 @@
  */
 package Model.TableMeuk;
 
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import javax.swing.JScrollPane;
@@ -32,6 +33,8 @@ public class UberTablePanel extends JPanel {
     private JComboBox[] filterBoxes;
     private JScrollPane scrollpaneTable;
     
+    private Object selectedObject;
+    
     public UberTablePanel(Object[] data, int p_w, int p_h){
         setLayout(null);
         setBounds(0,0,p_w,p_h);
@@ -55,11 +58,13 @@ public class UberTablePanel extends JPanel {
         
         int posx = 0;
         for(int i = 0; i < filterBoxes.length; i++){
-            int comboWidth = table.getTableHeader().getColumnModel().getColumn(i).getWidth()*2;
+            //int comboWidth = table.getTableHeader().getColumnModel().getColumn(i).getWidth()*2;
             filterBoxes[i] = new JComboBox();
-            filterBoxes[i].setBounds(posx, 0, comboWidth, HEIGHTOFCOMBOBOXESTABLE);
+            filterBoxes[i].setBackground(Color.WHITE);
+            filterBoxes[i].setEditable(true);
+            //filterBoxes[i].setBounds(posx, 0, comboWidth, HEIGHTOFCOMBOBOXESTABLE);
             add(filterBoxes[i]);
-            posx += comboWidth;
+            //posx += comboWidth;
         }
         
         add(scrollpaneTable);
@@ -70,14 +75,14 @@ public class UberTablePanel extends JPanel {
     
     
     //update alle componenten aan de hand van de size
-    public void UpdateSize(int w, int h){
-        setBounds(0,0,w,h);
+    public void UpdateSize(int x, int y, int w, int h){
+        setBounds(x,y,w,h);
         //table.setBounds(0,HEIGHTOFCOMBOBOXESTABLE + HEIGHTOFTABLEHEADER,(int)getBounds().getWidth(),(int)getBounds().getHeight()-(HEIGHTOFCOMBOBOXESTABLE + HEIGHTOFTABLEHEADER));
         //table.getTableHeader().setBounds(0,HEIGHTOFCOMBOBOXESTABLE,(int)getBounds().getWidth(),HEIGHTOFTABLEHEADER);
         scrollpaneTable.setBounds(0,HEIGHTOFCOMBOBOXESTABLE,(int)getBounds().getWidth(),(int)getBounds().getHeight()-(HEIGHTOFCOMBOBOXESTABLE));
         int posx = 0;
         for(int i = 0; i < filterBoxes.length; i++){
-            int comboWidth = table.getTableHeader().getColumnModel().getColumn(i).getWidth()*2;
+            int comboWidth = table.getTableHeader().getColumnModel().getColumn(i).getWidth();
             filterBoxes[i].setBounds(posx, 0, comboWidth, HEIGHTOFCOMBOBOXESTABLE);
             posx += comboWidth;
         }
@@ -137,7 +142,7 @@ public class UberTablePanel extends JPanel {
                  int daID = Integer.parseInt(daModel.getIDAt(row).toString());
                  //@TODO inbouwen dat hier iets komt dat je de gedachte kan bewerken
                  
-                 //controller.getModel().GetThought(daID).GetNote()
+                 controller.GetModel().GetThought(daID).GetNote();
                  System.out.println("Double clicked: row: " + row + ", col: " + column + ", id: " + daID);
                  }
            }

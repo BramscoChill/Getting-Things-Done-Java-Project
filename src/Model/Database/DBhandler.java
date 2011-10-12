@@ -134,7 +134,8 @@ public class DBhandler {
                 int resultCounter = 0;
                 while(resultSet.next()){
                     thoughts[resultCounter] = new Thought(resultSet.getInt(1), resultSet.getString(2), resultSet.getTimestamp(3));
-                    thoughts[resultCounter].PrintThought();
+                    //thoughts[resultCounter].PrintThought();
+                    resultCounter++;
                 }
                 
             }
@@ -287,6 +288,7 @@ public class DBhandler {
                     
                     
                     actions[resultCounter].PrintAll();
+                    resultCounter++;
                 }
                 
             }

@@ -53,8 +53,9 @@ public class UberTableModel extends AbstractTableModel {
         columnNames[1] = "Datum";
         
         this.data = new Object[data.length][3];
+        System.out.println("date len: " + data.length);
         for(int i = 0; i < data.length; i++){
-            System.out.println("data ID is null: " + (data[i].GetID()));
+            //System.out.println("i: " + i + ", data ID is null: " + (data[i] == null) + ", this.data is null: " + (this.data[i][0] == null));
             this.data[i][0] = new Integer(data[i].GetID());
             this.data[i][1] = (data[i].GetNote());
             this.data[i][2] = data[i].GetTimestamp();

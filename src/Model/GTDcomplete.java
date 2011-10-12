@@ -22,12 +22,6 @@ public class GTDcomplete extends Observable {
     
     //<editor-fold defaultstate="collapsed" desc="Gedachten">
     public Thought[] GetAllThoughtsAsArray(){
-        try{
-            SetAllThoughts();
-        } catch (Exception ex){
-            ex.printStackTrace();
-            System.out.println();
-        }
         Thought[] thoughtsArray = new Thought[thoughts.size()];
         for(int i = 0; i < thoughts.size(); i++){
             thoughtsArray[i] = thoughts.get(i);
@@ -43,9 +37,14 @@ public class GTDcomplete extends Observable {
         return thoughts;
     }
     
-    public Thought GetThought(int index){
-        if(index > -1 && index < thoughts.size()){
-            return thoughts.get(index);
+    public Thought GetThought(int thoughtID){
+//        if(index > -1 && index < thoughts.size()){
+//            return thoughts.get(index);
+//        }
+        for(int i = 0; i < thoughts.size(); i++ ){
+            if(thoughts.get(i) != null && thoughts.get(i).GetID() == thoughtID){
+                return thoughts.get(i);
+            }
         }
         return null;
     }
@@ -56,6 +55,9 @@ public class GTDcomplete extends Observable {
         {
             thoughts.add(newThought);
         }
+        //observer call
+        setChanged();
+        notifyObservers(newThought);
         return (newThought != null);
     }
     
@@ -69,6 +71,8 @@ public class GTDcomplete extends Observable {
     
     public Boolean DeleteThought(Thought thought) throws ThingsException, DatabaseException{
         thoughts.remove(thought);
+        setChanged();
+        notifyObservers(thought);
         return dbHandler.DeleteThought(thought);
     }
     //</editor-fold>

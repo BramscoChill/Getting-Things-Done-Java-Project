@@ -66,7 +66,7 @@ public class MainConstants {
     public static final String HISTORYMENUTITLE = MAINTITLE + " Geschiedenis - " + "V" + MAINVERSION;
     
     public static final String THOUGHTSMENUTITLE = MAINTITLE + " Gedachten - " + "V" + MAINVERSION;
-    
+    public static final int THOUGHTSMENUMARGIN = 30;
     //als er meerdere acties in de database achter elkaar moeten worden uitgevoerd
     //dan moet ie niet steeds de verbinding sluiten
     //zet hem op false voor een reeks acties en daarna weer op true, dan houd ie de verbinding open

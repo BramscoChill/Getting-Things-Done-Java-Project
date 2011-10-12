@@ -5,6 +5,11 @@
 package controller;
 
 
+import model.Action;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.Thought;
+import model.exceptions.ThingsException;
 import view.ThoughtsFrame;
 import com.google.gdata.util.ServiceException;
 import java.io.IOException;
@@ -52,7 +57,7 @@ public class Controller implements Observer {
         //laad alle opties in
         OPTIONS.LoadOptions();
         
-        GoogleCalendar calen = new GoogleCalendar();
+        
     }
     
     //voegt de actionlisteners toe aan het mainframe en andere JFrames
@@ -65,7 +70,34 @@ public class Controller implements Observer {
             {
                 System.out.println("PUSH DA BUTTON BUTTON 1");
                 System.out.println("save button - gUser: " + OPTIONS.getGCUsername());
-                thoughtsFrame = new ThoughtsFrame(gtd.GetAllThoughtsAsArray());
+                
+                try {
+                    gtd.SetAllThoughts();
+                    thoughtsFrame = new ThoughtsFrame(gtd.GetAllThoughtsAsArray());
+                    thoughtsFrame.addWindowListener(new WindowAdapter(){
+                   public void windowOpened( WindowEvent e ){
+                        //thoughtsFrame.requestFocus();
+                     }
+                   public void windowClosing( WindowEvent e ){
+                       //mainMenuFrame.setEnabled(true);
+                       thoughtsFrame.dispose();
+                       thoughtsFrame = null;
+                       mainMenuFrame.toFront();
+                       
+                   }
+                });
+                } catch (ThingsException ex) {
+                    Object[] options = {"Ok"};
+                    int n = JOptionPane.showOptionDialog(optionsMenuFrame,
+                        "Kan de gedachten niet ophalen, check uw verbinding (of inloggegevens / database DNS)!",
+                        "Kalender niet gevonden!",
+                        JOptionPane.OK_OPTION,
+                        JOptionPane.ERROR_MESSAGE,
+                        null,
+                        options,
+                        options[0]);
+                }
+                
             }
         });
         
@@ -246,8 +278,20 @@ public class Controller implements Observer {
         //check all windows closed, exit app
     }
     
+    public GTDcomplete GetModel(){
+        return gtd;
+    }
+    
     @Override
     public void update(Observable o, Object arg) {
+        if(arg instanceof Thought){
+            //update de thougts table
+            if(thoughtsFrame != null){
+                thoughtsFrame.UpdateThoughts(gtd.GetAllThoughtsAsArray());
+            }
+        } else if(arg instanceof Action){
+            
+        }
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
