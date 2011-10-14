@@ -5,6 +5,8 @@
 package controller;
 
 
+import view.ActionFrame;
+import model.exceptions.DatabaseException;
 import model.Action;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import model.Options;
 
+import view.MessageBox;
 import static view.MainConstants.*;
 
 /**
@@ -45,6 +48,7 @@ public class Controller implements Observer {
     private MainMenuFrame mainMenuFrame;
     private OptionsFrame optionsMenuFrame;
     private ThoughtsFrame thoughtsFrame;
+    private ActionFrame actionFrame;
     
     public Controller(){
         //thoughtsFrame.setVisible(false);
@@ -69,44 +73,68 @@ public class Controller implements Observer {
  
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("PUSH DA BUTTON BUTTON 1");
-                System.out.println("save button - gUser: " + OPTIONS.getGCUsername());
+                //System.out.println("PUSH DA BUTTON BUTTON 1");
+                //System.out.println("save button - gUser: " + OPTIONS.getGCUsername());
                 
                 try {
                     gtd.SetAllThoughts();
                     thoughtsFrame = new ThoughtsFrame(gtd.GetAllThoughtsAsArray());
                     thoughtsFrame.addWindowListener(new WindowAdapter(){
-                   public void windowOpened( WindowEvent e ){
-                        //thoughtsFrame.requestFocus();
-                     }
-                   public void windowClosing( WindowEvent e ){
-                       //mainMenuFrame.setEnabled(true);
-                       thoughtsFrame.dispose();
-                       thoughtsFrame = null;
-                       mainMenuFrame.toFront();
-                       
-                   }
-                });
+                           public void windowOpened( WindowEvent e ){
+                                //thoughtsFrame.requestFocus();
+                             }
+                           public void windowClosing( WindowEvent e ){
+                               //mainMenuFrame.setEnabled(true);
+                               thoughtsFrame.dispose();
+                               thoughtsFrame = null;
+                               mainMenuFrame.toFront();
+
+                           }
+                   });
                 } catch (ThingsException ex) {
-                    Object[] options = {"Ok"};
-                    int n = JOptionPane.showOptionDialog(optionsMenuFrame,
-                        "Kan de gedachten niet ophalen, check uw verbinding (of inloggegevens / database DNS)!",
-                        "Kalender niet gevonden!",
-                        JOptionPane.OK_OPTION,
-                        JOptionPane.ERROR_MESSAGE,
-                        null,
-                        options,
-                        options[0]);
+                ex.printStackTrace();
+                    MessageBox.DoOkErrorMessageBox(mainMenuFrame, "FOUT: laden gedachtes!",
+                            "FOUT BIJ HET OPSLAAN VAN DE GEDACHTE, verbinding is in orde,"
+                            + "\ngedachtes konden niet opgehaald worden van de database!");
+                } catch (DatabaseException ex) {
+                    ex.printStackTrace();
+                MessageBox.DoOkErrorMessageBox(mainMenuFrame, "FOUT: laden gedachtes!",
+                        "FOUT BIJ HET LADEN VAN DE GEDCHTES, \ncontrolleer de verbinding!");
                 }
                 
             }
         });
         
+        //actions scherm
         buttons[1].addActionListener(new ActionListener() {
  
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("PUSH DA BUTTON BUTTON 2");
+                try {
+                    gtd.SetAllActions();
+                    actionFrame = new ActionFrame(gtd.GetAllActionssAsArray());
+                    actionFrame.addWindowListener(new WindowAdapter(){
+                   public void windowOpened( WindowEvent e ){
+                        //thoughtsFrame.requestFocus();
+                     }
+                   public void windowClosing( WindowEvent e ){
+                       //mainMenuFrame.setEnabled(true);
+                       actionFrame.dispose();
+                       actionFrame = null;
+                       mainMenuFrame.toFront();
+                       
+                   }
+                });
+                } catch (ThingsException ex) {
+                ex.printStackTrace();
+                    MessageBox.DoOkErrorMessageBox(mainMenuFrame, "FOUT: laden acties!",
+                            "FOUT BIJ HET OPSLAAN VAN DE ACTIES, verbinding is in orde,"
+                            + "\ngedachtes konden niet opgehaald worden van de database!");
+                } catch (DatabaseException ex) {
+                    ex.printStackTrace();
+                MessageBox.DoOkErrorMessageBox(mainMenuFrame, "FOUT: laden acties!",
+                        "FOUT BIJ HET LADEN VAN DE ACTIES, \ncontrolleer de verbinding!");
+                }
             }
         });
         

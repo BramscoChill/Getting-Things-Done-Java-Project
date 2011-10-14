@@ -120,7 +120,7 @@ public class DBhandler {
     }
     
     
-    public Thought[] GetAllThoughts() throws ThingsException {
+    public Thought[] GetAllThoughts() throws DatabaseException, ThingsException {
         
         Thought thoughts[] = null;
         
@@ -143,9 +143,10 @@ public class DBhandler {
             CloseConnection();
             
             return thoughts;
-        } catch (Exception ex){
+        }  catch (SQLException ex) {
+            ex.printStackTrace();
             throw new ThingsException("", new Thought(), ThingsException.ThingsWhat.GET);
-        } 
+        }
     }
     
     public Boolean DeleteThought(Thought thought) throws ThingsException, DatabaseException{

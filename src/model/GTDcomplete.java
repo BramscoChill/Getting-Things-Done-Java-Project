@@ -22,14 +22,10 @@ public class GTDcomplete extends Observable {
     
     //<editor-fold defaultstate="collapsed" desc="Gedachten">
     public Thought[] GetAllThoughtsAsArray(){
-        Thought[] thoughtsArray = new Thought[thoughts.size()];
-        for(int i = 0; i < thoughts.size(); i++){
-            thoughtsArray[i] = thoughts.get(i);
-        }
-        return thoughtsArray;
+        return (Thought[]) thoughts.toArray(new Thought[thoughts.size()]);
     }
     
-    public void SetAllThoughts() throws ThingsException{
+    public void SetAllThoughts() throws DatabaseException, ThingsException{
         thoughts = new ArrayList<Thought>(Arrays.asList(dbHandler.GetAllThoughts()));
     }
     
@@ -78,8 +74,13 @@ public class GTDcomplete extends Observable {
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="Actions">
+    
+    public void SetAllActions() throws DatabaseException, ThingsException{
+        actions = new ArrayList<Action>(Arrays.asList(dbHandler.GetAllActions()));
+    }
+    
     public Action[] GetAllActionssAsArray(){
-        return (Action[]) actions.toArray();
+        return (Action[]) actions.toArray(new Action[actions.size()]);
     }
     
     public ArrayList<Action> GetAllActionsAsArrayList(){

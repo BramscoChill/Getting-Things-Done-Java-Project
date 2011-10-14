@@ -42,9 +42,8 @@ public class ThoughtsFrame extends JFrame {
         super(THOUGHTSMENUTITLE);
         setLayout(null);
         this.setResizable(true);
-        setBounds(100,new Random().nextInt(200)+50,700,399);
+        setLocation(100,new Random().nextInt(200)+50);
         setMinimumSize(new Dimension(700,600));
-        //setMaximumSize(new Dimension(9999,900));
         
         setVisible(true);
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -52,7 +51,7 @@ public class ThoughtsFrame extends JFrame {
         
         //******************************//
         //************TEST**************//
-        setBounds(100,100,600,600);
+        setBounds(100,100,800,700);
         
 //        Thought[] thoughts = new Thought[5];
 //        for(int i = 0; i < thoughts.length; i++){
@@ -69,7 +68,7 @@ public class ThoughtsFrame extends JFrame {
         deleteThoughtBTN.setFont(FONTBUTTONS);
         deleteThoughtBTN.setEnabled(false);
         thoughtNoteTXT = new JTextArea();
-        thoughtNoteTXT.setFont(FONT);
+        thoughtNoteTXT.setFont(UBERTABLEINPUTFONT);
         thoughtNoteTXT.setBorder(BorderFactory.createLineBorder(Color.black));
         thoughtNoteTXT.setLineWrap(true);
         thoughtNoteTXT.setWrapStyleWord(true);
@@ -137,8 +136,7 @@ public class ThoughtsFrame extends JFrame {
             {
                 DoNewThought();
                 saveThoughtBTN.setEnabled(true);
-                //bij een nieuwe gedachte kan er niks gewist worden
-                deleteThoughtBTN.setEnabled(false);
+                
             }
         });
         
@@ -162,6 +160,7 @@ public class ThoughtsFrame extends JFrame {
                 currentSelectedThought = (tablePanel.getSelectedObject() instanceof Thought) ? 
                         (Thought)tablePanel.getSelectedObject() : null;
                 SetThoughtNoteToCurrentThought();
+                //als er een bestaande gedachte geselecteerd is, kan die opgeslagen worden
                 saveThoughtBTN.setEnabled(true);
                 //als er een bestaande gedachte geselecteerd is, dan kan die gewist worden
                 deleteThoughtBTN.setEnabled(true);
@@ -198,22 +197,30 @@ public class ThoughtsFrame extends JFrame {
             thoughtNoteTXT.setText(currentSelectedThought.GetNote());
         } else {
             System.out.println("Faal in: SetThoughtNoteToCurrentThought");
+            MessageBox.DoOkErrorMessageBox(this, "FOUT: bij het instellen gedachte - 34893!",
+                    "FOUT bij het instellen van een gedachte, neem contact op met de makers!");
         }
     }
     
+    //zet de tekst in de tekstbox naar de huidige note
     private void SetCurrentThoughtToThoughtNote(){
             currentSelectedThought.SetNote(thoughtNoteTXT.getText());
     }
     
+    //slaat de huidige gedachte op
     private void SaveCurrentThought(){
         try {
             //slaat alles op naar het model en DB
             //System.out.println("ID gedachte: " + currentSelectedThought.GetID());
             controller.GetModel().UpdateThought(currentSelectedThought);
         } catch (ThingsException ex) {
-            Logger.getLogger(ThoughtsFrame.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+            MessageBox.DoOkErrorMessageBox(this, "FOUT: opslaan gedachte mislukt!",
+                    "FOUT BIJ HET OPSLAAN VAN DE GEDACHTE, \ncontrolleer de verbinding!");
         } catch (DatabaseException ex) {
-            Logger.getLogger(ThoughtsFrame.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+            MessageBox.DoOkErrorMessageBox(this, "FOUT: opslaan gedachte mislukt!",
+                    "FOUT BIJ HET OPSLAAN VAN DE GEDACHTE, verbinding is in orde, \ngedachte kon niet opgeslagen worden in de database!");
         }
     }
     
@@ -221,6 +228,10 @@ public class ThoughtsFrame extends JFrame {
         currentSelectedThought = new Thought();
         SetThoughtNoteToCurrentThought();
         tablePanel.DeselectAll();
+        //als je een nieuwe gedachte maakt, dan kan je er niet nog een nieuwe maken
+        clearSelectedThoughtBTN.setEnabled(false);
+        //bij een nieuwe gedachte kan er niks gewist worden
+        deleteThoughtBTN.setEnabled(false);
     }
     
     public Thought GetCurrentSelectedThought(){
@@ -234,7 +245,27 @@ public class ThoughtsFrame extends JFrame {
     public void DoDeleteThought(){
         //checkt of er wel een gedachte is om te wissen
         if(currentSelectedThought != null && currentSelectedThought.GetID() != -1){
-            
+            try {
+                //slaat alles op naar het model en DB
+                //System.out.println("ID gedachte: " + currentSelectedThought.GetID());
+                if(!controller.GetModel().DeleteThought(currentSelectedThought)){
+                    MessageBox.DoOkErrorMessageBox(this, "FOUT: wissen gedachte mislukt! - 001",
+                        "FOUT BIJ HET WISSEN VAN DE GEDACHTE, verbinding is in orde,"
+                        + "\ngedachte kon niet gewist worden in de database!");
+                };
+            } catch (ThingsException ex) {
+                ex.printStackTrace();
+                MessageBox.DoOkErrorMessageBox(this, "FOUT: wissen gedachte mislukt!",
+                    "FOUT BIJ HET WISSEN VAN DE GEDACHTE, \ncontrolleer de verbinding!");
+            } catch (DatabaseException ex) {
+                ex.printStackTrace();
+                MessageBox.DoOkErrorMessageBox(this, "FOUT: wissen gedachte mislukt!",
+                    "FOUT BIJ HET WISSEN VAN DE GEDACHTE, verbinding is in orde,"
+                    + "\ngedachte kon niet gewist worden in de database!");
+            }
+        } else { //zou nooit mogen gebeuren, maar voor dn zekersheid #trolololll
+            MessageBox.DoOkErrorMessageBox(this, "FOUT: wissen gedachte mislukt! - 002",
+                    "FOUT BIJ HET WISSEN VAN DE GEDACHTE, kan geen lege gedachte wissen!");
         }
     }
     

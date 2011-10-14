@@ -46,6 +46,10 @@ public class MainMenuFrame extends JFrame {
         mainButtons[1] = new JButton("Acties");
         mainButtons[2] = new JButton("Projecten");
         mainButtons[3] = new JButton("Geschiedenis");
+        mainButtons[0].setFont(FONTBUTTONS);
+        mainButtons[1].setFont(FONTBUTTONS);
+        mainButtons[2].setFont(FONTBUTTONS);
+        mainButtons[3].setFont(FONTBUTTONS);
         add(mainButtons[0]);
         add(mainButtons[1]);
         add(mainButtons[2]);
