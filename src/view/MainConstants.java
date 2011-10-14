@@ -75,11 +75,8 @@ public class MainConstants {
     public static final Font FONT = new Font("Arial", Font.PLAIN, 14);
     public static final Font FONTBUTTONS = new Font("Arial", Font.BOLD, 20);
     public static final Font FONTTITLE = new Font("Arial", Font.BOLD, 40);
-<<<<<<< HEAD
     public static final Font UBERTABLEFONT = new Font("Arial", Font.PLAIN, 16);
     public static final int UBERTABLEROWHEIGHT = 30;
-=======
->>>>>>> ef0b1631fce0b58fd506d485488d34099b1df17c
     public static final Color BACKGROUND = new Color(200, 220, 230);
     public static final Boolean PRINTEMPTYTABLEROWS = false; //of de lege rijen in de UberTables ook gekleurt moeten worden
     public static final Color TABLEROWCOLOR = Color.GRAY; // new Color(200, 220, 230);

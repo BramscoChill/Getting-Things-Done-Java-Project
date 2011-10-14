@@ -58,8 +58,10 @@ public class UberTableModel extends AbstractTableModel {
             //System.out.println("i: " + i + ", data ID is null: " + (data[i] == null) + ", this.data is null: " + (this.data[i][0] == null));
             this.data[i][0] = new Integer(data[i].GetID());
             this.data[i][1] = (data[i].GetNote());
-            this.data[i][2] = data[i].GetTimestamp();
+            this.data[i][2] = data[i].GetTimestamp().toString();
+            System.out.println("this.data[i][1]: " + this.data[i][1]);
         }
+        System.out.println("updated thoughts uberTableModel");
         fireTableDataChanged();
     }
     

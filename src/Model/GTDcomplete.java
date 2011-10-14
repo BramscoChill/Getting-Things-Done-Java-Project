@@ -86,6 +86,17 @@ public class GTDcomplete extends Observable {
         return actions;
     }
     
+    public Action GetAction(int actionID){
+//        if(index > -1 && index < thoughts.size()){
+//            return thoughts.get(index);
+//        }
+        for(int i = 0; i < actions.size(); i++ ){
+            if(actions.get(i) != null && actions.get(i).getID() == actionID){
+                return actions.get(i);
+            }
+        }
+        return null;
+    }
     public Boolean AddAction(Action action) throws ThingsException, DatabaseException{
         Action newAction = dbHandler.AddAction(action);
         if(newAction != null)

@@ -178,7 +178,7 @@ public class DBhandler {
         try {
             MakeConnection(); //maakt database connectie indien nodig
             
-            if(thought.GetID() != -1){
+            if(thought.GetID() == -1){
                 //gaat alles preparen, voorkomt sql injectie etc.
                 PreparedStatement preparedStatement = (PreparedStatement) connection.prepareStatement("INSERT INTO " + TABLE_THOUGHT + " (notes) VALUES (?);",Statement.RETURN_GENERATED_KEYS);
                 preparedStatement.setString(1, thought.GetNote());

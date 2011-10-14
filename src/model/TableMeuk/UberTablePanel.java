@@ -4,6 +4,16 @@
  */
 package Model.TableMeuk;
 
+import javax.swing.table.TableRowSorter;
+import javax.swing.table.TableModel;
+import javax.swing.JTextField;
+import java.util.ArrayList;
+import javax.swing.RowFilter;
+import java.util.List;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
+import java.awt.event.ActionListener;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
@@ -34,6 +44,14 @@ public class UberTablePanel extends JPanel {
     private JScrollPane scrollpaneTable;
     
     private Object selectedObject;
+    private String type;
+    
+    public ActionListener selectionChangedTable;
+    
+    //rowfilters
+    private List<RowFilter<Object,Object>> rfs;
+    
+
     
     public UberTablePanel(Object[] data, int p_w, int p_h){
         setLayout(null);
@@ -44,9 +62,13 @@ public class UberTablePanel extends JPanel {
         if(data instanceof Action[]){
             table = new UberTable((Action[]) data);
             filterBoxes = new JComboBox[8];
+            type = "action"; 
+            rfs = new ArrayList<RowFilter<Object,Object>>(8);
         } else if(data instanceof Thought[]){
             table = new UberTable((Thought[]) data);
             filterBoxes = new JComboBox[2];
+            type = "thought";
+            rfs = new ArrayList<RowFilter<Object,Object>>(2);
         } else {
             System.out.println("Verkeerde info doorgestuurt naar uber table! - klasseinfo: " + this.toString());
         }
@@ -62,6 +84,41 @@ public class UberTablePanel extends JPanel {
             filterBoxes[i] = new JComboBox();
             filterBoxes[i].setBackground(Color.WHITE);
             filterBoxes[i].setEditable(true);
+            rfs.add(RowFilter.regexFilter("", i));
+            final int finalI = i;
+            JTextComponent comboEditorComponent = (JTextComponent)filterBoxes[i].getEditor().getEditorComponent();
+            comboEditorComponent.getDocument().addDocumentListener(new DocumentListener() { 
+              public void changedUpdate(DocumentEvent e) { 
+                UpdateFilter(finalI); 
+              } 
+              public void removeUpdate(DocumentEvent e) { 
+                UpdateFilter(finalI); 
+              } 
+              public void insertUpdate(DocumentEvent e) { 
+                UpdateFilter(finalI); 
+              } 
+
+              public void UpdateFilter(int columnIndex) { 
+                  //trekt de input uit de combo
+                  JTextField inputField = (JTextField) filterBoxes[columnIndex].getEditor().getEditorComponent();
+                  String input = inputField.getText().trim().toLowerCase();
+                  if(! input.isEmpty()){
+                     
+                      rfs.set(columnIndex,RowFilter.regexFilter(input, columnIndex));
+//                      for(int i = 0; i < rfs.size(); i++) {
+//                          if(rfs.get(i) != null){
+//                              
+//                          }
+//                      }
+                  } else {
+                      rfs.set(columnIndex,RowFilter.regexFilter("", columnIndex)); 
+                  }
+                  RowFilter<Object,Object> af = RowFilter.andFilter(rfs);
+                  ((TableRowSorter<TableModel>)table.getRowSorter()).setRowFilter(af);
+        
+                 //System.out.println("Combo Box CHANGED: " + columnIndex + "\nInput: " + input);
+              } 
+            }); 
             //filterBoxes[i].setBounds(posx, 0, comboWidth, HEIGHTOFCOMBOBOXESTABLE);
             add(filterBoxes[i]);
             //posx += comboWidth;
@@ -89,11 +146,12 @@ public class UberTablePanel extends JPanel {
     }
     
     public void UpdateActions(Action[] data){
-        table = new UberTable(data);
+        //table = new UberTable(data);
+        table.UpdateData(data);
     }
     
     public void UpdateThoughts(Thought[] data){
-        table = new UberTable(data);
+        table.UpdateData(data);
     }
     
     private void SetListeners(){
@@ -142,10 +200,36 @@ public class UberTablePanel extends JPanel {
                  int daID = Integer.parseInt(daModel.getIDAt(row).toString());
                  //@TODO inbouwen dat hier iets komt dat je de gedachte kan bewerken
                  
-                 controller.GetModel().GetThought(daID).GetNote();
-                 System.out.println("Double clicked: row: " + row + ", col: " + column + ", id: " + daID);
+                 if("thought".equals(type)){
+                     setSelectedObject(controller.GetModel().GetThought(daID));
+                     
+                 } else if("action".equals(type)){
+                     setSelectedObject(controller.GetModel().GetAction(daID));
+                 } else {
+                     
+                 }
+                 
+                 if(selectionChangedTable != null){
+                     selectionChangedTable.actionPerformed(null);
+                 }
+                 
+                 //System.out.println("Double clicked: row: " + row + ", col: " + column + ", id: " + daID);
                  }
            }
         });
+        
+        
+    }
+    
+    public Object getSelectedObject() {
+        return selectedObject;
+    }
+
+    public void setSelectedObject(Object selectedObject) {
+        this.selectedObject = selectedObject;
+    }
+    
+    public void DeselectAll(){
+        table.getSelectionModel().clearSelection();
     }
 }

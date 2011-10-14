@@ -29,13 +29,19 @@ public class UberTable extends JTable {
     private UberTableModel model;
     private TableRowSorter<TableModel> sorter;
     
+    public UberTable(){
+        setFont(UBERTABLEFONT);
+        setRowHeight(UBERTABLEROWHEIGHT);
+    }
     
     public UberTable(Action[] data){
+        this();
         UpdateData(data);
         DoStuffOnStartup();
     }
     
     public UberTable(Thought[] data){
+        this();
         UpdateData(data);
         DoStuffOnStartup();
     }    
@@ -43,24 +49,29 @@ public class UberTable extends JTable {
     private void DoStuffOnStartup(){
         getTableHeader().setReorderingAllowed(false); // no movable colums
         setModel(model);
-        setRowSorter(sorter);
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         
         //getTableHeader().getColumnModel().getColumns().nextElement().
         
         setBackground((Color)toolkit.getDesktopProperty("control"));
         
-         sorter = new TableRowSorter<TableModel>(model);
+        sorter = new TableRowSorter<TableModel>(model);
+        setRowSorter(sorter);
+        
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
     
     public void UpdateData(Action[] data){
+        model = null;
         model = new UberTableModel((Action[]) data);
+        setModel(model);
+       
     }
 
     public void UpdateData(Thought[] data){
+        model = null;
         model = new UberTableModel((Thought[]) data);
-        
+        setModel(model);
     }
     
       @Override
