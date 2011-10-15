@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.JFrame;
 import model.Options;
 
 /**
@@ -54,12 +55,16 @@ public class MainConstants {
         ;
     };
     
+    public static final javax.swing.ImageIcon PREVIOUSBUTTONIMAGEICON = new javax.swing.ImageIcon(MainConstants.class .getResource("/resources/buttonicons/Actions-go-previous-icon2.png"));
+    public static final int PREVIOUSBUTTONSIZE = 55;
+    
     public static final String OPTIONSMENUTITLE = MAINTITLE + " Options - V" + MAINVERSION;
     public static final int OPTIONSMENUMARGIN = 20;
     public static final Font OPTIONSMENUFONTTEXTFIELDS = new Font("Arial", Font.BOLD, 18);
     public static Options OPTIONS = new Options();
     
     public static final String ACTIONSMENUTITLE = MAINTITLE + " Acties - " + "V" + MAINVERSION;
+    public static final int ACTIONSSMENUMARGIN = 30;
     
     public static final String PROJECTSMENUTITLE = MAINTITLE + " Projecten - " + "V" + MAINVERSION;
     

@@ -76,7 +76,7 @@ public class GTDcomplete extends Observable {
     //<editor-fold defaultstate="collapsed" desc="Actions">
     
     public void SetAllActions() throws DatabaseException, ThingsException{
-        actions = new ArrayList<Action>(Arrays.asList(dbHandler.GetAllActions()));
+        actions = new ArrayList<Action>(Arrays.asList(dbHandler.GetAllActionsNotDone()));
     }
     
     public Action[] GetAllActionssAsArray(){

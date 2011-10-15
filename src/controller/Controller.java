@@ -125,6 +125,19 @@ public class Controller implements Observer {
                        
                    }
                 });
+                    
+                    actionFrame.previousButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                       actionFrame.dispose();
+                       actionFrame = null;
+                       if(mainMenuFrame == null){
+                           mainMenuFrame = new MainMenuFrame();
+                       }
+                       mainMenuFrame.setVisible(true);
+                       mainMenuFrame.toFront();
+                    }
+                });
                 } catch (ThingsException ex) {
                 ex.printStackTrace();
                     MessageBox.DoOkErrorMessageBox(mainMenuFrame, "FOUT: laden acties!",
@@ -197,6 +210,7 @@ public class Controller implements Observer {
                     }
                 });
                 
+                //knop uit het opties menu om de verbinding met google calander te controleren
                 optionsMenuFrame.gcCheckConnectionDB.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e)
                     {
@@ -261,6 +275,7 @@ public class Controller implements Observer {
             }
         });
         
+
 
         
     }

@@ -34,9 +34,9 @@ import static view.MainConstants.*;
  */
 public class OptionsFrame extends JFrame {
     
-    public JButton gcSyncActions,gcCheckConnectionDB;
+    public JButton gcSyncActions,gcCheckConnectionDB, previousButton;
     
-    private JButton saveButton, cancelButton, previousButton;
+    private JButton saveButton, cancelButton;
     private JLabel optionsTitle, googleUsernameLBL, googlePasswordLBL, startupScreenLBL, gcSyncOptionsLBL, errorMessageLBL;
     private JTextField googleUsername, googlePassword;
     private JComboBox startupScreen, gcSyncOptions;
@@ -126,7 +126,7 @@ public class OptionsFrame extends JFrame {
         add(gcSyncOptions);
         add(errorMessageLBL);
         
-        previousButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/resources/buttonicons/Actions-go-previous-icon2.png"))); // NOI18N
+        previousButton.setIcon(PREVIOUSBUTTONIMAGEICON); // NOI18N
     }
     
     private void UpdateScreenBounds(){
@@ -147,9 +147,9 @@ public class OptionsFrame extends JFrame {
                 int bHeight = 30;
                 int bWidth = 100;
                 
-                int previousButWH = 55;
-                int previousButXpos = (int) (frameW - margin - previousButWH);
-                previousButton.setBounds(previousButXpos - 5, (int)(margin/2), previousButWH, previousButWH);
+                
+                int previousButXpos = (int) (frameW - margin - PREVIOUSBUTTONSIZE);
+                previousButton.setBounds(previousButXpos - 5, (int)(margin/2), PREVIOUSBUTTONSIZE, PREVIOUSBUTTONSIZE);
                 
                 //googleUsername.setBounds(null);
                 

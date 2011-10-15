@@ -44,6 +44,7 @@ public class UberTable extends JTable {
         this();
         UpdateData(data);
         DoStuffOnStartup();
+        //model.get.setWidth(200);
     }    
     
     private void DoStuffOnStartup(){

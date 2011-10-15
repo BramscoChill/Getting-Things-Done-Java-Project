@@ -4,6 +4,7 @@
  */
 package Model.TableMeuk;
 
+import java.awt.event.ActionEvent;
 import javax.swing.table.TableRowSorter;
 import javax.swing.table.TableModel;
 import javax.swing.JTextField;
@@ -61,7 +62,7 @@ public class UberTablePanel extends JPanel {
         //en stelt het juisten aantal comboboxen in
         if(data instanceof Action[]){
             table = new UberTable((Action[]) data);
-            filterBoxes = new JComboBox[8];
+            filterBoxes = new JComboBox[6];
             type = "action"; 
             rfs = new ArrayList<RowFilter<Object,Object>>(8);
         } else if(data instanceof Thought[]){
@@ -69,6 +70,7 @@ public class UberTablePanel extends JPanel {
             filterBoxes = new JComboBox[2];
             type = "thought";
             rfs = new ArrayList<RowFilter<Object,Object>>(2);
+            
         } else {
             System.out.println("Verkeerde info doorgestuurt naar uber table! - klasseinfo: " + this.toString());
         }
@@ -98,27 +100,18 @@ public class UberTablePanel extends JPanel {
                 UpdateFilter(finalI); 
               } 
 
-              public void UpdateFilter(int columnIndex) { 
-                  //trekt de input uit de combo
-                  JTextField inputField = (JTextField) filterBoxes[columnIndex].getEditor().getEditorComponent();
-                  String input = inputField.getText().trim().toLowerCase();
-                  if(! input.isEmpty()){
-                     
-                      rfs.set(columnIndex,RowFilter.regexFilter(input, columnIndex));
-//                      for(int i = 0; i < rfs.size(); i++) {
-//                          if(rfs.get(i) != null){
-//                              
-//                          }
-//                      }
-                  } else {
-                      rfs.set(columnIndex,RowFilter.regexFilter("", columnIndex)); 
-                  }
-                  RowFilter<Object,Object> af = RowFilter.andFilter(rfs);
-                  ((TableRowSorter<TableModel>)table.getRowSorter()).setRowFilter(af);
-        
-                 //System.out.println("Combo Box CHANGED: " + columnIndex + "\nInput: " + input);
-              } 
+ 
             }); 
+            
+            filterBoxes[i].addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println("Combo selection changed!");
+                String input = filterBoxes[finalI].getSelectedItem().toString().trim().toLowerCase();
+                UpdateFilter(finalI, input); 
+            }
+        });
             //filterBoxes[i].setBounds(posx, 0, comboWidth, HEIGHTOFCOMBOBOXESTABLE);
             add(filterBoxes[i]);
             //posx += comboWidth;
@@ -126,6 +119,19 @@ public class UberTablePanel extends JPanel {
         
         add(scrollpaneTable);
         SetListeners();
+        
+        
+        //zet de colum size in, afhankelijk van het type
+        if(data instanceof Action[]){
+            table.getColumnModel().getColumn(0).setPreferredWidth(300);
+            //table.getColumnModel().getColumn(table.getColumnModel().getColumnCount()-1).setPreferredWidth(15);
+            
+        } else if(data instanceof Thought[]){
+            
+        } else {
+            //System.out.println("Verkeerde info doorgestuurt naar uber table! - klasseinfo: " + this.toString());
+        }
+        
         
         setVisible(true);
     }
@@ -219,6 +225,7 @@ public class UberTablePanel extends JPanel {
         });
         
         
+        
     }
     
     public Object getSelectedObject() {
@@ -231,5 +238,33 @@ public class UberTablePanel extends JPanel {
     
     public void DeselectAll(){
         table.getSelectionModel().clearSelection();
+    }              
+    public void UpdateFilter(int columnIndex, String input) { 
+        //trekt de input uit de combo
+        //JTextField inputField = (JTextField) filterBoxes[columnIndex].getEditor().getEditorComponent();
+        //String input = inputField.getText().trim().toLowerCase();
+        if(! input.isEmpty()){
+
+          rfs.set(columnIndex,RowFilter.regexFilter(input, columnIndex));
+        //                      for(int i = 0; i < rfs.size(); i++) {
+        //                          if(rfs.get(i) != null){
+        //                              
+        //                          }
+        //                      }
+        } else {
+          rfs.set(columnIndex,RowFilter.regexFilter("", columnIndex)); 
+        }
+        RowFilter<Object,Object> af = RowFilter.andFilter(rfs);
+        ((TableRowSorter<TableModel>)table.getRowSorter()).setRowFilter(af);
+
+        System.out.println("Combo Box CHANGED: " + columnIndex + "\nInput: " + input);
     }
+    
+    public void UpdateFilter(int columnIndex) { 
+        //trekt de input uit de combo
+        JTextField inputField = (JTextField) filterBoxes[columnIndex].getEditor().getEditorComponent();
+        String input = inputField.getText().trim().toLowerCase();
+        UpdateFilter(columnIndex, input);
+    }
+    
 }

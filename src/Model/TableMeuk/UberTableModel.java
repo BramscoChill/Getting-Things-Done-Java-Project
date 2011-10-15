@@ -22,27 +22,27 @@ public class UberTableModel extends AbstractTableModel {
     }
     
     public UberTableModel(Action[] data){
-        columnNames = new String[8];
+        columnNames = new String[6];
         columnNames[0] = "Beschrijving";
-        columnNames[1] = "Notities";
-        columnNames[2] = "Status";
-        columnNames[3] = "Context";
-        columnNames[4] = "Project";
-        columnNames[5] = "Datum";
-        columnNames[6] = "Datum Gewijzicht";
-        columnNames[7] = "Klaar";
+        //columnNames[1] = "Notities";
+        columnNames[1] = "Status";
+        columnNames[2] = "Context";
+        columnNames[3] = "Project";
+        columnNames[4] = "Datum";
+        columnNames[5] = "Datum Gewijzicht";
+        //columnNames[6] = "Klaar";
         
         this.data = new Object[data.length][9];
         for(int i = 0; i < data.length; i++){
             this.data[i][0] = new Integer(data[i].getID());
             this.data[i][1] = (data[i].getDescription());
-            this.data[i][2] = data[i].getNote();
-            this.data[i][3] = (data[i].getStatus() != null && data[i].getStatus().getID() != -1) ? data[i].getStatus().getName() : "";
-            this.data[i][4] = (data[i].getContext() != null && data[i].getContext().getID() != -1) ? data[i].getContext().getName() : "";
-            this.data[i][5] = (data[i].getProject() != null && data[i].getProject().getID() != -1) ? data[i].getProject().getName() : "";
-            this.data[i][6] = data[i].getDatumTijd();
-            this.data[i][7] = data[i].getStatusChanged();
-            this.data[i][8] = data[i].isDone();
+            //this.data[i][2] = data[i].getNote();
+            this.data[i][2] = (data[i].getStatus() != null && data[i].getStatus().getID() != -1) ? data[i].getStatus().getName() : "";
+            this.data[i][3] = (data[i].getContext() != null && data[i].getContext().getID() != -1) ? data[i].getContext().getName() : "";
+            this.data[i][4] = (data[i].getProject() != null && data[i].getProject().getID() != -1) ? data[i].getProject().getName() : "";
+            this.data[i][5] = data[i].getDatumTijd().toString();
+            this.data[i][6] = data[i].getStatusChanged().toString();
+            //this.data[i][7] = data[i].isDone();
         }
         fireTableDataChanged();
     }

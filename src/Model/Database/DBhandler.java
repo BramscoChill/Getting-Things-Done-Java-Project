@@ -6,6 +6,7 @@ package Model.Database;
  */
 
 
+import java.util.List;
 import java.util.Calendar;
 import java.util.ArrayList;
 import model.*;
@@ -303,6 +304,34 @@ public class DBhandler {
         
         CloseConnection();
         return actions;
+    }
+    
+    //krijgt alleen alle acties die nog niet klaar zijn
+    public Action[] GetAllActionsNotDone() throws DatabaseException, ThingsException{
+        Action[] daActions = GetAllActions();
+        List<Action> daList = new ArrayList<Action>();
+        
+        for(int i = 0; i < daActions.length; i++){
+            if(daActions[i] != null && !(daActions[i].isDone())){
+                daList.add(daActions[i]);
+            }
+        }
+        
+        return (Action[]) daList.toArray(new Action[daList.size()]);
+    }
+    
+    //krijgt alle acties die al klaar zijn
+    public Action[] GetAllActionsDone() throws DatabaseException, ThingsException{
+        Action[] daActions = GetAllActions();
+        List<Action> daList = new ArrayList<Action>();
+        
+        for(int i = 0; i < daActions.length; i++){
+            if(daActions[i] != null && (daActions[i].isDone())){
+                daList.add(daActions[i]);
+            }
+        }
+        
+        return (Action[]) daList.toArray(new Action[daList.size()]);
     }
        
     /* met deze funtie voeg je een nieuwe actie toe, of update je een bestaande actie
