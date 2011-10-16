@@ -147,6 +147,10 @@ public class GTDcomplete extends Observable {
         return dbHandler.DeleteStatus(status);
     }
     
+    public Status[] GetStatuses() throws ThingsException, DatabaseException{
+        return dbHandler.GetAllStatuses();
+    }
+    
     public Boolean AddContext(Context context) throws ThingsException, DatabaseException{
         Context newContext = dbHandler.AddContext(context);
         return (newContext != null);
@@ -158,6 +162,10 @@ public class GTDcomplete extends Observable {
     
     public Boolean DeleteContext(Context context) throws ThingsException, DatabaseException{
         return dbHandler.DeleteContext(context);
+    }
+    
+    public Context[] GetContexts() throws ThingsException, DatabaseException{
+        return dbHandler.GetAllContexts();
     }
     
 }

@@ -4,6 +4,10 @@
  */
 package view;
 
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import Model.TableMeuk.UberTablePanel;
@@ -20,7 +24,7 @@ import static view.MainConstants.*;
  *
  * @author Administrator
  */
-public class ActionFrame extends JFrame {
+public class ActionsFrame extends JFrame {
     public JButton previousButton;
     
     private Action[] actions;
@@ -29,8 +33,10 @@ public class ActionFrame extends JFrame {
     private JButton editActionBTN, newActionBTN, deleteActionBTN;
     private JLabel screenInfoLBL;
     
+    private Action currentSelectedAction = null;
     
-    public ActionFrame(Action[] actions){
+    
+    public ActionsFrame(Action[] actions){
         super(ACTIONSMENUTITLE);
         
         this.actions = actions;
@@ -103,6 +109,46 @@ public class ActionFrame extends JFrame {
 
             }
         });
+        
+                //action listener om aan te geven dat de selectie van de tabel veranderd is
+        //word aangeroepen vannuit het tablePanel
+        tablePanel.selectionChangedTable = new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                setCurrentSelectedAction((tablePanel.getSelectedObject() instanceof Action) ? 
+                        (Action)tablePanel.getSelectedObject() : null);
+                
+                //als er een bestaande actie geselecteerd is, kan die veranderd worden
+                editActionBTN.setEnabled(true);
+                //als er een bestaande actie geselecteerd is, dan kan die gewist worden
+                deleteActionBTN.setEnabled(true);
+            }
+        };
+        
+        newActionBTN.addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                DoNewAction();
+            }
+        });
+        
+        editActionBTN.addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                DoEditAction();
+            }
+        });
+        
+        deleteActionBTN.addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                DoDeleteAction();
+            }
+        });
     }
     
     private void UpdateScreenBounds(){
@@ -126,5 +172,61 @@ public class ActionFrame extends JFrame {
         deleteActionBTN.setBounds((int)(editActionBTN.getLocation().getX() + editActionBTN.getSize().getWidth() + ACTIONSSMENUMARGIN),
                 (int)(editActionBTN.getLocation().getY()),
                 (int)((this.getSize().getWidth()/3) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
+    }
+    
+    private Action getCurrentSelectedAction() {
+        return currentSelectedAction;
+    }
+
+    private void setCurrentSelectedAction(Action currentSelectedAction) {
+        this.currentSelectedAction = currentSelectedAction;
+    }
+    
+    private void DoNewAction(){
+        setCurrentSelectedAction(new Action());
+        OpenActionNewScreen();
+        //op t einde is er niks meer geselecteerd
+        tablePanel.DeselectAll();
+        editActionBTN.setEnabled(false);
+        deleteActionBTN.setEnabled(false);
+        setCurrentSelectedAction(null);
+    }
+    
+    private void DoEditAction(){
+        //checkt of er wel een actie geselecteerd is
+        if(getCurrentSelectedAction() != null){
+            OpenActionNewScreen();
+        } else {
+            //zou nooit mogen gebeuren, maar voor dn zekersheid #trolololll
+            MessageBox.DoOkErrorMessageBox(this, "FOUT: aanpassen actie mislukt! - 001",
+                    "FOUT BIJ HET AANPASSEN VAN DE ACTIE, kan geen lege actie aanpassen!");
+        }
+    }
+    
+    private void DoDeleteAction(){
+        //checkt of er wel een actie geselecteerd is
+        if(getCurrentSelectedAction() != null){
+            
+        } else {
+            //zou nooit mogen gebeuren, maar voor dn zekersheid #trolololll
+            MessageBox.DoOkErrorMessageBox(this, "FOUT: wissen actie mislukt! - 001",
+                    "FOUT BIJ HET WISSEN VAN DE ACTIE, kan geen lege actie wissen!");
+        }
+    }
+    
+    private void OpenActionNewScreen(){
+        final OneActionFrame newAction = new OneActionFrame(getCurrentSelectedAction());
+        setEnabled(false);
+        newAction.addWindowListener(new WindowAdapter(){
+                   public void windowOpened( WindowEvent e ){
+                        //field1.requestFocus();
+                     }
+                   public void windowClosing( WindowEvent e ){
+                       setEnabled(true);
+                       newAction.dispose();
+                       toFront();
+                       
+                   }
+                });
     }
 }

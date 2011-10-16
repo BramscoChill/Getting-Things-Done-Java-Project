@@ -113,17 +113,6 @@ public class MainMenuFrame extends JFrame {
         });
         
         
-        
-        addWindowListener(new WindowAdapter(){
-           public void windowOpened( WindowEvent e ){
-                //field1.requestFocus();
-             }
-           public void windowClosing( WindowEvent e ){
-                   setVisible(false);
-                   dispose();
-           }
-        }); 
-        
     }
     
     private void CreateMenuBar(){

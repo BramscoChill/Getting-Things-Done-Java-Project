@@ -5,7 +5,10 @@
 package controller;
 
 
-import view.ActionFrame;
+import view.HistoryFrame;
+import view.ProjectsFrame;
+import view.OneActionFrame;
+import view.ActionsFrame;
 import model.exceptions.DatabaseException;
 import model.Action;
 import java.util.logging.Level;
@@ -48,12 +51,15 @@ public class Controller implements Observer {
     private MainMenuFrame mainMenuFrame;
     private OptionsFrame optionsMenuFrame;
     private ThoughtsFrame thoughtsFrame;
-    private ActionFrame actionFrame;
+    private ActionsFrame actionFrame;
+    private ProjectsFrame projectsFrame;
+    private HistoryFrame historyFrame;
     
     public Controller(){
         //thoughtsFrame.setVisible(false);
         //mainMenu.setVisible(false);
         mainMenuFrame = new MainMenuFrame();
+        
         
         //voiegt listeners toe
         AddMainMenuListeners();
@@ -77,20 +83,24 @@ public class Controller implements Observer {
                 //System.out.println("save button - gUser: " + OPTIONS.getGCUsername());
                 
                 try {
-                    gtd.SetAllThoughts();
-                    thoughtsFrame = new ThoughtsFrame(gtd.GetAllThoughtsAsArray());
-                    thoughtsFrame.addWindowListener(new WindowAdapter(){
-                           public void windowOpened( WindowEvent e ){
-                                //thoughtsFrame.requestFocus();
-                             }
-                           public void windowClosing( WindowEvent e ){
-                               //mainMenuFrame.setEnabled(true);
-                               thoughtsFrame.dispose();
-                               thoughtsFrame = null;
-                               mainMenuFrame.toFront();
+                    //een scherm kan niet 2x geopent worden
+                    if(thoughtsFrame == null){
+                        gtd.SetAllThoughts();
+                        thoughtsFrame = new ThoughtsFrame(gtd.GetAllThoughtsAsArray());
+                        thoughtsFrame.addWindowListener(new WindowAdapter(){
+                               public void windowOpened( WindowEvent e ){
+                                    //thoughtsFrame.requestFocus();
+                                 }
+                               public void windowClosing( WindowEvent e ){
+                                   //mainMenuFrame.setEnabled(true);
+                                   DoReopenMainMenuFrame();
+                                   thoughtsFrame.dispose();
+                                   thoughtsFrame = null;
 
-                           }
-                   });
+
+                               }
+                       });
+                    }
                 } catch (ThingsException ex) {
                 ex.printStackTrace();
                     MessageBox.DoOkErrorMessageBox(mainMenuFrame, "FOUT: laden gedachtes!",
@@ -111,33 +121,33 @@ public class Controller implements Observer {
             public void actionPerformed(ActionEvent e)
             {
                 try {
-                    gtd.SetAllActions();
-                    actionFrame = new ActionFrame(gtd.GetAllActionssAsArray());
-                    actionFrame.addWindowListener(new WindowAdapter(){
-                   public void windowOpened( WindowEvent e ){
-                        //thoughtsFrame.requestFocus();
-                     }
-                   public void windowClosing( WindowEvent e ){
-                       //mainMenuFrame.setEnabled(true);
-                       actionFrame.dispose();
-                       actionFrame = null;
-                       mainMenuFrame.toFront();
-                       
-                   }
-                });
-                    
-                    actionFrame.previousButton.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                       actionFrame.dispose();
-                       actionFrame = null;
-                       if(mainMenuFrame == null){
-                           mainMenuFrame = new MainMenuFrame();
-                       }
-                       mainMenuFrame.setVisible(true);
-                       mainMenuFrame.toFront();
-                    }
-                });
+                    //een scherm kan niet 2x geopent worden
+                    if(actionFrame == null){
+                        gtd.SetAllActions();
+                        actionFrame = new ActionsFrame(gtd.GetAllActionssAsArray());
+                        actionFrame.addWindowListener(new WindowAdapter(){
+                       public void windowOpened( WindowEvent e ){
+                            //thoughtsFrame.requestFocus();
+                         }
+                           public void windowClosing( WindowEvent e ){
+                               //mainMenuFrame.setEnabled(true);
+                               actionFrame.dispose();
+                               actionFrame = null;
+                               DoReopenMainMenuFrame();
+
+                           }
+                        });
+
+                        actionFrame.previousButton.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e)
+                            {
+                               actionFrame.dispose();
+                               actionFrame = null;
+                               DoReopenMainMenuFrame();
+
+                            }
+                        });
+                }
                 } catch (ThingsException ex) {
                 ex.printStackTrace();
                     MessageBox.DoOkErrorMessageBox(mainMenuFrame, "FOUT: laden acties!",
@@ -151,11 +161,13 @@ public class Controller implements Observer {
             }
         });
         
+        //projecten
         buttons[2].addActionListener(new ActionListener() {
  
             public void actionPerformed(ActionEvent e)
             {
                 System.out.println("PUSH DA BUTTON BUTTON 2");
+                OneActionFrame test = new OneActionFrame();
             }
         });
         
@@ -275,9 +287,18 @@ public class Controller implements Observer {
             }
         });
         
-
-
         
+        mainMenuFrame.addWindowListener(new WindowAdapter(){
+           public void windowOpened( WindowEvent e ){
+                //field1.requestFocus();
+             }
+           public void windowClosing( WindowEvent e ){
+                   mainMenuFrame.setVisible(false);
+                   DoCheckLastWindowCloses();
+                   //dispose();
+           }
+        }); 
+
     }
     
     private void OpenWindow(MenuScreen windowType){
@@ -341,6 +362,21 @@ public class Controller implements Observer {
             
         }
         //throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    private void DoReopenMainMenuFrame(){
+       
+           //mainMenuFrame = new MainMenuFrame();
+           mainMenuFrame.setVisible(true);
+           mainMenuFrame.toFront();
+       
+    }
+    
+    //checkt of alle  schermen gesloten zijn, dan moet ie afsluiten
+    private void DoCheckLastWindowCloses(){
+        if(optionsMenuFrame == null && thoughtsFrame == null && actionFrame == null && projectsFrame == null && historyFrame == null && mainMenuFrame.isVisible() == false){
+            System.exit(0);
+        }
     }
     
 }

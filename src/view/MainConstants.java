@@ -8,8 +8,10 @@ import model.Project;
 import model.Status;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import model.Options;
 
@@ -55,7 +57,9 @@ public class MainConstants {
         ;
     };
     
-    public static final javax.swing.ImageIcon PREVIOUSBUTTONIMAGEICON = new javax.swing.ImageIcon(MainConstants.class .getResource("/resources/buttonicons/Actions-go-previous-icon2.png"));
+    public static final ImageIcon PREVIOUSBUTTONIMAGEICON = new ImageIcon(MainConstants.class .getResource("/resources/buttonicons/Actions-go-previous-icon2.png"));
+    public static final ImageIcon PLUSBUTTONIMAGEICON = new ImageIcon(MainConstants.class .getResource("/resources/buttonicons/Plus-icon-128.png"));
+    public static final ImageIcon MINUSBUTTONIMAGEICON = new ImageIcon(MainConstants.class .getResource("/resources/buttonicons/Minus-icon-128.png"));
     public static final int PREVIOUSBUTTONSIZE = 55;
     
     public static final String OPTIONSMENUTITLE = MAINTITLE + " Options - V" + MAINVERSION;
@@ -65,6 +69,7 @@ public class MainConstants {
     
     public static final String ACTIONSMENUTITLE = MAINTITLE + " Acties - " + "V" + MAINVERSION;
     public static final int ACTIONSSMENUMARGIN = 30;
+    public static final String ACTIONMENUTITLE = MAINTITLE + " Actie: ";
     
     public static final String PROJECTSMENUTITLE = MAINTITLE + " Projecten - " + "V" + MAINVERSION;
     
@@ -95,5 +100,9 @@ public class MainConstants {
     //public static ArrayList<Context> contexten = new ArrayList<Context>();
     //public static ArrayList<Project> projecten = new ArrayList<Project>();
     
-    
+    public static ImageIcon ResizeImageToButton(ImageIcon imgIcon, int imageW, int imageH){
+        int margin = 5;
+        Image img = imgIcon.getImage();
+        return new ImageIcon(img.getScaledInstance(imageW - margin, imageH - margin,  java.awt.Image.SCALE_SMOOTH));   
+    }
 }
