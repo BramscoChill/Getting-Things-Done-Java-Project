@@ -546,6 +546,8 @@ public class OneActionFrame extends JFrame {
                     datumTijd.setHours(hh);
                     datumTijd.setMinutes(mm);
 
+                    System.out.println("Datum: " + ("" + datumTijd.getDate() + "-" + datumTijd.getMonth() + "-" + datumTijd.getYear() + " " + datumTijd.getHours() + ":" + datumTijd.getMinutes()));
+                    
                     daAction.setDatumTijd(datumTijd);
                     return true;
                 }
@@ -565,10 +567,9 @@ public class OneActionFrame extends JFrame {
         Timestamp datumTijd = daAction.getDatumTijd();
         
         Date dateNow = new Date();
-        System.out.println("dateNow: " + dateNow);
         
-        datumTijd = (datumTijd == null) ? new Timestamp(1,1,1,1,1,1,1) : datumTijd;
-        System.out.println("Datum: " + ("" + datumTijd.getDay() + "-" + datumTijd.getMonth() + "-" + datumTijd.getYear()));
+        datumTijd = (datumTijd == null) ? new Timestamp(0) : datumTijd;
+        
         String[] date = str.split("-");
         if(date.length == 3){
             try{
@@ -584,15 +585,9 @@ public class OneActionFrame extends JFrame {
                     datumTijd.setMonth(mm);
                     datumTijd.setYear(yyyy);
                     
-                    dateNow.setDate(dd);
-                    dateNow.setMonth(mm);
-                    dateNow.setYear(yyyy - 1900);
+                    daAction.setDatumTijd(datumTijd);
+                    //System.out.println("Datum: " + ("" + datumTijd.getDate() + "-" + datumTijd.getMonth() + "-" + datumTijd.getYear()));
                     
-                    System.out.println("dateNow: " + dateNow);
-                    
-                    daAction.setDatumTijd(new Timestamp(dateNow.getTime()));
-                    
-                    System.out.println("Datum: " + ("" + datumTijd.getDay() + "-" + datumTijd.getMonth() + "-" + datumTijd.getYear()));
                     return true;
                 }
             } catch (Exception ex){

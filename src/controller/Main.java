@@ -1,6 +1,8 @@
 
 package controller;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import model.*;
 import model.Database.*;
 
@@ -19,6 +21,12 @@ public class Main {
         //String meuk = tmpProject[0].getNote();
         //test.DeleteStatus(test.AddStatus(new Status(-1,"bladiebladiebla")));
 
-        System.out.println();
+//        Timestamp stamp = new Timestamp(new Date().getTime());
+//        
+//        System.out.println(stamp);
+//        stamp.setDate(11);
+//        System.out.println(stamp);
+//        System.out.println(stamp.getDate());
+//        System.exit(0);
     }
 }
