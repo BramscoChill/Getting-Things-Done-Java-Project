@@ -4,6 +4,7 @@
  */
 package view;
 
+import javax.swing.JDialog;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.DefaultListModel;
@@ -38,6 +39,7 @@ import javax.swing.JLabel;
 import javax.swing.BorderFactory;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.Arrays;
 import java.util.Random;
 import javax.swing.JTextArea;
 import javax.swing.JFrame;
@@ -109,7 +111,6 @@ public class OneActionFrame extends JFrame {
         
         GetProjectsContextsStatuses();
         
-        SetFormToCurrentAction();
         
     }
     
@@ -381,7 +382,7 @@ public class OneActionFrame extends JFrame {
                 if(actionContextLIST.getSelectedIndex() != -1){
                     int clickEd = DoYesNoCurrentScreen("Verwijderen Context","Weet je zeker dat je deze context wilt weghalen?");
                     if(clickEd == 0){
-                        DoRemove();
+                        DoRemoveCurrentContext();
                     }
                 }
             }
@@ -405,8 +406,7 @@ public class OneActionFrame extends JFrame {
  
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("Description: " + GetDescription());
-                System.out.println("Timestamp: " + GetDate() + " " +  GetTime());
+                DoSaveAction();
             }
         });
         
@@ -558,6 +558,8 @@ public class OneActionFrame extends JFrame {
                     actionProjectMODEL.addElement(project.getName()); 
                 }
                 
+                SetFormToCurrentAction();
+                
             } catch (ThingsException ex) {
             ex.printStackTrace();
                 DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
@@ -582,8 +584,43 @@ public class OneActionFrame extends JFrame {
         
     }
     
+    //stelt het form in naar de huidige actie
     private void SetFormToCurrentAction(){
         actionDescriptionTXT.setText(GetDescription());
+        actionNoteTXT.setText(GetNote());
+        actionDatumTXT.setText(GetDate());
+        actionTijdTXT.setText(GetTime());
+        
+        //System.out.println("projects.length: " + projects.length + "actionProjectLIST len: " + actionProjectMODEL.getSize());
+        if(GetProject() != null && projects != null){
+            for(int i = 0; i < projects.length; i++){
+                if(GetProject().equalsIgnoreCase(actionProjectMODEL.getElementAt(i).toString())){
+                    actionProjectLIST.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
+        
+        System.out.println("GetContext(): " + GetContext());
+        if(GetContext() != null && contexts != null){
+            for(int i = 0; i < contexts.length; i++){
+                if(GetContext().equalsIgnoreCase(actionContextMODEL.getElementAt(i).toString())){
+                    actionContextLIST.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
+        
+        if(GetStatus() != null && statuses != null){
+            for(int i = 0; i < statuses.length; i++){
+                if(GetStatus().equalsIgnoreCase(actionStatusCOMBO.getItemAt(i).toString())){
+                    actionStatusCOMBO.setSelectedIndex(i);
+                    break;
+                }
+            }
+        }
+        
+
     }
     private String GetDescription(){
         return daAction.getDescription();
@@ -676,7 +713,7 @@ public class OneActionFrame extends JFrame {
     
     private String GetDate(){
         Timestamp datumTijd = daAction.getDatumTijd();
-        return (datumTijd == null) ? null : ("" + datumTijd.getDay() + "-" + datumTijd.getMonth() + "-" + datumTijd.getYear());
+        return (datumTijd == null) ? null : ("" + datumTijd.getDate() + "-" + datumTijd.getMonth() + "-" + datumTijd.getYear());
     }
     
     private Boolean SetDate(String str){
@@ -726,6 +763,8 @@ public class OneActionFrame extends JFrame {
                 Context daContext = controller.GetModel().AddContext(new Context(-1,str));
                 if(daContext != null){
                     actionContextMODEL.addElement(daContext.getName());
+                    contexts = Arrays.copyOf(contexts, contexts.length+1);
+                    contexts[contexts.length-1] = daContext;
                 } else {
                     DoErrorCurrentScreen("FOUT: laden context!",
                         "FOUT BIJ HET LADEN VAN DE CONTEXT, verbinding is in orde,"
@@ -748,7 +787,8 @@ public class OneActionFrame extends JFrame {
         }
     }
     
-    private void DoRemove() {
+    //haalt de huidig geselecteerde context weg (als die er is)
+    private void DoRemoveCurrentContext() {
         String str = actionContextLIST.getSelectedValue().toString();
         Context contextToRemove = null;
         for(Context cont : contexts){
@@ -784,9 +824,39 @@ public class OneActionFrame extends JFrame {
         }
     }
     
+    private void DoSaveAction(){
+        //checkt of er wel een actie is
+        if(daAction != null){
+            try {
+                //probeert de actie toe te voegen
+                daAction.setStatusChanged(new Timestamp(new Date().getTime()));
+                Action ac = controller.GetModel().AddAction(daAction);
+                if(ac == null){ //als ie faalt met het toevoegen, dan geeft ie een melding
+                    MessageBox.DoOkErrorMessageBox(this, "FOUT: toevoegen van actie mislukt! - 001",
+                    "FOUT BIJ HET TOEVOEGEN VAN DE ACTIE, alles zou goed moeten gaan, maar iets faalt er!!!!!\nNeem contact op met de maker!");
+                }
+                DoExit();
+            } catch (ThingsException ex) {
+            ex.printStackTrace();
+            MessageBox.DoOkErrorMessageBox(this, "FOUT: toevoegen van actie mislukt!",
+                    "FOUT BIJ HET TOEVOEGEN VAN DE ACTIE, \ncontrolleer de verbinding!");
+            } catch (DatabaseException ex) {
+                ex.printStackTrace();
+                MessageBox.DoOkErrorMessageBox(this, "FOUT: toevoegen van actie mislukt!",
+                        "FOUT BIJ HET TOEVOEGEN, verbinding is in orde, \nDe actie kon niet toegevoegd worden aan de database!");
+            }
+        } else {
+            //zou nooit mogen gebeuren, maar voor dn zekersheid #trolololll
+            MessageBox.DoOkErrorMessageBox(this, "FOUT: toevoegen van actie mislukt! - 001",
+                    "FOUT BIJ HET TOEVOEGEN VAN DE ACTIE, kan geen lege actie toevoegen!");
+        }
+    
+        
+    }
+    
     private void DoNewCalendarFrame(){
         final CalendarFrame calFrame = new CalendarFrame();
-        final JFrame f = new JFrame("Kalender");
+        final JDialog f = new JDialog(this,"Kalender", true);
         f.setResizable(false);
         Container c = f.getContentPane();
         c.setLayout(new FlowLayout());

@@ -98,16 +98,16 @@ public class GTDcomplete extends Observable {
         }
         return null;
     }
-    public Boolean AddAction(Action action) throws ThingsException, DatabaseException{
+    public Action AddAction(Action action) throws ThingsException, DatabaseException{
         Action newAction = dbHandler.AddAction(action);
         if(newAction != null)
         {
             actions.add(newAction);
         }
-        return (newAction != null);
+        return newAction;
     }
     
-    public Boolean UpdateAction(Action action) throws ThingsException, DatabaseException{
+    public Action UpdateAction(Action action) throws ThingsException, DatabaseException{
         return AddAction(action);
     }
     

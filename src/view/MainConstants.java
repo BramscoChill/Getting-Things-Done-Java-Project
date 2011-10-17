@@ -9,6 +9,7 @@ import model.Status;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.ImageIcon;
@@ -104,5 +105,16 @@ public class MainConstants {
         int margin = 5;
         Image img = imgIcon.getImage();
         return new ImageIcon(img.getScaledInstance(imageW - margin, imageH - margin,  java.awt.Image.SCALE_SMOOTH));   
+    }
+    
+    public static String MakeStringTimestampOfTimestamp(Timestamp stamp){
+        String dd = (("" + stamp.getDate()).length() == 1) ? "0" + stamp.getDate() : "" + stamp.getDate();
+        String mm = (("" + stamp.getMonth()).length() == 1) ? "0" + stamp.getMonth() : "" + stamp.getMonth();
+        String yyyy = (("" + stamp.getYear()).length() == 1) ? "0" + stamp.getYear() : "" + stamp.getYear();
+        
+        String hh = (("" + stamp.getHours()).length() == 1) ? "0" + stamp.getHours() : "" + stamp.getHours();
+        String min = (("" + stamp.getMinutes()).length() == 1) ? "0" + stamp.getMinutes() : "" + stamp.getMinutes();
+        
+        return dd + "-" + mm + "-" + yyyy + " " + hh + ":" + min;
     }
 }

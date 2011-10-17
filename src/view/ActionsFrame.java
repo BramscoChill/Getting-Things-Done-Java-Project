@@ -206,15 +206,17 @@ public class ActionsFrame extends JFrame {
         this.currentSelectedAction = currentSelectedAction;
     }
     
-    private void DoNewAction(){
-        setCurrentSelectedAction(new Action());
-        OpenActionNewScreen();
-        //op t einde is er niks meer geselecteerd
+    private void SetCurrentSelectedActionNull(){
         tablePanel.DeselectAll();
         editActionBTN.setEnabled(false);
         deleteActionBTN.setEnabled(false);
         markAsDoneBTN.setEnabled(false);
         setCurrentSelectedAction(null);
+    }
+    
+    private void DoNewAction(){
+        setCurrentSelectedAction(new Action());
+        OpenActionNewScreen();
     }
     
     private void DoEditAction(){
@@ -230,8 +232,20 @@ public class ActionsFrame extends JFrame {
     
     private void DoDeleteAction(){
         //checkt of er wel een actie geselecteerd is
-        if(getCurrentSelectedAction() != null){
-            RefreshActionsList();
+        if(getCurrentSelectedAction() != null && getCurrentSelectedAction().getID() != -1){
+            getCurrentSelectedAction().setDone(true);
+            try {
+                controller.GetModel().DeleteAction(getCurrentSelectedAction());
+                RefreshActionsList();
+            } catch (ThingsException ex) {
+            ex.printStackTrace();
+            MessageBox.DoOkErrorMessageBox(this, "FOUT: verwijderen van actiemislukt!",
+                    "FOUT BIJ HET VERWIJDEREN VAN DE ACTIE, \ncontrolleer de verbinding!");
+            } catch (DatabaseException ex) {
+                ex.printStackTrace();
+                MessageBox.DoOkErrorMessageBox(this, "FOUT: verwijderen van actie mislukt!",
+                        "FOUT BIJ HET VERWIJDEREN, verbinding is in orde, \nDe actie kon niet verwijderd worden uit de database!");
+            }
         } else {
             //zou nooit mogen gebeuren, maar voor dn zekersheid #trolololll
             MessageBox.DoOkErrorMessageBox(this, "FOUT: wissen actie mislukt! - 001",
@@ -239,6 +253,8 @@ public class ActionsFrame extends JFrame {
         }
     }
     
+    
+    //markeerd de geselecteerde actie als gedaan
     private void MarkSelectedActionAsDone(){
         //checkt of er wel een actie geselecteerd is
         if(getCurrentSelectedAction() != null && getCurrentSelectedAction().getID() != -1){
@@ -278,6 +294,7 @@ public class ActionsFrame extends JFrame {
                 });
     }
     
+    //laad de lijsten met de statussen, contexten en projecten opnieuw in
     private void RefreshActionsList(){
         ( new Thread() {
             public void run() {
@@ -285,6 +302,7 @@ public class ActionsFrame extends JFrame {
                     controller.GetModel().SetAllActions();
                     controller.GetModel().GetAllActionssAsArray();
                     tablePanel.UpdateActions(actions);
+                    SetCurrentSelectedActionNull();
                 } catch (ThingsException ex) {
                     ex.printStackTrace();
                     DoErrorCurrentScreen("FOUT: updaten actielijst mislukt!",
