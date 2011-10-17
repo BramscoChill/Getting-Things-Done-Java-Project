@@ -4,6 +4,7 @@
  */
 package view;
 
+import java.awt.Color;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.ActionEvent;
@@ -30,7 +31,9 @@ import static controller.Main.*;
  * @author Administrator
  */
 public class ActionsFrame extends JFrame {
-    public JButton previousButton;
+    public JButton previousButton = new JButton();;
+    
+    private JLabel loadingLabel;
     
     private Action[] actions;
     
@@ -41,28 +44,39 @@ public class ActionsFrame extends JFrame {
     private Action currentSelectedAction = null;
     
     
-    public ActionsFrame(Action[] actions){
+    public ActionsFrame(){
         super(ACTIONSMENUTITLE);
-        
-        this.actions = actions;
         setLayout(null);
         this.setResizable(true);
         setLocation(100,new Random().nextInt(200)+50);
         setMinimumSize(new Dimension(1000,600));
         
-        AddComponents();
+        loadingLabel = new JLabel("Loading....");
+        loadingLabel.setFont(FONTTITLE);
+        loadingLabel.setSize(200,50);
+        loadingLabel.setOpaque(true);
+        loadingLabel.setBackground(Color.BLACK);
+        loadingLabel.setForeground(Color.WHITE);
         
-        AddListeners();
+        loadingLabel.setLocation((int)((this.getBounds().getWidth()/2) - loadingLabel.getSize().getWidth()),
+                (int)((this.getBounds().getHeight() / 2) - loadingLabel.getSize().getHeight()));
         
-        setVisible(true);
-        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        add(loadingLabel);
+        
+        loadingLabel.setVisible(true);
+        
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
-        UpdateScreenBounds();
+        
+        setVisible(true);
+        
+        LoadAll();
     }
     
     
     private void AddComponents(){
+        
+        
         tablePanel = new UberTablePanel(actions,300,300);
         
         screenInfoLBL = new JLabel("Acties");
@@ -84,8 +98,10 @@ public class ActionsFrame extends JFrame {
         markAsDoneBTN.setFont(FONTBUTTONS);
         markAsDoneBTN.setEnabled(false);
         
-        previousButton = new JButton();
+        
         previousButton.setIcon(PREVIOUSBUTTONIMAGEICON);
+        
+
         
         add(tablePanel);
         add(newActionBTN);
@@ -319,5 +335,103 @@ public class ActionsFrame extends JFrame {
     private void DoErrorCurrentScreen(String title, String message){
         MessageBox.DoOkErrorMessageBox(this, title, message);
     }
+    
+    private void DoLoading(Boolean isLoading){
+        if(isLoading){
+            setEnabled(false);
+            loadingLabel.setVisible(true);
+        } else {
+            setEnabled(true);
+            loadingLabel.setVisible(false);
+        }
+    }
+    
+    private void DoExit(){
+        this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+    }
+    
+    private void LoadContextsStatusesProjects(){
+        ( new Thread() {
+ 
+        public void run() {
+            DoLoading(true);
+            try {
+                controller.GetModel().SetAllProjectsContextsStatuses();
+                
+            } catch (ThingsException ex) {
+            ex.printStackTrace();
+                DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
+                        "FOUT BIJ HET OPSLAAN VAN DE laden Projecten, Contexten en Statussen, verbinding is in orde,"
+                        + "\n Meuk kon niet opgehaald worden van de database!\nDit scherm zal nu sluiten!");
+                DoExit();
+                //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            } catch (DatabaseException ex) {
+                ex.printStackTrace();
+            DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
+                    "FOUT BIJ HET LADEN VAN DE laden Projecten, Contexten en Statussen, \ncontrolleer de verbinding!\nDit scherm zal nu sluiten!");
+            DoExit();
+            //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            }
+            DoLoading(false);
+        }
+        }
+        ).start();
+    }
+    
+//    private void LoadActions(){
+//        try{
+//        controller.GetModel().SetAllActions();
+//        actions = controller.GetModel().GetAllActionssAsArray();
+//        } catch (ThingsException ex) {
+//                ex.printStackTrace();
+//                    MessageBox.DoOkErrorMessageBox(this, "FOUT: laden acties!",
+//                            "FOUT BIJ HET OPSLAAN VAN DE ACTIES, verbinding is in orde,"
+//                            + "\ngedachtes konden niet opgehaald worden van de database!");
+//                    DoExit();
+//                } catch (DatabaseException ex) {
+//                    ex.printStackTrace();
+//                MessageBox.DoOkErrorMessageBox(this, "FOUT: laden acties!",
+//                        "FOUT BIJ HET LADEN VAN DE ACTIES, \ncontrolleer de verbinding!");
+//                DoExit();
+//                }
+//    }
+    
+    private void LoadAll(){
+        ( new Thread() {
+ 
+        public void run() {
+            DoLoading(true);
+            //LoadContextsStatusesProjects();
+            try {
+                controller.GetModel().SetAllActions();
+                actions = controller.GetModel().GetAllActionssAsArray();
+                controller.GetModel().SetAllProjectsContextsStatuses();
+                
+                AddComponents();
+                
+                AddListeners();
+
+                UpdateScreenBounds();
+                
+            } catch (ThingsException ex) {
+            ex.printStackTrace();
+                DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
+                        "FOUT BIJ HET OPSLAAN VAN DE laden Projecten, Contexten en Statussen, verbinding is in orde,"
+                        + "\n Meuk kon niet opgehaald worden van de database!\nDit scherm zal nu sluiten!");
+                DoExit();
+                //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            } catch (DatabaseException ex) {
+                ex.printStackTrace();
+            DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
+                    "FOUT BIJ HET LADEN VAN DE laden Projecten, Contexten en Statussen, \ncontrolleer de verbinding!\nDit scherm zal nu sluiten!");
+            DoExit();
+            //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            }
+            DoLoading(false);
+        }
+        }
+        ).start();
+    }
+
     
 }

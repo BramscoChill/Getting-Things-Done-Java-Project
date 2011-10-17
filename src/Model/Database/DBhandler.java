@@ -432,7 +432,7 @@ public class DBhandler {
                         }
 
                         daAction.setDone(resultSet.getBoolean(9));
-                        daAction.PrintAll();
+                        //daAction.PrintAll();
                         //System.out.println(thoughts[uprsCounter].GetNote());
                     } else {
                         preparedStatement.close();

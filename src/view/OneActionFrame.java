@@ -61,6 +61,7 @@ public class OneActionFrame extends JFrame {
     
     //COMPONENTEN
     private JLabel loadingLabel;
+    
     private JLabel actionDescriptionLBL,actionNoteLBL;
     private JTextArea actionDescriptionTXT,actionNoteTXT;
     private JScrollPane actionDescriptionSCROLL,actionNoteSCROLL;
@@ -109,7 +110,7 @@ public class OneActionFrame extends JFrame {
         
         UpdateScreenBounds();
         
-        GetProjectsContextsStatuses();
+        GetProjectsContextsStatusesInternal();
         
         
     }
@@ -272,13 +273,13 @@ public class OneActionFrame extends JFrame {
         //same als bovenste listener
         actionNoteTXT.getDocument().addDocumentListener(new DocumentListener() { 
             public void changedUpdate(DocumentEvent e) { 
-                SetDescription(actionDescriptionTXT.getText());
+                SetNote(actionNoteTXT.getText());
             } 
             public void removeUpdate(DocumentEvent e) { 
-                SetDescription(actionDescriptionTXT.getText());
+                SetNote(actionNoteTXT.getText());
             } 
             public void insertUpdate(DocumentEvent e) { 
-                SetDescription(actionDescriptionTXT.getText());
+                SetNote(actionNoteTXT.getText());
             } 
         }); 
         
@@ -532,15 +533,17 @@ public class OneActionFrame extends JFrame {
         }
     }
     
-    private void GetProjectsContextsStatuses(){
+    
+    private void GetProjectsContextsStatusesInternal(){
         ( new Thread() {
  
         public void run() {
             DoLoading(true);
             try {
-                projects = controller.GetModel().GetProjects();
-                statuses = controller.GetModel().GetStatuses();
-                contexts = controller.GetModel().GetContexts();
+                //controller.GetModel().SetAllProjectsContextsStatuses();
+                projects = controller.GetModel().GetProjectsInternal();
+                statuses = controller.GetModel().GetStatusesInternal();
+                contexts = controller.GetModel().GetContextsInternal();
                 
                 actionProjectMODEL.clear();
                 actionContextMODEL.clear();
@@ -636,6 +639,7 @@ public class OneActionFrame extends JFrame {
     
     private void SetNote(String str){
         daAction.setNote(str);
+        System.out.println("GetNote(): " + GetNote());
     }
     
     private String GetProject(){

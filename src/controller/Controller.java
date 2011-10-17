@@ -120,11 +120,11 @@ public class Controller implements Observer {
  
             public void actionPerformed(ActionEvent e)
             {
-                try {
+                
                     //een scherm kan niet 2x geopent worden
                     if(actionFrame == null){
-                        gtd.SetAllActions();
-                        actionFrame = new ActionsFrame(gtd.GetAllActionssAsArray());
+                        
+                        actionFrame = new ActionsFrame();
                         actionFrame.addWindowListener(new WindowAdapter(){
                        public void windowOpened( WindowEvent e ){
                             //thoughtsFrame.requestFocus();
@@ -148,16 +148,7 @@ public class Controller implements Observer {
                             }
                         });
                 }
-                } catch (ThingsException ex) {
-                ex.printStackTrace();
-                    MessageBox.DoOkErrorMessageBox(mainMenuFrame, "FOUT: laden acties!",
-                            "FOUT BIJ HET OPSLAAN VAN DE ACTIES, verbinding is in orde,"
-                            + "\ngedachtes konden niet opgehaald worden van de database!");
-                } catch (DatabaseException ex) {
-                    ex.printStackTrace();
-                MessageBox.DoOkErrorMessageBox(mainMenuFrame, "FOUT: laden acties!",
-                        "FOUT BIJ HET LADEN VAN DE ACTIES, \ncontrolleer de verbinding!");
-                }
+                
             }
         });
         

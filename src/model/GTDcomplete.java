@@ -18,6 +18,11 @@ import model.exceptions.ThingsException;
 public class GTDcomplete extends Observable {
     private ArrayList<Action> actions = new ArrayList<Action>();
     private ArrayList<Thought> thoughts = new ArrayList<Thought>();
+    
+    private ArrayList<Context> contexts = new ArrayList<Context>();
+    private ArrayList<Project> projects = new ArrayList<Project>();
+    private ArrayList<Status> statuses = new ArrayList<Status>();
+    
     private DBhandler dbHandler = new DBhandler();
     
     //<editor-fold defaultstate="collapsed" desc="Gedachten">
@@ -117,12 +122,15 @@ public class GTDcomplete extends Observable {
     }
     //</editor-fold>
     
-    public Boolean AddProject(Project project) throws ThingsException, DatabaseException{
+    public Project AddProject(Project project) throws ThingsException, DatabaseException{
         Project newProject = dbHandler.AddProject(project);
-        return (newProject != null);
+        if(newProject != null){
+            projects.add(newProject);
+        }
+        return newProject;
     }
     
-    public Boolean UpdateProject(Project project) throws ThingsException, DatabaseException{
+    public Project UpdateProject(Project project) throws ThingsException, DatabaseException{
         return AddProject(project);
     }
     
@@ -130,16 +138,23 @@ public class GTDcomplete extends Observable {
         return dbHandler.DeleteProject(project);
     }
     
-    public Project[] GetProjects() throws ThingsException, DatabaseException{
+    public Project[] GetProjectsFromDB() throws ThingsException, DatabaseException{
         return dbHandler.GetAllProjects();
     }
     
-    public Boolean AddStatus(Status status) throws ThingsException, DatabaseException{
-        Status newStatus = dbHandler.AddStatus(status);
-        return (newStatus != null);
+    public Project[] GetProjectsInternal() throws ThingsException, DatabaseException{
+        return (Project[]) projects.toArray(new Project[projects.size()]);
     }
     
-    public Boolean UpdateStatus(Status status) throws ThingsException, DatabaseException{
+    public Status AddStatus(Status status) throws ThingsException, DatabaseException{
+        Status newStatus = dbHandler.AddStatus(status);
+        if(newStatus != null){
+            statuses.add(newStatus);
+        }
+        return newStatus;
+    }
+    
+    public Status UpdateStatus(Status status) throws ThingsException, DatabaseException{
         return AddStatus(status);
     }
     
@@ -147,12 +162,20 @@ public class GTDcomplete extends Observable {
         return dbHandler.DeleteStatus(status);
     }
     
-    public Status[] GetStatuses() throws ThingsException, DatabaseException{
+    public Status[] GetStatusesFromDB() throws ThingsException, DatabaseException{
         return dbHandler.GetAllStatuses();
     }
     
+    public Status[] GetStatusesInternal() throws ThingsException, DatabaseException{
+        return (Status[]) statuses.toArray(new Status[statuses.size()]);
+    }
+    
     public Context AddContext(Context context) throws ThingsException, DatabaseException{
-        return(dbHandler.AddContext(context));
+        Context newContext = dbHandler.AddContext(context);
+        if(newContext != null){
+            contexts.add(newContext);
+        }
+        return(newContext);
     }
     
     public Context UpdateContext(Context context) throws ThingsException, DatabaseException{
@@ -163,8 +186,18 @@ public class GTDcomplete extends Observable {
         return dbHandler.DeleteContext(context);
     }
     
-    public Context[] GetContexts() throws ThingsException, DatabaseException{
+    public Context[] GetContextsFromDB() throws ThingsException, DatabaseException{
         return dbHandler.GetAllContexts();
+    }
+    
+    public Context[] GetContextsInternal() throws ThingsException, DatabaseException{
+        return (Context[]) contexts.toArray(new Context[contexts.size()]);
+    }
+    
+    public void SetAllProjectsContextsStatuses() throws ThingsException, DatabaseException{
+        contexts = new ArrayList<Context>(Arrays.asList(GetContextsFromDB()));
+        projects = new ArrayList<Project>(Arrays.asList(GetProjectsFromDB()));
+        statuses = new ArrayList<Status>(Arrays.asList(GetStatusesFromDB()));
     }
     
 }

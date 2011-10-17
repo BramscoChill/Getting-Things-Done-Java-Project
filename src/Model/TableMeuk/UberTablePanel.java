@@ -72,7 +72,7 @@ public class UberTablePanel extends JPanel {
             rfs = new ArrayList<RowFilter<Object,Object>>(2);
             
         } else {
-            System.out.println("Verkeerde info doorgestuurt naar uber table! - klasseinfo: " + this.toString());
+            //System.out.println("Verkeerde info doorgestuurt naar uber table! - klasseinfo: " + this.toString());
         }
         
         scrollpaneTable = new JScrollPane(table);
@@ -107,7 +107,7 @@ public class UberTablePanel extends JPanel {
  
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("Combo selection changed!");
+                //System.out.println("Combo selection changed!");
                 String input = filterBoxes[finalI].getSelectedItem().toString().trim().toLowerCase();
                 UpdateFilter(finalI, input); 
             }
@@ -163,7 +163,7 @@ public class UberTablePanel extends JPanel {
     private void SetListeners(){
         TableColumnModelListener tableColumnModelListener = new TableColumnModelListener() {
       public void columnAdded(TableColumnModelEvent e) {
-        System.out.println("Added");
+        //System.out.println("Added");
       }
 
       public void columnMarginChanged(ChangeEvent e) {
@@ -181,15 +181,15 @@ public class UberTablePanel extends JPanel {
       }
 
       public void columnMoved(TableColumnModelEvent e) {
-        System.out.println("Moved");
+        //System.out.println("Moved");
       }
 
       public void columnRemoved(TableColumnModelEvent e) {
-        System.out.println("Removed");
+        //System.out.println("Removed");
       }
 
       public void columnSelectionChanged(ListSelectionEvent e) {
-        System.out.println("Selection Changed");
+        //System.out.println("Selection Changed");
       }
     };
         
@@ -257,7 +257,7 @@ public class UberTablePanel extends JPanel {
         RowFilter<Object,Object> af = RowFilter.andFilter(rfs);
         ((TableRowSorter<TableModel>)table.getRowSorter()).setRowFilter(af);
 
-        System.out.println("Combo Box CHANGED: " + columnIndex + "\nInput: " + input);
+        //System.out.println("Combo Box CHANGED: " + columnIndex + "\nInput: " + input);
     }
     
     public void UpdateFilter(int columnIndex) { 
