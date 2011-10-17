@@ -42,7 +42,13 @@ public class UberTableModel extends AbstractTableModel {
             //System.out.println("this.data[i][1]: " + this.data[i][1]);
         }
         //System.out.println("updated thoughts uberTableModel");
-        fireTableDataChanged();
+        
+        //kan wel eens misgaan als de table leeg is
+        try{
+            fireTableDataChanged();
+        } catch (Exception ex){
+            System.out.println("fireTableDataChanged faaltje!");
+        }
     }
     
     public void UpdateActions(Action[] data){
@@ -70,7 +76,13 @@ public class UberTableModel extends AbstractTableModel {
             this.data[i][6] = (data[i].getStatusChanged() != null) ? (MakeStringTimestampOfTimestamp(data[i].getStatusChanged())) : "";
             //this.data[i][7] = data[i].isDone();
         }
-        fireTableDataChanged();
+        
+        //kan wel eens misgaan als de table leeg is
+        try{
+            fireTableDataChanged();
+        } catch (Exception ex){
+            System.out.println("fireTableDataChanged faaltje!");
+        }
     }
     
 

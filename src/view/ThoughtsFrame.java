@@ -153,7 +153,7 @@ public class ThoughtsFrame extends JFrame {
         
         //action listener om aan te geven dat de selectie van de tabel veranderd is
         //word aangeroepen vannuit het tablePanel
-        tablePanel.selectionChangedTable = new ActionListener() {
+        tablePanel.selectionChangedTableDoubleClick = new ActionListener() {
  
             public void actionPerformed(ActionEvent e)
             {

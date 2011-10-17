@@ -51,19 +51,7 @@ public class ActionsFrame extends JFrame {
         setLocation(100,new Random().nextInt(200)+50);
         setMinimumSize(new Dimension(1000,600));
         
-        loadingLabel = new JLabel("Loading....");
-        loadingLabel.setFont(FONTTITLE);
-        loadingLabel.setSize(200,50);
-        loadingLabel.setOpaque(true);
-        loadingLabel.setBackground(Color.BLACK);
-        loadingLabel.setForeground(Color.WHITE);
-        
-        loadingLabel.setLocation((int)((this.getBounds().getWidth()/2) - loadingLabel.getSize().getWidth()),
-                (int)((this.getBounds().getHeight() / 2) - loadingLabel.getSize().getHeight()));
-        
-        add(loadingLabel);
-        
-        loadingLabel.setVisible(true);
+        SetLoadingTable();
         
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
@@ -138,7 +126,24 @@ public class ActionsFrame extends JFrame {
         
                 //action listener om aan te geven dat de selectie van de tabel veranderd is
         //word aangeroepen vannuit het tablePanel
-        tablePanel.selectionChangedTable = new ActionListener() {
+        tablePanel.selectionChangedTableDoubleClick = new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                setCurrentSelectedAction((tablePanel.getSelectedObject() instanceof Action) ? 
+                        (Action)tablePanel.getSelectedObject() : null);
+                
+                //als er een bestaande actie geselecteerd is, kan die veranderd worden
+                editActionBTN.setEnabled(true);
+                //als er een bestaande actie geselecteerd is, dan kan die gewist worden
+                deleteActionBTN.setEnabled(true);
+                markAsDoneBTN.setEnabled(true);
+                DoEditAction();
+                
+            }
+        };
+        
+        tablePanel.selectionChangedTableOneClick = new ActionListener() {
  
             public void actionPerformed(ActionEvent e)
             {
@@ -152,6 +157,7 @@ public class ActionsFrame extends JFrame {
                 markAsDoneBTN.setEnabled(true);
             }
         };
+        
         
         newActionBTN.addActionListener(new ActionListener() {
  
@@ -278,6 +284,7 @@ public class ActionsFrame extends JFrame {
             try {
                 controller.GetModel().UpdateAction(getCurrentSelectedAction());
                 RefreshActionsList();
+                SetCurrentSelectedActionNull();
             } catch (ThingsException ex) {
             ex.printStackTrace();
             MessageBox.DoOkErrorMessageBox(this, "FOUT: markeren van gedachte als klaar mislukt!",
@@ -305,6 +312,7 @@ public class ActionsFrame extends JFrame {
                        setEnabled(true);
                        newAction.dispose();
                        toFront();
+                       SetCurrentSelectedActionNull();
                        RefreshActionsList();
                    }
                 });
@@ -314,20 +322,25 @@ public class ActionsFrame extends JFrame {
     private void RefreshActionsList(){
         ( new Thread() {
             public void run() {
-                try{
-                    controller.GetModel().SetAllActions();
-                    controller.GetModel().GetAllActionssAsArray();
-                    tablePanel.UpdateActions(actions);
-                    SetCurrentSelectedActionNull();
-                } catch (ThingsException ex) {
-                    ex.printStackTrace();
-                    DoErrorCurrentScreen("FOUT: updaten actielijst mislukt!",
-                            "FOUT BIJ HET UPDATEN VAN DE ACTIELIJST, \ncontrolleer de verbinding!");
-                    } catch (DatabaseException ex) {
-                        ex.printStackTrace();
-                        DoErrorCurrentScreen("FOUT: updaten actielijst mislukt!",
-                                "FOUT BIJ HET UPDATEN VAN DE ACTIELIJST, verbinding is in orde, \nActies kunnen niet opgehaald worden uit de database!");
+                //try{
+                    System.out.println("Refreshed da list ActionsFrame");
+                    CloseConnectionAfterDatabaseAction = false;
+                    //controller.GetModel().SetAllActionsNotDone();
+                    actions = controller.GetModel().GetAllActionssAsArray();
+                    for(Action action : actions){
+                        System.out.println("Action: " + action.getDescription() + ", done: " + action.isDone());
                     }
+                    tablePanel.UpdateActions(actions);
+                    CloseConnectionAfterDatabaseAction = true;
+//                } catch (ThingsException ex) {
+//                    ex.printStackTrace();
+//                    DoErrorCurrentScreen("FOUT: updaten actielijst mislukt!",
+//                            "FOUT BIJ HET UPDATEN VAN DE ACTIELIJST, \ncontrolleer de verbinding!");
+//                    } catch (DatabaseException ex) {
+//                        ex.printStackTrace();
+//                        DoErrorCurrentScreen("FOUT: updaten actielijst mislukt!",
+//                                "FOUT BIJ HET UPDATEN VAN DE ACTIELIJST, verbinding is in orde, \nActies kunnen niet opgehaald worden uit de database!");
+//                    }
             }
         }).start();
     }
@@ -361,14 +374,14 @@ public class ActionsFrame extends JFrame {
             } catch (ThingsException ex) {
             ex.printStackTrace();
                 DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
-                        "FOUT BIJ HET OPSLAAN VAN DE laden Projecten, Contexten en Statussen, verbinding is in orde,"
-                        + "\n Meuk kon niet opgehaald worden van de database!\nDit scherm zal nu sluiten!");
+                "FOUT BIJ HET OPSLAAN VAN DE laden Projecten, Contexten en Statussen, verbinding is in orde,"
+                + "\n Meuk kon niet opgehaald worden van de database!\nDit scherm zal nu sluiten!");
                 DoExit();
                 //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
             } catch (DatabaseException ex) {
                 ex.printStackTrace();
-            DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
-                    "FOUT BIJ HET LADEN VAN DE laden Projecten, Contexten en Statussen, \ncontrolleer de verbinding!\nDit scherm zal nu sluiten!");
+                DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
+                "FOUT BIJ HET LADEN VAN DE laden Projecten, Contexten en Statussen, \ncontrolleer de verbinding!\nDit scherm zal nu sluiten!");
             DoExit();
             //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
             }
@@ -380,7 +393,7 @@ public class ActionsFrame extends JFrame {
     
 //    private void LoadActions(){
 //        try{
-//        controller.GetModel().SetAllActions();
+//        controller.GetModel().SetAllActionsNotDone();
 //        actions = controller.GetModel().GetAllActionssAsArray();
 //        } catch (ThingsException ex) {
 //                ex.printStackTrace();
@@ -403,10 +416,11 @@ public class ActionsFrame extends JFrame {
             DoLoading(true);
             //LoadContextsStatusesProjects();
             try {
-                controller.GetModel().SetAllActions();
+                CloseConnectionAfterDatabaseAction = false;
+                controller.GetModel().SetAllActionsNotDone();
                 actions = controller.GetModel().GetAllActionssAsArray();
                 controller.GetModel().SetAllProjectsContextsStatuses();
-                
+                CloseConnectionAfterDatabaseAction = true;
                 AddComponents();
                 
                 AddListeners();
@@ -416,21 +430,38 @@ public class ActionsFrame extends JFrame {
             } catch (ThingsException ex) {
             ex.printStackTrace();
                 DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
-                        "FOUT BIJ HET OPSLAAN VAN DE laden Projecten, Contexten en Statussen, verbinding is in orde,"
-                        + "\n Meuk kon niet opgehaald worden van de database!\nDit scherm zal nu sluiten!");
+                "FOUT BIJ HET OPSLAAN VAN DE laden Projecten, Contexten en Statussen, verbinding is in orde,"
+                + "\n Meuk kon niet opgehaald worden van de database!\nDit scherm zal nu sluiten!");
                 DoExit();
                 //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
             } catch (DatabaseException ex) {
                 ex.printStackTrace();
-            DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
-                    "FOUT BIJ HET LADEN VAN DE laden Projecten, Contexten en Statussen, \ncontrolleer de verbinding!\nDit scherm zal nu sluiten!");
-            DoExit();
+                DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
+                "FOUT BIJ HET LADEN VAN DE laden Projecten, Contexten en Statussen, \ncontrolleer de verbinding!\nDit scherm zal nu sluiten!");
+                DoExit();
             //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
             }
             DoLoading(false);
         }
         }
         ).start();
+    }
+
+    //zet de loading tabel alvast neer, zodat andere shit later geladen kan worden
+    private void SetLoadingTable() {
+        loadingLabel = new JLabel("Loading....");
+        loadingLabel.setFont(FONTTITLE);
+        loadingLabel.setSize(200,50);
+        loadingLabel.setOpaque(true);
+        loadingLabel.setBackground(Color.BLACK);
+        loadingLabel.setForeground(Color.WHITE);
+        
+        loadingLabel.setLocation((int)((this.getBounds().getWidth()/2) - loadingLabel.getSize().getWidth()),
+                (int)((this.getBounds().getHeight() / 2) - loadingLabel.getSize().getHeight()));
+        
+        add(loadingLabel);
+        
+        loadingLabel.setVisible(true);
     }
 
     

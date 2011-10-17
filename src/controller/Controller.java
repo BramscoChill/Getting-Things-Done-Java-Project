@@ -179,14 +179,12 @@ public class Controller implements Observer {
                 //laat het options scherm en schakelt het hoofdscherm uit
                 optionsMenuFrame = new OptionsFrame();
                 mainMenuFrame.setEnabled(false);
-                System.out.println("fap fap fap 1");
                 
                 //de listener voor het optionsMenu (Ander JFrame) om ervoor te zorgen
                 //dat als het options scherm sluit, je het main scherm weer kan bewerken
                 optionsMenuFrame.addWindowListener(new WindowAdapter(){
                    public void windowOpened( WindowEvent e ){
                         //field1.requestFocus();
-                       System.out.println("fap fap fap 3");
                      }
                    public void windowClosing( WindowEvent e ){
                        mainMenuFrame.setEnabled(true);

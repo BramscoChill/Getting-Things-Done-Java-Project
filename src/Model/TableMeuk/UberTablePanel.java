@@ -4,6 +4,7 @@
  */
 package Model.TableMeuk;
 
+import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.table.TableRowSorter;
 import javax.swing.table.TableModel;
@@ -47,7 +48,8 @@ public class UberTablePanel extends JPanel {
     private Object selectedObject;
     private String type;
     
-    public ActionListener selectionChangedTable;
+    public ActionListener selectionChangedTableDoubleClick;
+    public ActionListener selectionChangedTableOneClick;
     
     //rowfilters
     private List<RowFilter<Object,Object>> rfs;
@@ -199,33 +201,57 @@ public class UberTablePanel extends JPanel {
         table.addMouseListener(new MouseAdapter() {
            public void mouseClicked(MouseEvent e) {
               if (e.getClickCount() == 2) {
-                 UberTable target = (UberTable)e.getSource();
-                 int row = target.getSelectedRow();
-                 int column = target.getSelectedColumn();
-                 UberTableModel daModel = (UberTableModel) table.getModel();
-                 int daID = Integer.parseInt(daModel.getIDAt(row).toString());
-                 //@TODO inbouwen dat hier iets komt dat je de gedachte kan bewerken
+                  SetCurrentObject();
                  
-                 if("thought".equals(type)){
-                     setSelectedObject(controller.GetModel().GetThought(daID));
-                     
-                 } else if("action".equals(type)){
-                     setSelectedObject(controller.GetModel().GetAction(daID));
-                 } else {
-                     
-                 }
-                 
-                 if(selectionChangedTable != null){
-                     selectionChangedTable.actionPerformed(null);
+                 if(selectionChangedTableDoubleClick != null){
+                     selectionChangedTableDoubleClick.actionPerformed(null);
                  }
                  
                  //System.out.println("Double clicked: row: " + row + ", col: " + column + ", id: " + daID);
+                 } else if(e.getClickCount() == 1) {
+
                  }
            }
         });
         
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() { 
+            public void valueChanged(ListSelectionEvent e) {
+                //als de selectie weggaat roept ie deze ook aan, er moet wel een selectie geplaatst worden!
+                if(table.getSelectedRow() > -1){
+                
+                     SetCurrentObject();
+                     System.out.println("one click selectionChangedTableOneClick");
+                     if(selectionChangedTableOneClick != null){
+                         selectionChangedTableOneClick.actionPerformed(null);
+                     }
+                }
+            }
+        });
         
         
+    }
+    
+    private void SetCurrentObject(){
+        try{
+         UberTable target = table;//(UberTable)e;
+         int row = target.getSelectedRow();
+         int column = target.getSelectedColumn();
+         UberTableModel daModel = (UberTableModel) table.getModel();
+         int daID = Integer.parseInt(daModel.getIDAt(row).toString());
+
+         System.out.println("row: " + row + ", daID: " + daID);
+
+         if("thought".equals(type)){
+             setSelectedObject(controller.GetModel().GetThought(daID));
+
+         } else if("action".equals(type)){
+             setSelectedObject(controller.GetModel().GetAction(daID));
+         } else {
+
+         }
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
     
     public Object getSelectedObject() {
@@ -240,24 +266,27 @@ public class UberTablePanel extends JPanel {
         table.getSelectionModel().clearSelection();
     }              
     public void UpdateFilter(int columnIndex, String input) { 
-        //trekt de input uit de combo
-        //JTextField inputField = (JTextField) filterBoxes[columnIndex].getEditor().getEditorComponent();
-        //String input = inputField.getText().trim().toLowerCase();
-        if(! input.isEmpty()){
+        //er moeten wel rijen zijn om op te filteren!
+        if(table.getRowCount() > 0){
+            //trekt de input uit de combo
+            //JTextField inputField = (JTextField) filterBoxes[columnIndex].getEditor().getEditorComponent();
+            //String input = inputField.getText().trim().toLowerCase();
+            if(! input.isEmpty()){
 
-          rfs.set(columnIndex,RowFilter.regexFilter(input, columnIndex));
-        //                      for(int i = 0; i < rfs.size(); i++) {
-        //                          if(rfs.get(i) != null){
-        //                              
-        //                          }
-        //                      }
-        } else {
-          rfs.set(columnIndex,RowFilter.regexFilter("", columnIndex)); 
+              rfs.set(columnIndex,RowFilter.regexFilter(input, columnIndex));
+            //                      for(int i = 0; i < rfs.size(); i++) {
+            //                          if(rfs.get(i) != null){
+            //                              
+            //                          }
+            //                      }
+            } else {
+              rfs.set(columnIndex,RowFilter.regexFilter("", columnIndex)); 
+            }
+            RowFilter<Object,Object> af = RowFilter.andFilter(rfs);
+            ((TableRowSorter<TableModel>)table.getRowSorter()).setRowFilter(af);
+
+            //System.out.println("Combo Box CHANGED: " + columnIndex + "\nInput: " + input);
         }
-        RowFilter<Object,Object> af = RowFilter.andFilter(rfs);
-        ((TableRowSorter<TableModel>)table.getRowSorter()).setRowFilter(af);
-
-        //System.out.println("Combo Box CHANGED: " + columnIndex + "\nInput: " + input);
     }
     
     public void UpdateFilter(int columnIndex) { 

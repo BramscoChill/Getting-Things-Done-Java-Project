@@ -80,8 +80,22 @@ public class GTDcomplete extends Observable {
     
     //<editor-fold defaultstate="collapsed" desc="Actions">
     
-    public void SetAllActions() throws DatabaseException, ThingsException{
+    public void SetAllActionsNotDone() throws DatabaseException, ThingsException{
         actions = new ArrayList<Action>(Arrays.asList(dbHandler.GetAllActionsNotDone()));
+    }
+    
+    //filtert alle acties eruit die al wel gedaan zijn
+    public void RefreshAllActionsNotDone(){
+        System.out.println("RefreshAllActionsNotDone len: " + actions.size());
+        ArrayList<Action> tmpActions = new ArrayList<Action>();
+        for(int i = 0; i < actions.size(); i++){
+            if(actions.get(i).isDone()){
+                tmpActions.add(actions.get(i));
+                System.out.println("Removed action!");
+            }
+        }
+        actions.removeAll(tmpActions);
+        System.out.println("RefreshAllActionsNotDone len: " + actions.size());
     }
     
     public Action[] GetAllActionssAsArray(){
@@ -113,7 +127,27 @@ public class GTDcomplete extends Observable {
     }
     
     public Action UpdateAction(Action action) throws ThingsException, DatabaseException{
-        return AddAction(action);
+        Action newAction = AddAction(action);
+        Boolean foundAction = false;
+        
+        if(newAction != null){
+            //vervangt de bestaande actie in de lijst met acties, dan hoeft niet alles opnieuw opgehaald te worden
+            for(int i = 0; i < actions.size(); i++){
+                if(actions.get(i).getID() == newAction.getID()){
+                    actions.set(i, newAction);
+                    foundAction = true;
+                    //filtert alle acties eruit dit niet gedaan zijn
+                    System.out.println("Filtered all actions not done GTDcomplete");
+                    break;
+                }
+            }
+        }
+        if(foundAction){
+            RefreshAllActionsNotDone();
+            return newAction;
+        }
+        //als ie niet geupdate kan worden, dan geeft ie null terug
+        return  null;
     }
     
     public Boolean DeleteAction(Action action) throws ThingsException, DatabaseException{

@@ -6,6 +6,8 @@ package Model.Database;
  */
 
 
+import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Calendar;
 import java.util.ArrayList;
@@ -35,9 +37,9 @@ public class DBhandler {
         if(! CheckConnection()){
             String daURL = "jdbc:mysql://" + MYSQL_SERVER + "/" + DB_NAME;
             try{
-                System.out.println("Going to make  connection");
+                System.out.println("Going to make connection with DB");
                 connection = (Connection) DriverManager.getConnection(daURL, MYSQL_USERNAME, MYSQL_PASSWORD);
-                System.out.println("Connection establisht: " + CheckConnection());
+                System.out.println("DB Connection establisht: " + CheckConnection());
             }
             catch (Exception ex){
                 {
@@ -64,6 +66,7 @@ public class DBhandler {
         try {
             if(CloseConnectionAfterDatabaseAction && CheckConnection()){
                 connection.close();
+                System.out.println("DB Connection closed");
             }
         } catch (SQLException ex) {
             
@@ -343,6 +346,9 @@ public class DBhandler {
         try {
             MakeConnection(); //maakt database connectie indien nodig
             
+            //voegt changed ding toe
+            action.setStatusChanged(new Timestamp(new Date().getTime()));
+            
             PreparedStatement preparedStatement;
             if(action.getID() == -1){
             //gaat alles preparen, voorkomt sql injectie etc.
@@ -498,15 +504,15 @@ public class DBhandler {
             if(daItem instanceof Status){
                 result = new Status();
                 tableName = TABLE_STATUS;
-                System.out.println("Instance of status");
+                //System.out.println("Instance of status");
             } else if(daItem instanceof Context){
                 result = new Context();
                 tableName = TABLE_CONTEXT;
-                System.out.println("Instance of context");
+                //System.out.println("Instance of context");
             } else {
                 result = new Project();
                 tableName = TABLE_PROJECT;
-                System.out.println("Instance of project");
+                //System.out.println("Instance of project");
             }
             MakeConnection(); //maakt database connectie indien nodig
             

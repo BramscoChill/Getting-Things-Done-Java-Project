@@ -643,7 +643,7 @@ public class OneActionFrame extends JFrame {
     }
     
     private String GetProject(){
-        return daAction.getProject().getName();
+        return (daAction.getProject() != null) ? daAction.getProject().getName() : null;
     }
     
     private Boolean SetProject(String str){
@@ -659,7 +659,7 @@ public class OneActionFrame extends JFrame {
     }
     
     private String GetContext(){
-        return daAction.getContext().getName();
+        return (daAction.getContext() != null) ? daAction.getContext().getName() : null;
     }
     
     private Boolean SetContext(String str){
@@ -673,7 +673,7 @@ public class OneActionFrame extends JFrame {
     }
     
     private String GetStatus(){
-        return daAction.getStatus().getName();
+        return (daAction.getStatus() != null) ? daAction.getStatus().getName() : null;
     }
     
     private Boolean SetStatus(String str){
@@ -833,7 +833,6 @@ public class OneActionFrame extends JFrame {
         if(daAction != null){
             try {
                 //probeert de actie toe te voegen
-                daAction.setStatusChanged(new Timestamp(new Date().getTime()));
                 Action ac = controller.GetModel().AddAction(daAction);
                 if(ac == null){ //als ie faalt met het toevoegen, dan geeft ie een melding
                     MessageBox.DoOkErrorMessageBox(this, "FOUT: toevoegen van actie mislukt! - 001",
@@ -897,6 +896,7 @@ public class OneActionFrame extends JFrame {
         this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
     }
     
+    //zet de label neer dat ie aan het laden is en disable
     private void DoLoading(Boolean isLoading){
         if(isLoading){
             setEnabled(false);
