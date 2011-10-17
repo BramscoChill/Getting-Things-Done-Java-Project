@@ -36,13 +36,16 @@ public class UberTable extends JTable {
     
     public UberTable(Action[] data){
         this();
-        UpdateData(data);
+        model = new UberTableModel((Action[]) data);
+        setModel(model);
         DoStuffOnStartup();
     }
     
     public UberTable(Thought[] data){
         this();
-        UpdateData(data);
+        model = null;
+        model = new UberTableModel((Thought[]) data);
+        setModel(model);
         DoStuffOnStartup();
         //model.get.setWidth(200);
     }    
@@ -63,16 +66,12 @@ public class UberTable extends JTable {
     }
     
     public void UpdateData(Action[] data){
-        model = null;
-        model = new UberTableModel((Action[]) data);
-        setModel(model);
+        model.UpdateActions(data);
        
     }
 
     public void UpdateData(Thought[] data){
-        model = null;
-        model = new UberTableModel((Thought[]) data);
-        setModel(model);
+        model.UpdateThoughts(data);
     }
     
       @Override

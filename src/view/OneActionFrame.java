@@ -4,6 +4,9 @@
  */
 package view;
 
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.DefaultListModel;
 import java.util.Date;
 import java.awt.FlowLayout;
 import java.awt.Container;
@@ -55,12 +58,14 @@ public class OneActionFrame extends JFrame {
     
     
     //COMPONENTEN
+    private JLabel loadingLabel;
     private JLabel actionDescriptionLBL,actionNoteLBL;
     private JTextArea actionDescriptionTXT,actionNoteTXT;
     private JScrollPane actionDescriptionSCROLL,actionNoteSCROLL;
     
     private JLabel actionProjectLBL, actionContextLBL;
     private JList actionProjectLIST, actionContextLIST;
+    private DefaultListModel actionProjectMODEL, actionContextMODEL;
     private JScrollPane actionProjectSCROLL, actionContextSCROLL;
     private JButton actionAddProjectBTN, actionRemoveProjectBTN, actionAddContextBTN, actionRemoveContextBTN;
     
@@ -134,10 +139,13 @@ public class OneActionFrame extends JFrame {
         
         actionProjectLBL = new JLabel("Gekoppeld Project:");
         actionProjectLBL.setFont(FONTBUTTONS);
-        actionProjectLIST = new JList();
+        actionProjectMODEL = new DefaultListModel();
+        actionProjectLIST = new JList(actionProjectMODEL);
         actionProjectSCROLL = new JScrollPane(actionProjectLIST);
         actionAddProjectBTN = new JButton();
         actionRemoveProjectBTN = new JButton();
+        actionAddProjectBTN.setEnabled(false);
+        actionRemoveProjectBTN.setEnabled(false);
         if(! useImagesForButtons){
             actionAddProjectBTN.setText("+");
             actionRemoveProjectBTN.setText("-");
@@ -146,7 +154,8 @@ public class OneActionFrame extends JFrame {
         
         actionContextLBL = new JLabel("Gekoppeld Context:");
         actionContextLBL.setFont(FONTBUTTONS);
-        actionContextLIST = new JList();
+        actionContextMODEL = new DefaultListModel();
+        actionContextLIST = new JList(actionContextMODEL);
         actionContextSCROLL = new JScrollPane(actionContextLIST);
         actionAddContextBTN = new JButton();
         actionRemoveContextBTN = new JButton();
@@ -186,6 +195,18 @@ public class OneActionFrame extends JFrame {
         actionSaveBTN = new JButton("Opslaan");
         actionCancelBTN = new JButton("Annuleren");
         
+        
+        loadingLabel = new JLabel("Loading....");
+        loadingLabel.setFont(FONTTITLE);
+        loadingLabel.setSize(200,50);
+        loadingLabel.setOpaque(true);
+        loadingLabel.setBackground(Color.BLACK);
+        loadingLabel.setForeground(Color.WHITE);
+        
+        loadingLabel.setLocation((int)((this.getBounds().getWidth()/2) - loadingLabel.getSize().getWidth()),
+                (int)((this.getBounds().getHeight() / 2) - loadingLabel.getSize().getHeight()));
+        
+        add(loadingLabel);
         add(actionDescriptionLBL);
         add(actionDescriptionSCROLL);
         add(actionNoteLBL);
@@ -207,6 +228,7 @@ public class OneActionFrame extends JFrame {
         add(actionStatusCOMBO);
         add(actionSaveBTN);
         add(actionCancelBTN);
+        
     }
 
     private void AddListeners() {
@@ -305,6 +327,66 @@ public class OneActionFrame extends JFrame {
           }
         });
         
+        actionStatusCOMBO.addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                //System.out.println("Combo status OneActionFrame changed!: " + actionStatusCOMBO.getSelectedItem().toString());
+                if(SetStatus(actionStatusCOMBO.getSelectedItem().toString())){
+                    actionStatusCOMBO.setBackground(Color.WHITE);
+                } else {
+                    actionStatusCOMBO.setBackground(Color.RED);
+                }
+            }
+        });
+        
+        actionProjectLIST.addListSelectionListener(new ListSelectionListener ()
+        {
+            public void valueChanged(ListSelectionEvent evt) {
+                //System.out.println("Selection changed actionProjectLIST: " + actionProjectLIST.getSelectedValue().toString());
+                if(SetProject(actionProjectLIST.getSelectedValue().toString())){
+                    actionProjectLIST.setBackground(Color.WHITE);
+                } else {
+                    actionProjectLIST.setBackground(Color.RED);
+                }
+            }
+        });
+        
+        actionContextLIST.addListSelectionListener(new ListSelectionListener ()
+        {
+            public void valueChanged(ListSelectionEvent evt) {
+                //System.out.println("Selection changed actionProjectLIST: " + actionProjectLIST.getSelectedValue().toString());
+                if(actionContextLIST.getSelectedValue() != null){
+                    if(SetContext(actionContextLIST.getSelectedValue().toString()) == true){
+                        actionContextLIST.setBackground(Color.WHITE);
+                    } else {
+                        actionContextLIST.setBackground(Color.RED);
+                    }
+                } else {
+                        actionContextLIST.setBackground(Color.RED);
+                }
+            }
+        });
+        
+        actionAddContextBTN.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                DoAddContext();
+            }
+        });
+        
+        actionRemoveContextBTN.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                if(actionContextLIST.getSelectedIndex() != -1){
+                    int clickEd = DoYesNoCurrentScreen("Verwijderen Context","Weet je zeker dat je deze context wilt weghalen?");
+                    if(clickEd == 0){
+                        DoRemove();
+                    }
+                }
+            }
+        });
+        
         actionDatumBTN.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
@@ -332,7 +414,8 @@ public class OneActionFrame extends JFrame {
  
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("Description: " + GetDescription());
+                //System.out.println("Description: " + GetDescription());
+                DoExit();
             }
         });
             
@@ -450,22 +533,53 @@ public class OneActionFrame extends JFrame {
     }
     
     private void GetProjectsContextsStatuses(){
-        try {
-            projects = controller.GetModel().GetProjects();
-            statuses = controller.GetModel().GetStatuses();
-            contexts = controller.GetModel().GetContexts();
-        } catch (ThingsException ex) {
-        ex.printStackTrace();
-            MessageBox.DoOkErrorMessageBox(this, "FOUT: laden Projecten, Contexten en Statussen!",
-                    "FOUT BIJ HET OPSLAAN VAN DE laden Projecten, Contexten en Statussen, verbinding is in orde,"
-                    + "\n Meuk kon niet opgehaald worden van de database!\nDit scherm zal nu sluiten!");
-            this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
-        } catch (DatabaseException ex) {
+        ( new Thread() {
+ 
+        public void run() {
+            DoLoading(true);
+            try {
+                projects = controller.GetModel().GetProjects();
+                statuses = controller.GetModel().GetStatuses();
+                contexts = controller.GetModel().GetContexts();
+                
+                actionProjectMODEL.clear();
+                actionContextMODEL.clear();
+                actionStatusCOMBO.removeAllItems();
+                
+                for(Status status : statuses){
+                    actionStatusCOMBO.addItem(status.getName());
+                }
+                
+                for(Context context : contexts){
+                    actionContextMODEL.addElement(context.getName()); 
+                }
+                
+                for(Project project : projects){
+                    actionProjectMODEL.addElement(project.getName()); 
+                }
+                
+            } catch (ThingsException ex) {
             ex.printStackTrace();
-        MessageBox.DoOkErrorMessageBox(this, "FOUT: laden Projecten, Contexten en Statussen!",
-                "FOUT BIJ HET LADEN VAN DE laden Projecten, Contexten en Statussen, \ncontrolleer de verbinding!\nDit scherm zal nu sluiten!");
-        this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+                DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
+                        "FOUT BIJ HET OPSLAAN VAN DE laden Projecten, Contexten en Statussen, verbinding is in orde,"
+                        + "\n Meuk kon niet opgehaald worden van de database!\nDit scherm zal nu sluiten!");
+                DoExit();
+                //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            } catch (DatabaseException ex) {
+                ex.printStackTrace();
+            DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
+                    "FOUT BIJ HET LADEN VAN DE laden Projecten, Contexten en Statussen, \ncontrolleer de verbinding!\nDit scherm zal nu sluiten!");
+            DoExit();
+            //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            }
+            DoLoading(false);
         }
+
+        }
+
+        ).start();
+
+        
     }
     
     private void SetFormToCurrentAction(){
@@ -492,8 +606,10 @@ public class OneActionFrame extends JFrame {
     }
     
     private Boolean SetProject(String str){
+       
         for(Project pr : projects){
-            if(pr.getName().trim().equals(str.trim())){
+             System.out.println("SetProject str: " + str + ", pr: " + pr.getName());
+            if(pr.getName().trim().toLowerCase().equals(str.trim().toLowerCase())){
                 daAction.setProject(pr);
                 return true;
             }
@@ -597,9 +713,81 @@ public class OneActionFrame extends JFrame {
         return false;
     }
     
+    private void DoAddContext() {
+        String str = MessageBox.DoEnterTextInputDialog(this, "Context Toevoegen", "Typ de naam in van de context:");
+        Boolean alreadyExists = false;
+        for(Context cont : contexts){
+            if(cont.getName().toLowerCase().trim().equals(str.trim().toLowerCase())){
+                alreadyExists = true;
+            }
+        }
+        if(! alreadyExists){
+            try {
+                Context daContext = controller.GetModel().AddContext(new Context(-1,str));
+                if(daContext != null){
+                    actionContextMODEL.addElement(daContext.getName());
+                } else {
+                    DoErrorCurrentScreen("FOUT: laden context!",
+                        "FOUT BIJ HET LADEN VAN DE CONTEXT, verbinding is in orde,"
+                        + "\n NULL gereturnt van de database, neem contact op met de maker!");
+                }
+            } catch (ThingsException ex) {
+            ex.printStackTrace();
+                DoErrorCurrentScreen("FOUT: laden context!",
+                        "FOUT BIJ HET LADEN VAN DE CONTEXT, verbinding is in orde,"
+                        + "\n Meuk kon niet opgehaald worden van de database!\nDit scherm zal nu sluiten!");
+                DoExit();
+                //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            } catch (DatabaseException ex) {
+                ex.printStackTrace();
+            DoErrorCurrentScreen("FOUT: laden context!",
+                    "FOUT BIJ HET LADEN VAN DE CONTEXT, \ncontrolleer de verbinding!\nDit scherm zal nu sluiten!");
+            DoExit();
+            //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            }
+        }
+    }
+    
+    private void DoRemove() {
+        String str = actionContextLIST.getSelectedValue().toString();
+        Context contextToRemove = null;
+        for(Context cont : contexts){
+            if(cont.getName().toLowerCase().trim().equals(str.trim().toLowerCase())){
+                contextToRemove = cont;
+                break;
+            }
+        }
+        if(contextToRemove != null){
+            try {
+                Boolean removeSucceded = controller.GetModel().DeleteContext(contextToRemove);
+                if(removeSucceded){
+                    actionContextMODEL.removeElement(contextToRemove.getName());
+                } else {
+                    DoErrorCurrentScreen("FOUT: laden context!",
+                        "FOUT BIJ HET LADEN VAN DE CONTEXT, verbinding is in orde,"
+                        + "\n NULL gereturnt van de database, neem contact op met de maker!");
+                }
+            } catch (ThingsException ex) {
+            ex.printStackTrace();
+                DoErrorCurrentScreen("FOUT: laden context!",
+                        "FOUT BIJ HET LADEN VAN DE CONTEXT, verbinding is in orde,"
+                        + "\n Meuk kon niet opgehaald worden van de database!\nDit scherm zal nu sluiten!");
+                DoExit();
+                //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            } catch (DatabaseException ex) {
+                ex.printStackTrace();
+            DoErrorCurrentScreen("FOUT: laden context!",
+                    "FOUT BIJ HET LADEN VAN DE CONTEXT, \ncontrolleer de verbinding!\nDit scherm zal nu sluiten!");
+            DoExit();
+            //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            }
+        }
+    }
+    
     private void DoNewCalendarFrame(){
         final CalendarFrame calFrame = new CalendarFrame();
         final JFrame f = new JFrame("Kalender");
+        f.setResizable(false);
         Container c = f.getContentPane();
         c.setLayout(new FlowLayout());
 
@@ -626,5 +814,22 @@ public class OneActionFrame extends JFrame {
     private void DoErrorCurrentScreen(String title, String message){
         MessageBox.DoOkErrorMessageBox(this, title, message);
     }
+    
+    private int DoYesNoCurrentScreen(String title, String message){
+        return MessageBox.DoYesNoQuestionMessage(this, title, message);
+    }
 
+    private void DoExit(){
+        this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+    }
+    
+    private void DoLoading(Boolean isLoading){
+        if(isLoading){
+            setEnabled(false);
+            loadingLabel.setVisible(true);
+        } else {
+            setEnabled(true);
+            loadingLabel.setVisible(false);
+        }
+    }
 }

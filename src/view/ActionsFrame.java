@@ -8,6 +8,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import Model.TableMeuk.UberTablePanel;
@@ -18,7 +20,10 @@ import model.Action;
 import java.util.Random;
 import javax.swing.JFrame;
 
+import model.exceptions.DatabaseException;
+import model.exceptions.ThingsException;
 import static view.MainConstants.*;
+import static controller.Main.*;
 
 /**
  *
@@ -30,7 +35,7 @@ public class ActionsFrame extends JFrame {
     private Action[] actions;
     
     private UberTablePanel tablePanel;
-    private JButton editActionBTN, newActionBTN, deleteActionBTN;
+    private JButton editActionBTN, newActionBTN, deleteActionBTN, markAsDoneBTN;
     private JLabel screenInfoLBL;
     
     private Action currentSelectedAction = null;
@@ -75,6 +80,10 @@ public class ActionsFrame extends JFrame {
         deleteActionBTN.setFont(FONTBUTTONS);
         deleteActionBTN.setEnabled(false);
         
+        markAsDoneBTN = new JButton("Klaar");
+        markAsDoneBTN.setFont(FONTBUTTONS);
+        markAsDoneBTN.setEnabled(false);
+        
         previousButton = new JButton();
         previousButton.setIcon(PREVIOUSBUTTONIMAGEICON);
         
@@ -84,6 +93,7 @@ public class ActionsFrame extends JFrame {
         add(deleteActionBTN);
         add(previousButton);
         add(screenInfoLBL);
+        add(markAsDoneBTN);
     }
     
     private void AddListeners(){
@@ -123,6 +133,7 @@ public class ActionsFrame extends JFrame {
                 editActionBTN.setEnabled(true);
                 //als er een bestaande actie geselecteerd is, dan kan die gewist worden
                 deleteActionBTN.setEnabled(true);
+                markAsDoneBTN.setEnabled(true);
             }
         };
         
@@ -149,6 +160,16 @@ public class ActionsFrame extends JFrame {
                 DoDeleteAction();
             }
         });
+        
+        markAsDoneBTN.addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                MarkSelectedActionAsDone();
+            }
+        });
+        
+        
     }
     
     private void UpdateScreenBounds(){
@@ -165,13 +186,16 @@ public class ActionsFrame extends JFrame {
                 ,(int)(this.getSize().getWidth() - (2.5 * ACTIONSSMENUMARGIN)), 
                 (int)(this.getSize().getHeight() - 215));
         newActionBTN.setBounds(ACTIONSSMENUMARGIN,(int)(tablePanel.getLocation().getY() + tablePanel.getSize().getHeight() + ACTIONSSMENUMARGIN),
-                (int)((this.getSize().getWidth()/3) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
+                (int)((this.getSize().getWidth()/4) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
         editActionBTN.setBounds((int)(newActionBTN.getLocation().getX() + newActionBTN.getSize().getWidth() + ACTIONSSMENUMARGIN),
                 (int)(newActionBTN.getLocation().getY()),
-                (int)((this.getSize().getWidth()/3) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
+                (int)((this.getSize().getWidth()/4) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
         deleteActionBTN.setBounds((int)(editActionBTN.getLocation().getX() + editActionBTN.getSize().getWidth() + ACTIONSSMENUMARGIN),
                 (int)(editActionBTN.getLocation().getY()),
-                (int)((this.getSize().getWidth()/3) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
+                (int)((this.getSize().getWidth()/4) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
+        markAsDoneBTN.setBounds((int)(deleteActionBTN.getLocation().getX() + deleteActionBTN.getSize().getWidth() + ACTIONSSMENUMARGIN),
+                (int)(deleteActionBTN.getLocation().getY()),
+                (int)((this.getSize().getWidth()/4) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
     }
     
     private Action getCurrentSelectedAction() {
@@ -189,6 +213,7 @@ public class ActionsFrame extends JFrame {
         tablePanel.DeselectAll();
         editActionBTN.setEnabled(false);
         deleteActionBTN.setEnabled(false);
+        markAsDoneBTN.setEnabled(false);
         setCurrentSelectedAction(null);
     }
     
@@ -206,11 +231,34 @@ public class ActionsFrame extends JFrame {
     private void DoDeleteAction(){
         //checkt of er wel een actie geselecteerd is
         if(getCurrentSelectedAction() != null){
-            
+            RefreshActionsList();
         } else {
             //zou nooit mogen gebeuren, maar voor dn zekersheid #trolololll
             MessageBox.DoOkErrorMessageBox(this, "FOUT: wissen actie mislukt! - 001",
                     "FOUT BIJ HET WISSEN VAN DE ACTIE, kan geen lege actie wissen!");
+        }
+    }
+    
+    private void MarkSelectedActionAsDone(){
+        //checkt of er wel een actie geselecteerd is
+        if(getCurrentSelectedAction() != null && getCurrentSelectedAction().getID() != -1){
+            getCurrentSelectedAction().setDone(true);
+            try {
+                controller.GetModel().UpdateAction(getCurrentSelectedAction());
+                RefreshActionsList();
+            } catch (ThingsException ex) {
+            ex.printStackTrace();
+            MessageBox.DoOkErrorMessageBox(this, "FOUT: markeren van gedachte als klaar mislukt!",
+                    "FOUT BIJ HET MARKEREN VAN DE ACTIE ALS KLAAR, \ncontrolleer de verbinding!");
+            } catch (DatabaseException ex) {
+                ex.printStackTrace();
+                MessageBox.DoOkErrorMessageBox(this, "FOUT: opslaan gedachte mislukt!",
+                        "FOUT BIJ HET MARKEREN VAN DE ACTIE ALS KLAAR, verbinding is in orde, \ngedachte kon niet geupdate worden in de database!");
+            }
+        } else {
+            //zou nooit mogen gebeuren, maar voor dn zekersheid #trolololll
+            MessageBox.DoOkErrorMessageBox(this, "FOUT: markeren als klaar mislukt! - 001",
+                    "FOUT BIJ HET MARKEREN VAN DE ACTIE ALS KLAAR, kan geen lege actie markeren \n(of het is een nieuwe actie!)!");
         }
     }
     
@@ -225,8 +273,33 @@ public class ActionsFrame extends JFrame {
                        setEnabled(true);
                        newAction.dispose();
                        toFront();
-                       
+                       RefreshActionsList();
                    }
                 });
     }
+    
+    private void RefreshActionsList(){
+        ( new Thread() {
+            public void run() {
+                try{
+                    controller.GetModel().SetAllActions();
+                    controller.GetModel().GetAllActionssAsArray();
+                    tablePanel.UpdateActions(actions);
+                } catch (ThingsException ex) {
+                    ex.printStackTrace();
+                    DoErrorCurrentScreen("FOUT: updaten actielijst mislukt!",
+                            "FOUT BIJ HET UPDATEN VAN DE ACTIELIJST, \ncontrolleer de verbinding!");
+                    } catch (DatabaseException ex) {
+                        ex.printStackTrace();
+                        DoErrorCurrentScreen("FOUT: updaten actielijst mislukt!",
+                                "FOUT BIJ HET UPDATEN VAN DE ACTIELIJST, verbinding is in orde, \nActies kunnen niet opgehaald worden uit de database!");
+                    }
+            }
+        }).start();
+    }
+    
+    private void DoErrorCurrentScreen(String title, String message){
+        MessageBox.DoOkErrorMessageBox(this, title, message);
+    }
+    
 }

@@ -151,12 +151,11 @@ public class GTDcomplete extends Observable {
         return dbHandler.GetAllStatuses();
     }
     
-    public Boolean AddContext(Context context) throws ThingsException, DatabaseException{
-        Context newContext = dbHandler.AddContext(context);
-        return (newContext != null);
+    public Context AddContext(Context context) throws ThingsException, DatabaseException{
+        return(dbHandler.AddContext(context));
     }
     
-    public Boolean UpdateContext(Context context) throws ThingsException, DatabaseException{
+    public Context UpdateContext(Context context) throws ThingsException, DatabaseException{
         return AddContext(context);
     }
     

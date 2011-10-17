@@ -710,7 +710,7 @@ public class DBhandler {
         try {
             MakeConnection(); //maakt database connectie indien nodig
             
-            if(context.getID() != -1){
+            if(context.getID() == -1){
                 //gaat alles preparen, voorkomt sql injectie etc.
                 PreparedStatement preparedStatement = (PreparedStatement) connection.prepareStatement("INSERT INTO " + TABLE_CONTEXT + " (name) VALUES (?);",Statement.RETURN_GENERATED_KEYS);
                 preparedStatement.setString(1, context.getName());

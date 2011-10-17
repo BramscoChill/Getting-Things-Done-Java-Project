@@ -22,6 +22,28 @@ public class UberTableModel extends AbstractTableModel {
     }
     
     public UberTableModel(Action[] data){
+        UpdateActions(data);
+    }
+    
+    public void UpdateThoughts(Thought[] data){
+        columnNames = new String[2];
+        columnNames[0] = "Gedachte";
+        columnNames[1] = "Datum";
+        
+        this.data = new Object[data.length][3];
+        //System.out.println("date len: " + data.length);
+        for(int i = 0; i < data.length; i++){
+            //System.out.println("i: " + i + ", data ID is null: " + (data[i] == null) + ", this.data is null: " + (this.data[i][0] == null));
+            this.data[i][0] = new Integer(data[i].GetID());
+            this.data[i][1] = (data[i].GetNote());
+            this.data[i][2] = data[i].GetTimestamp().toString();
+            //System.out.println("this.data[i][1]: " + this.data[i][1]);
+        }
+        //System.out.println("updated thoughts uberTableModel");
+        fireTableDataChanged();
+    }
+    
+    public void UpdateActions(Action[] data){
         columnNames = new String[6];
         columnNames[0] = "Beschrijving";
         //columnNames[1] = "Notities";
@@ -44,24 +66,6 @@ public class UberTableModel extends AbstractTableModel {
             this.data[i][6] = data[i].getStatusChanged().toString();
             //this.data[i][7] = data[i].isDone();
         }
-        fireTableDataChanged();
-    }
-    
-    public void UpdateThoughts(Thought[] data){
-        columnNames = new String[2];
-        columnNames[0] = "Gedachte";
-        columnNames[1] = "Datum";
-        
-        this.data = new Object[data.length][3];
-        //System.out.println("date len: " + data.length);
-        for(int i = 0; i < data.length; i++){
-            //System.out.println("i: " + i + ", data ID is null: " + (data[i] == null) + ", this.data is null: " + (this.data[i][0] == null));
-            this.data[i][0] = new Integer(data[i].GetID());
-            this.data[i][1] = (data[i].GetNote());
-            this.data[i][2] = data[i].GetTimestamp().toString();
-            //System.out.println("this.data[i][1]: " + this.data[i][1]);
-        }
-        //System.out.println("updated thoughts uberTableModel");
         fireTableDataChanged();
     }
     
