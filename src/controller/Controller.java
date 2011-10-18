@@ -157,8 +157,35 @@ public class Controller implements Observer {
  
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("PUSH DA BUTTON BUTTON 2");
-                OneActionFrame test = new OneActionFrame();
+                
+                    //een scherm kan niet 2x geopent worden
+                    if(actionFrame == null){
+                        
+                        actionFrame = new ActionsFrame(false);
+                        actionFrame.addWindowListener(new WindowAdapter(){
+                       public void windowOpened( WindowEvent e ){
+                            //thoughtsFrame.requestFocus();
+                         }
+                           public void windowClosing( WindowEvent e ){
+                               //mainMenuFrame.setEnabled(true);
+                               actionFrame.dispose();
+                               actionFrame = null;
+                               DoReopenMainMenuFrame();
+
+                           }
+                        });
+
+                        actionFrame.previousButton.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e)
+                            {
+                               actionFrame.dispose();
+                               actionFrame = null;
+                               DoReopenMainMenuFrame();
+
+                            }
+                        });
+                }
+                
             }
         });
         
@@ -168,27 +195,27 @@ public class Controller implements Observer {
             public void actionPerformed(ActionEvent e)
             {                
                 //een scherm kan niet 2x geopent worden
-                if(historyFrame == null){
+                if(projectsFrame == null){
 
-                    historyFrame = new ActionsFrame(true);
-                    historyFrame.addWindowListener(new WindowAdapter(){
+                    projectsFrame = new ProjectsFrame();
+                    projectsFrame.addWindowListener(new WindowAdapter(){
                    public void windowOpened( WindowEvent e ){
                         //thoughtsFrame.requestFocus();
                      }
                        public void windowClosing( WindowEvent e ){
                            //mainMenuFrame.setEnabled(true);
-                           historyFrame.dispose();
-                           historyFrame = null;
+                           projectsFrame.dispose();
+                           projectsFrame = null;
                            DoReopenMainMenuFrame();
 
                        }
                     });
 
-                    historyFrame.previousButton.addActionListener(new ActionListener() {
+                    projectsFrame.previousButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e)
                         {
-                           historyFrame.dispose();
-                           historyFrame = null;
+                           projectsFrame.dispose();
+                           projectsFrame = null;
                            DoReopenMainMenuFrame();
 
                         }

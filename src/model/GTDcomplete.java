@@ -146,6 +146,7 @@ public class GTDcomplete extends Observable {
     }
     public Action AddAction(Action action) throws ThingsException, DatabaseException{
         Action newAction = dbHandler.AddAction(action);
+        System.out.println("GTD complete - AddAction - added new action");
         if(newAction != null)
         {
             actions.add(newAction);
@@ -154,8 +155,10 @@ public class GTDcomplete extends Observable {
     }
     
     public Action UpdateAction(Action action) throws ThingsException, DatabaseException{
-        Action newAction = AddAction(action);
+        Action newAction = dbHandler.AddAction(action);
         Boolean foundAction = false;
+        
+        //System.out.println("UpdateAction action list count: " + actions.size());
         
         if(newAction != null){
             //vervangt de bestaande actie in de lijst met acties, dan hoeft niet alles opnieuw opgehaald te worden
@@ -164,11 +167,13 @@ public class GTDcomplete extends Observable {
                     actions.set(i, newAction);
                     foundAction = true;
                     //filtert alle acties eruit dit niet gedaan zijn
-                    System.out.println("Filtered all actions not done GTDcomplete");
+                    
                     break;
                 }
             }
         }
+        //System.out.println("UpdateAction action list count: " + actions.size());
+        
         if(foundAction){
             //RefreshAllActionsNotDone();
             return newAction;

@@ -54,7 +54,7 @@ public class OptionsFrame extends JFrame {
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
-        SetButtons();
+        AddComponents();
         
         AddListeners(); 
         
@@ -65,7 +65,7 @@ public class OptionsFrame extends JFrame {
         
     }
     
-    private void SetButtons(){
+    private void AddComponents(){
         setMinimumSize(new Dimension(600,450));
         setMaximumSize(new Dimension(900,500));
         

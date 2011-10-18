@@ -276,15 +276,12 @@ public class UberTablePanel extends JPanel {
 RowFilter<TableModel, Object> filter =
     RowFilter.regexFilter(Pattern.compile("",Pattern.CASE_INSENSITIVE).toString(),0,1);
 
+            //de input moet geen wazige tekens bevatten, anders crasht ie
             if(! input.isEmpty() && input.matches("([a-zA-Z_\\-0-9]*)")){
                 
-                System.out.println("columnIndex: " + columnIndex);
+              //System.out.println("columnIndex: " + columnIndex);
+                //voor de case insensitive check
               rfs.set(columnIndex,RowFilter.regexFilter("(?i)^" + input, columnIndex));
-            //                      for(int i = 0; i < rfs.size(); i++) {
-            //                          if(rfs.get(i) != null){
-            //                              
-            //                          }
-            //                      }
             } else {
               rfs.set(columnIndex,RowFilter.regexFilter("", columnIndex)); 
             }

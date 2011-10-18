@@ -833,7 +833,14 @@ public class OneActionFrame extends JFrame {
         if(daAction != null){
             try {
                 //probeert de actie toe te voegen
-                Action ac = controller.GetModel().AddAction(daAction);
+                Action ac;
+                if(daAction.getID() == -1){
+                    ac = controller.GetModel().AddAction(daAction);
+                    //System.out.println("ADDED an action!!!");
+                } else {
+                    //System.out.println("UPDATED an action!!!");
+                    ac = controller.GetModel().UpdateAction(daAction);
+                }
                 if(ac == null){ //als ie faalt met het toevoegen, dan geeft ie een melding
                     MessageBox.DoOkErrorMessageBox(this, "FOUT: toevoegen van actie mislukt! - 001",
                     "FOUT BIJ HET TOEVOEGEN VAN DE ACTIE, alles zou goed moeten gaan, maar iets faalt er!!!!!\nNeem contact op met de maker!");

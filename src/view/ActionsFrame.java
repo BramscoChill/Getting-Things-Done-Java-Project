@@ -178,6 +178,11 @@ public class ActionsFrame extends JFrame {
             public void actionPerformed(ActionEvent e)
             {
                 DoNewAction();
+//                RefreshActionsList();
+//                for(Action action : controller.GetModel().GetAllActionsAsArray()){
+//                    System.out.println("Action: " + action.getDescription() + ", done: " + action.isDone());
+//                }
+                
             }
         });
         
@@ -364,9 +369,9 @@ public class ActionsFrame extends JFrame {
                         actions = controller.GetModel().GetAllActionsNotDoneAsArray();
                     }
                     
-                    for(Action action : actions){
-                        System.out.println("Action: " + action.getDescription() + ", done: " + action.isDone());
-                    }
+//                    for(Action action : actions){
+//                        System.out.println("Action: " + action.getDescription() + ", done: " + action.isDone());
+//                    }
                     tablePanel.UpdateActions(actions);
                     CloseConnectionAfterDatabaseAction = true;
 //                } catch (ThingsException ex) {
