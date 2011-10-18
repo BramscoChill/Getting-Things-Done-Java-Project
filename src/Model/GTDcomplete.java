@@ -80,13 +80,14 @@ public class GTDcomplete extends Observable {
     
     //<editor-fold defaultstate="collapsed" desc="Actions">
     
-    public void SetAllActionsNotDone() throws DatabaseException, ThingsException{
-        actions = new ArrayList<Action>(Arrays.asList(dbHandler.GetAllActionsNotDone()));
+    public void SetAllActions() throws DatabaseException, ThingsException{
+        actions = new ArrayList<Action>(Arrays.asList(dbHandler.GetAllActions()));
     }
+    
     
     //filtert alle acties eruit die al wel gedaan zijn
     public void RefreshAllActionsNotDone(){
-        System.out.println("RefreshAllActionsNotDone len: " + actions.size());
+        //System.out.println("RefreshAllActionsNotDone len: " + actions.size());
         ArrayList<Action> tmpActions = new ArrayList<Action>();
         for(int i = 0; i < actions.size(); i++){
             if(actions.get(i).isDone()){
@@ -95,11 +96,37 @@ public class GTDcomplete extends Observable {
             }
         }
         actions.removeAll(tmpActions);
-        System.out.println("RefreshAllActionsNotDone len: " + actions.size());
+        //System.out.println("RefreshAllActionsNotDone len: " + actions.size());
     }
     
-    public Action[] GetAllActionssAsArray(){
+    public Action[] GetAllActionsAsArray(){
         return (Action[]) actions.toArray(new Action[actions.size()]);
+    }
+    
+    public Action[] GetAllActionsNotDoneAsArray(){
+        ArrayList<Action> daActions = actions;
+        ArrayList<Action> tmpActions = new ArrayList<Action>();
+        for(int i = 0; i < daActions.size(); i++){
+            if(!daActions.get(i).isDone()){
+                tmpActions.add(daActions.get(i));
+                //System.out.println("Removed action!");
+            }
+        }
+        //daActions.removeAll(tmpActions);
+        return (Action[]) tmpActions.toArray(new Action[tmpActions.size()]);
+    }
+    
+    public Action[] GetAllActionsDoneAsArray(){
+        ArrayList<Action> daActions = actions;
+        ArrayList<Action> tmpActions = new ArrayList<Action>();
+        for(int i = 0; i < daActions.size(); i++){
+            if(daActions.get(i).isDone()){
+                tmpActions.add(daActions.get(i));
+                //System.out.println("Removed action!");
+            }
+        }
+        //daActions.removeAll(tmpActions);
+        return (Action[]) tmpActions.toArray(new Action[tmpActions.size()]);
     }
     
     public ArrayList<Action> GetAllActionsAsArrayList(){
@@ -143,7 +170,7 @@ public class GTDcomplete extends Observable {
             }
         }
         if(foundAction){
-            RefreshAllActionsNotDone();
+            //RefreshAllActionsNotDone();
             return newAction;
         }
         //als ie niet geupdate kan worden, dan geeft ie null terug

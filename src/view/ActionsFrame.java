@@ -43,13 +43,17 @@ public class ActionsFrame extends JFrame {
     
     private Action currentSelectedAction = null;
     
+    private Boolean isHistory;
     
-    public ActionsFrame(){
+    
+    public ActionsFrame(Boolean isHistory){
         super(ACTIONSMENUTITLE);
         setLayout(null);
         this.setResizable(true);
         setLocation(100,new Random().nextInt(200)+50);
         setMinimumSize(new Dimension(1000,600));
+        
+        this.isHistory = isHistory;
         
         SetLoadingTable();
         
@@ -67,7 +71,12 @@ public class ActionsFrame extends JFrame {
         
         tablePanel = new UberTablePanel(actions,300,300);
         
-        screenInfoLBL = new JLabel("Acties");
+        if(isHistory){
+            screenInfoLBL = new JLabel("Geschiedenis");
+        } else {
+            screenInfoLBL = new JLabel("Acties");
+        }
+        
         screenInfoLBL.setFont(FONTTITLE);
         
         editActionBTN = new JButton("Aanpassen");
@@ -82,7 +91,12 @@ public class ActionsFrame extends JFrame {
         deleteActionBTN.setFont(FONTBUTTONS);
         deleteActionBTN.setEnabled(false);
         
-        markAsDoneBTN = new JButton("Klaar");
+        if(isHistory){
+            markAsDoneBTN = new JButton("Niet Klaar");
+        } else {
+            markAsDoneBTN = new JButton("Klaar");
+        }
+        
         markAsDoneBTN.setFont(FONTBUTTONS);
         markAsDoneBTN.setEnabled(false);
         
@@ -196,6 +210,7 @@ public class ActionsFrame extends JFrame {
     
     private void UpdateScreenBounds(){
         int btnHeight = 50;
+        int amountButtons = (isHistory) ? 3 : 4;
         
         int previousButXpos = (int) (this.getSize().getWidth() - ACTIONSSMENUMARGIN - PREVIOUSBUTTONSIZE);
         previousButton.setBounds(previousButXpos - 5, (int)(ACTIONSSMENUMARGIN/2), PREVIOUSBUTTONSIZE, PREVIOUSBUTTONSIZE);
@@ -207,17 +222,30 @@ public class ActionsFrame extends JFrame {
                 (int)((ACTIONSSMENUMARGIN/2) + screenInfoLBL.getLocation().getY() + screenInfoLBL.getSize().getHeight())
                 ,(int)(this.getSize().getWidth() - (2.5 * ACTIONSSMENUMARGIN)), 
                 (int)(this.getSize().getHeight() - 215));
-        newActionBTN.setBounds(ACTIONSSMENUMARGIN,(int)(tablePanel.getLocation().getY() + tablePanel.getSize().getHeight() + ACTIONSSMENUMARGIN),
-                (int)((this.getSize().getWidth()/4) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
-        editActionBTN.setBounds((int)(newActionBTN.getLocation().getX() + newActionBTN.getSize().getWidth() + ACTIONSSMENUMARGIN),
-                (int)(newActionBTN.getLocation().getY()),
-                (int)((this.getSize().getWidth()/4) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
-        deleteActionBTN.setBounds((int)(editActionBTN.getLocation().getX() + editActionBTN.getSize().getWidth() + ACTIONSSMENUMARGIN),
-                (int)(editActionBTN.getLocation().getY()),
-                (int)((this.getSize().getWidth()/4) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
-        markAsDoneBTN.setBounds((int)(deleteActionBTN.getLocation().getX() + deleteActionBTN.getSize().getWidth() + ACTIONSSMENUMARGIN),
-                (int)(deleteActionBTN.getLocation().getY()),
-                (int)((this.getSize().getWidth()/4) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
+        
+        if(isHistory){
+            editActionBTN.setBounds(ACTIONSSMENUMARGIN,(int)(tablePanel.getLocation().getY() + tablePanel.getSize().getHeight() + ACTIONSSMENUMARGIN),
+                    (int)((this.getSize().getWidth() / amountButtons) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
+            deleteActionBTN.setBounds((int)(editActionBTN.getLocation().getX() + editActionBTN.getSize().getWidth() + ACTIONSSMENUMARGIN),
+                    (int)(editActionBTN.getLocation().getY()),
+                    (int)((this.getSize().getWidth() / amountButtons) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
+            markAsDoneBTN.setBounds((int)(deleteActionBTN.getLocation().getX() + deleteActionBTN.getSize().getWidth() + ACTIONSSMENUMARGIN),
+                    (int)(deleteActionBTN.getLocation().getY()),
+                    (int)((this.getSize().getWidth() / amountButtons) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
+        } else {
+            newActionBTN.setBounds(ACTIONSSMENUMARGIN,(int)(tablePanel.getLocation().getY() + tablePanel.getSize().getHeight() + ACTIONSSMENUMARGIN),
+                    (int)((this.getSize().getWidth() / amountButtons) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
+            editActionBTN.setBounds((int)(newActionBTN.getLocation().getX() + newActionBTN.getSize().getWidth() + ACTIONSSMENUMARGIN),
+                    (int)(newActionBTN.getLocation().getY()),
+                    (int)((this.getSize().getWidth() / amountButtons) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
+            deleteActionBTN.setBounds((int)(editActionBTN.getLocation().getX() + editActionBTN.getSize().getWidth() + ACTIONSSMENUMARGIN),
+                    (int)(editActionBTN.getLocation().getY()),
+                    (int)((this.getSize().getWidth() / amountButtons) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
+            markAsDoneBTN.setBounds((int)(deleteActionBTN.getLocation().getX() + deleteActionBTN.getSize().getWidth() + ACTIONSSMENUMARGIN),
+                    (int)(deleteActionBTN.getLocation().getY()),
+                    (int)((this.getSize().getWidth() / amountButtons) - (1.5 * ACTIONSSMENUMARGIN)),btnHeight);
+        }
+
     }
     
     private Action getCurrentSelectedAction() {
@@ -280,7 +308,11 @@ public class ActionsFrame extends JFrame {
     private void MarkSelectedActionAsDone(){
         //checkt of er wel een actie geselecteerd is
         if(getCurrentSelectedAction() != null && getCurrentSelectedAction().getID() != -1){
-            getCurrentSelectedAction().setDone(true);
+            if(isHistory){
+                getCurrentSelectedAction().setDone(false);
+            } else {
+                getCurrentSelectedAction().setDone(true);
+            }
             try {
                 controller.GetModel().UpdateAction(getCurrentSelectedAction());
                 RefreshActionsList();
@@ -325,8 +357,13 @@ public class ActionsFrame extends JFrame {
                 //try{
                     System.out.println("Refreshed da list ActionsFrame");
                     CloseConnectionAfterDatabaseAction = false;
-                    //controller.GetModel().SetAllActionsNotDone();
-                    actions = controller.GetModel().GetAllActionssAsArray();
+                    //controller.GetModel().SetAllActions();
+                    if(isHistory){
+                        actions = controller.GetModel().GetAllActionsDoneAsArray();
+                    } else {
+                        actions = controller.GetModel().GetAllActionsNotDoneAsArray();
+                    }
+                    
                     for(Action action : actions){
                         System.out.println("Action: " + action.getDescription() + ", done: " + action.isDone());
                     }
@@ -393,8 +430,8 @@ public class ActionsFrame extends JFrame {
     
 //    private void LoadActions(){
 //        try{
-//        controller.GetModel().SetAllActionsNotDone();
-//        actions = controller.GetModel().GetAllActionssAsArray();
+//        controller.GetModel().SetAllActions();
+//        actions = controller.GetModel().GetAllActionsAsArray();
 //        } catch (ThingsException ex) {
 //                ex.printStackTrace();
 //                    MessageBox.DoOkErrorMessageBox(this, "FOUT: laden acties!",
@@ -417,8 +454,15 @@ public class ActionsFrame extends JFrame {
             //LoadContextsStatusesProjects();
             try {
                 CloseConnectionAfterDatabaseAction = false;
-                controller.GetModel().SetAllActionsNotDone();
-                actions = controller.GetModel().GetAllActionssAsArray();
+                controller.GetModel().SetAllActions();
+                //als het gaat om de history
+                if(isHistory){
+                    actions = controller.GetModel().GetAllActionsDoneAsArray();
+                } else { //gaat niet om de history
+                    actions = controller.GetModel().GetAllActionsNotDoneAsArray();
+                }
+                
+                
                 controller.GetModel().SetAllProjectsContextsStatuses();
                 CloseConnectionAfterDatabaseAction = true;
                 AddComponents();

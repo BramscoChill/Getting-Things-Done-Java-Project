@@ -53,7 +53,7 @@ public class Controller implements Observer {
     private ThoughtsFrame thoughtsFrame;
     private ActionsFrame actionFrame;
     private ProjectsFrame projectsFrame;
-    private HistoryFrame historyFrame;
+    private ActionsFrame historyFrame;
     
     public Controller(){
         //thoughtsFrame.setVisible(false);
@@ -124,7 +124,7 @@ public class Controller implements Observer {
                     //een scherm kan niet 2x geopent worden
                     if(actionFrame == null){
                         
-                        actionFrame = new ActionsFrame();
+                        actionFrame = new ActionsFrame(false);
                         actionFrame.addWindowListener(new WindowAdapter(){
                        public void windowOpened( WindowEvent e ){
                             //thoughtsFrame.requestFocus();
@@ -162,11 +162,39 @@ public class Controller implements Observer {
             }
         });
         
+        //history
         buttons[3].addActionListener(new ActionListener() {
  
             public void actionPerformed(ActionEvent e)
-            {
-                System.out.println("PUSH DA BUTTON BUTTON 3");
+            {                
+                //een scherm kan niet 2x geopent worden
+                if(historyFrame == null){
+
+                    historyFrame = new ActionsFrame(true);
+                    historyFrame.addWindowListener(new WindowAdapter(){
+                   public void windowOpened( WindowEvent e ){
+                        //thoughtsFrame.requestFocus();
+                     }
+                       public void windowClosing( WindowEvent e ){
+                           //mainMenuFrame.setEnabled(true);
+                           historyFrame.dispose();
+                           historyFrame = null;
+                           DoReopenMainMenuFrame();
+
+                       }
+                    });
+
+                    historyFrame.previousButton.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e)
+                        {
+                           historyFrame.dispose();
+                           historyFrame = null;
+                           DoReopenMainMenuFrame();
+
+                        }
+                    });
+                }
+                
             }
         });
         

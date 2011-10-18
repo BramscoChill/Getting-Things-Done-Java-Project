@@ -4,6 +4,7 @@
  */
 package Model.TableMeuk;
 
+import java.util.regex.Pattern;
 import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.table.TableRowSorter;
@@ -66,7 +67,7 @@ public class UberTablePanel extends JPanel {
             table = new UberTable((Action[]) data);
             filterBoxes = new JComboBox[6];
             type = "action"; 
-            rfs = new ArrayList<RowFilter<Object,Object>>(8);
+            rfs = new ArrayList<RowFilter<Object,Object>>(6);
         } else if(data instanceof Thought[]){
             table = new UberTable((Thought[]) data);
             filterBoxes = new JComboBox[2];
@@ -267,13 +268,18 @@ public class UberTablePanel extends JPanel {
     }              
     public void UpdateFilter(int columnIndex, String input) { 
         //er moeten wel rijen zijn om op te filteren!
-        if(table.getRowCount() > 0){
+        //if(table.getRowCount() > 0){
             //trekt de input uit de combo
             //JTextField inputField = (JTextField) filterBoxes[columnIndex].getEditor().getEditorComponent();
             //String input = inputField.getText().trim().toLowerCase();
-            if(! input.isEmpty()){
 
-              rfs.set(columnIndex,RowFilter.regexFilter(input, columnIndex));
+RowFilter<TableModel, Object> filter =
+    RowFilter.regexFilter(Pattern.compile("",Pattern.CASE_INSENSITIVE).toString(),0,1);
+
+            if(! input.isEmpty() && input.matches("([a-zA-Z_\\-0-9]*)")){
+                
+                System.out.println("columnIndex: " + columnIndex);
+              rfs.set(columnIndex,RowFilter.regexFilter("(?i)^" + input, columnIndex));
             //                      for(int i = 0; i < rfs.size(); i++) {
             //                          if(rfs.get(i) != null){
             //                              
@@ -286,7 +292,11 @@ public class UberTablePanel extends JPanel {
             ((TableRowSorter<TableModel>)table.getRowSorter()).setRowFilter(af);
 
             //System.out.println("Combo Box CHANGED: " + columnIndex + "\nInput: " + input);
-        }
+//        } else {
+//            if(input.trim().isEmpty()){
+//                ((TableRowSorter<TableModel>)table.getRowSorter()).setRowFilter(null);
+//            }
+//        }
     }
     
     public void UpdateFilter(int columnIndex) { 
