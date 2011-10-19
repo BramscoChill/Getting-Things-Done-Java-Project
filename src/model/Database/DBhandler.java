@@ -849,7 +849,7 @@ public class DBhandler {
             MakeConnection(); //maakt database connectie indien nodig
             
             //voeg nieuw project toe
-            if(project.getID() != -1){
+            if(project.getID() == -1){
                 //gaat alles preparen, voorkomt sql injectie etc.
                 PreparedStatement preparedStatement = (PreparedStatement) connection.prepareStatement("INSERT INTO " + TABLE_PROJECT + " (name,notes) VALUES (?,?);",Statement.RETURN_GENERATED_KEYS);
                 preparedStatement.setString(1, project.getName());
@@ -897,7 +897,7 @@ public class DBhandler {
                 CloseConnection();
                 return daProject;
             }  else { //pas bestaand project aan
-                PreparedStatement preparedStatement = (PreparedStatement) connection.prepareStatement("UPDATE " + TABLE_STATUS + " SET name = ?, notes = ? WHERE id = ?;",Statement.RETURN_GENERATED_KEYS);
+                PreparedStatement preparedStatement = (PreparedStatement) connection.prepareStatement("UPDATE " + TABLE_PROJECT + " SET name = ?, notes = ? WHERE id = ?;",Statement.RETURN_GENERATED_KEYS);
                 preparedStatement.setString(1, project.getName());
                 preparedStatement.setString(2, project.getNote());
                 preparedStatement.setInt(3, project.getID());
@@ -916,6 +916,7 @@ public class DBhandler {
         }
         
     }
+    
     
     public Boolean DeleteProject(Project project) throws ThingsException, DatabaseException{
         try {

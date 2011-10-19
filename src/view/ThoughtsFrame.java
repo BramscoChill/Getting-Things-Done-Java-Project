@@ -4,6 +4,8 @@
  */
 package view;
 
+import java.awt.event.WindowEvent;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.logging.Level;
@@ -32,9 +34,11 @@ import static controller.Main.*;
  */
 public class ThoughtsFrame extends JFrame {
     private UberTablePanel tablePanel;
-    private JButton saveThoughtBTN, clearSelectedThoughtBTN, deleteThoughtBTN;
+    private JButton saveThoughtBTN, newThoughtBTN, deleteThoughtBTN;
     private JTextArea thoughtNoteTXT;
     private JLabel thoughtNoteLBL;
+    
+    private JLabel loadingLabel;
     
     private Thought currentSelectedThought = null;
     
@@ -53,17 +57,22 @@ public class ThoughtsFrame extends JFrame {
         //************TEST**************//
         setBounds(100,100,800,700);
         
-//        Thought[] thoughts = new Thought[5];
-//        for(int i = 0; i < thoughts.length; i++){
-//            thoughts[i] = new Thought(i+1, "" + i + "bamiii " + i+3*34334, java.sql.Timestamp.valueOf("2011-10-06 11:04:49"));
-//        }
+        //SetLoadingTable();
         
         tablePanel = new UberTablePanel(thoughts,300,300);
+        AddComponents();
+        
+        AddListeners();
+
+        UpdateScreenBounds();
+    }
+    
+    private void AddComponents(){
         saveThoughtBTN = new JButton("Opslaan");
         saveThoughtBTN.setFont(FONTBUTTONS);
         saveThoughtBTN.setEnabled(false);
-        clearSelectedThoughtBTN = new JButton("Nieuwe Gedachte");
-        clearSelectedThoughtBTN.setFont(FONTBUTTONS);
+        newThoughtBTN = new JButton("Nieuwe Gedachte");
+        newThoughtBTN.setFont(FONTBUTTONS);
         deleteThoughtBTN = new JButton("Wis");
         deleteThoughtBTN.setFont(FONTBUTTONS);
         deleteThoughtBTN.setEnabled(false);
@@ -81,15 +90,9 @@ public class ThoughtsFrame extends JFrame {
         add(thoughtNoteLBL);
         add(saveThoughtBTN);
         add(deleteThoughtBTN);
-        add(clearSelectedThoughtBTN);
+        add(newThoughtBTN);
         add(thoughtNoteTXT);
         add(tablePanel);
-        
-        
-        
-        AddListeners();
-
-        UpdateScreenBounds();
     }
     
     private void AddListeners(){
@@ -130,7 +133,7 @@ public class ThoughtsFrame extends JFrame {
         });
         
         //maak een nieuwe gedachte aan
-        clearSelectedThoughtBTN.addActionListener(new ActionListener() {
+        newThoughtBTN.addActionListener(new ActionListener() {
  
             public void actionPerformed(ActionEvent e)
             {
@@ -178,13 +181,13 @@ public class ThoughtsFrame extends JFrame {
                 (int)(this.getSize().getWidth() - (2.5 * THOUGHTSMENUMARGIN)),100);
         saveThoughtBTN.setBounds(THOUGHTSMENUMARGIN,(int)(thoughtNoteTXT.getLocation().getY() + thoughtNoteTXT.getSize().getHeight() + THOUGHTSMENUMARGIN),
                 (int)((this.getSize().getWidth() / 2) - (2.5 * THOUGHTSMENUMARGIN)),btnHeight);
-        clearSelectedThoughtBTN.setBounds((int)(saveThoughtBTN.getLocation().getX() + saveThoughtBTN.getSize().getWidth() +
+        newThoughtBTN.setBounds((int)(saveThoughtBTN.getLocation().getX() + saveThoughtBTN.getSize().getWidth() +
                 THOUGHTSMENUMARGIN),
                 (int)(thoughtNoteTXT.getLocation().getY() + thoughtNoteTXT.getSize().getHeight() + THOUGHTSMENUMARGIN),
                 (int)((this.getSize().getWidth() - (saveThoughtBTN.getLocation().getX() + saveThoughtBTN.getSize().getWidth() +
                 THOUGHTSMENUMARGIN)) - (1.5 * THOUGHTSMENUMARGIN)),btnHeight);
-        deleteThoughtBTN.setBounds(THOUGHTSMENUMARGIN,(int)(clearSelectedThoughtBTN.getLocation().getY() + 
-                clearSelectedThoughtBTN.getSize().getHeight() + (THOUGHTSMENUMARGIN / 2)),
+        deleteThoughtBTN.setBounds(THOUGHTSMENUMARGIN,(int)(newThoughtBTN.getLocation().getY() + 
+                newThoughtBTN.getSize().getHeight() + (THOUGHTSMENUMARGIN / 2)),
                 (int)((this.getSize().getWidth()) - (2.5 * THOUGHTSMENUMARGIN)),btnHeight);
     }
     
@@ -213,6 +216,7 @@ public class ThoughtsFrame extends JFrame {
             //slaat alles op naar het model en DB
             //System.out.println("ID gedachte: " + currentSelectedThought.GetID());
             controller.GetModel().UpdateThought(currentSelectedThought);
+            
         } catch (ThingsException ex) {
             ex.printStackTrace();
             MessageBox.DoOkErrorMessageBox(this, "FOUT: opslaan gedachte mislukt!",
@@ -229,7 +233,7 @@ public class ThoughtsFrame extends JFrame {
         SetThoughtNoteToCurrentThought();
         tablePanel.DeselectAll();
         //als je een nieuwe gedachte maakt, dan kan je er niet nog een nieuwe maken
-        clearSelectedThoughtBTN.setEnabled(false);
+        newThoughtBTN.setEnabled(false);
         //bij een nieuwe gedachte kan er niks gewist worden
         deleteThoughtBTN.setEnabled(false);
     }
@@ -268,5 +272,65 @@ public class ThoughtsFrame extends JFrame {
                     "FOUT BIJ HET WISSEN VAN DE GEDACHTE, kan geen lege gedachte wissen!");
         }
     }
+    
+//    private void LoadThoughts(){
+//        ( new Thread() {
+// 
+//        public void run() {
+//            DoLoading(true);
+//            try {
+//                CloseConnectionAfterDatabaseAction = false;
+//                controller.GetModel().SetAllThoughts();
+//                controller.GetModel().GetAllThoughtsAsArray();
+//                CloseConnectionAfterDatabaseAction = true;
+//                
+//            } catch (ThingsException ex) {
+//                ex.printStackTrace();
+//                    MessageBox.DoOkErrorMessageBox(mainMenuFrame, "FOUT: laden gedachtes!",
+//                            "FOUT BIJ HET OPSLAAN VAN DE GEDACHTE, verbinding is in orde,"
+//                            + "\ngedachtes konden niet opgehaald worden van de database!");
+//                    DoExit();
+//                } catch (DatabaseException ex) {
+//                    ex.printStackTrace();
+//                MessageBox.DoOkErrorMessageBox(mainMenuFrame, "FOUT: laden gedachtes!",
+//                        "FOUT BIJ HET LADEN VAN DE GEDCHTES, \ncontrolleer de verbinding!");
+//                DoExit();
+//                }
+//            DoLoading(false);
+//        }
+//        }
+//        ).start();
+//    }
+    
+    private void DoExit(){
+        this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+    }
+    
+    //zet de loading tabel alvast neer, zodat andere shit later geladen kan worden
+//    private void SetLoadingTable() {
+//        loadingLabel = MainConstants.SetLoadingTable((int)getBounds().getWidth(), (int)getBounds().getHeight());
+//        add(loadingLabel);
+//    }
+//    
+//    //zet de label neer dat ie aan het laden is en disable
+//    private void DoLoading(Boolean isLoading){
+//        if(isLoading){
+//            for(Component c : this.getContentPane().getComponents()){
+//                c.setVisible(false);
+//            }
+//            setEnabled(false);
+//            loadingLabel.setVisible(true);
+//        } else {
+//            for(Component c : this.getContentPane().getComponents()){
+//                c.setVisible(true);
+//            }
+//            setEnabled(true);
+//            loadingLabel.setVisible(false);
+//        }
+//    }
+//    
+//    private void DoErrorCurrentScreen(String title, String message){
+//        MessageBox.DoOkErrorMessageBox(this, title, message);
+//    }
     
 }

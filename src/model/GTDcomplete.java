@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Observable;
 import model.exceptions.DatabaseException;
 import model.exceptions.ThingsException;
+import view.MainConstants;
 
 /**
  *
@@ -196,6 +197,15 @@ public class GTDcomplete extends Observable {
         return newProject;
     }
     
+    //aaleen om een nieuw project intern toe te voegen
+    public Project AddProjectInternal(Project project){
+        if(project != null && project.getID() == -1){
+            projects.add(project);
+            return project;
+        }
+        return null;
+    }
+    
     public Project UpdateProject(Project project) throws ThingsException, DatabaseException{
         return AddProject(project);
     }
@@ -208,8 +218,28 @@ public class GTDcomplete extends Observable {
         return dbHandler.GetAllProjects();
     }
     
-    public Project[] GetProjectsInternal() throws ThingsException, DatabaseException{
+    public Project[] GetProjectsInternal() {
         return (Project[]) projects.toArray(new Project[projects.size()]);
+    }
+    
+    public Project GetProjectInternal(int index){
+        if(index > -1 && index < projects.size()){
+            return projects.get(index);
+        }
+        return null;
+    }
+    
+    public Boolean UpdatInternalProjectsToDB() throws ThingsException, DatabaseException{
+        MainConstants.CloseConnectionAfterDatabaseAction = false;
+        for(int i = 0; i < projects.size(); i++){
+            Project newProject = dbHandler.AddProject(projects.get(i));
+            if(newProject == null){
+                return false;
+            }
+            projects.set(i, newProject);
+        }
+        MainConstants.CloseConnectionAfterDatabaseAction = true;
+        return true;
     }
     
     public Status AddStatus(Status status) throws ThingsException, DatabaseException{

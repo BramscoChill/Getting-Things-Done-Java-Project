@@ -198,15 +198,7 @@ public class OneActionFrame extends JFrame {
         actionCancelBTN = new JButton("Annuleren");
         
         
-        loadingLabel = new JLabel("Loading....");
-        loadingLabel.setFont(FONTTITLE);
-        loadingLabel.setSize(200,50);
-        loadingLabel.setOpaque(true);
-        loadingLabel.setBackground(Color.BLACK);
-        loadingLabel.setForeground(Color.WHITE);
-        
-        loadingLabel.setLocation((int)((this.getBounds().getWidth()/2) - loadingLabel.getSize().getWidth()),
-                (int)((this.getBounds().getHeight() / 2) - loadingLabel.getSize().getHeight()));
+        loadingLabel = SetLoadingTable((int)getBounds().getWidth(), (int)getBounds().getHeight());
         
         add(loadingLabel);
         add(actionDescriptionLBL);

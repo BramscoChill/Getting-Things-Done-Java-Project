@@ -10,7 +10,7 @@ package model;
  */
 public class Project extends NameItem {
     
-    private String note;
+    private String note = "";
     
     public Project(int id, String name, String note){
         super(id, name);

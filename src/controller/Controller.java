@@ -168,22 +168,14 @@ public class Controller implements Observer {
                        public void windowClosing( WindowEvent e ){
                            //mainMenuFrame.setEnabled(true);
                            //projectsFrame.dispose();
-                           e.getWindow().dispose();
-                           System.gc();
-                           projectsFrame = null;
-                           DoReopenMainMenuFrame();
-
+                           if(projectsFrame.alreadyExited){
+                               projectsFrame = null;
+                               System.gc();
+                               DoReopenMainMenuFrame();
+                           } else {
+                               projectsFrame.DoExitReal();
+                           }
                        }
-                    });
-
-                    projectsFrame.previousButton.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e)
-                        {
-                           projectsFrame.dispose();
-                           projectsFrame = null;
-                           DoReopenMainMenuFrame();
-
-                        }
                     });
                 }
                 

@@ -55,6 +55,19 @@ public class MessageBox {
         return n;
     }
     
+    private static int DoYesNoCancelMessage(JFrame frame,String title, String message, int typeMessage){
+        Object[] options = {"Ja", "Nee", "Annuleren"};
+        int n = JOptionPane.showOptionDialog(frame,
+            message,
+            title,
+            JOptionPane.YES_NO_OPTION,
+            typeMessage,
+            null,
+            options,
+            options[0]);
+        return n;
+    }
+    
     private static int DoYesNoMessage(JFrame frame,String title, String message, int typeMessage){
         Object[] options = {"Ja", "Nee"};
         int n = JOptionPane.showOptionDialog(frame,
@@ -75,6 +88,10 @@ public class MessageBox {
     
     public static int DoYesNoQuestionMessage(JFrame frame,String title, String message){
         return DoYesNoMessage(frame, title, message,JOptionPane.QUESTION_MESSAGE);
+    }
+    
+    public static int DoYesNoCancelQuestionMessage(JFrame frame,String title, String message){
+        return DoYesNoCancelMessage(frame, title, message,JOptionPane.QUESTION_MESSAGE);
     }
     
         

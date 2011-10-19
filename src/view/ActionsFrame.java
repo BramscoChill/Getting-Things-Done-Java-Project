@@ -4,6 +4,7 @@
  */
 package view;
 
+import java.awt.Component;
 import java.awt.Color;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
@@ -393,9 +394,15 @@ public class ActionsFrame extends JFrame {
     
     private void DoLoading(Boolean isLoading){
         if(isLoading){
+            for(Component c : this.getContentPane().getComponents()){
+                c.setVisible(false);
+            }
             setEnabled(false);
             loadingLabel.setVisible(true);
         } else {
+            for(Component c : this.getContentPane().getComponents()){
+                c.setVisible(true);
+            }
             setEnabled(true);
             loadingLabel.setVisible(false);
         }
@@ -498,19 +505,8 @@ public class ActionsFrame extends JFrame {
 
     //zet de loading tabel alvast neer, zodat andere shit later geladen kan worden
     private void SetLoadingTable() {
-        loadingLabel = new JLabel("Loading....");
-        loadingLabel.setFont(FONTTITLE);
-        loadingLabel.setSize(200,50);
-        loadingLabel.setOpaque(true);
-        loadingLabel.setBackground(Color.BLACK);
-        loadingLabel.setForeground(Color.WHITE);
-        
-        loadingLabel.setLocation((int)((this.getBounds().getWidth()/2) - loadingLabel.getSize().getWidth()),
-                (int)((this.getBounds().getHeight() / 2) - loadingLabel.getSize().getHeight()));
-        
+        loadingLabel = MainConstants.SetLoadingTable((int)getBounds().getWidth(), (int)getBounds().getHeight());
         add(loadingLabel);
-        
-        loadingLabel.setVisible(true);
     }
 
     

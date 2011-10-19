@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import model.Options;
 
 /**
@@ -102,6 +103,22 @@ public class MainConstants {
     //public static ArrayList<Context> contexten = new ArrayList<Context>();
     //public static ArrayList<Project> projecten = new ArrayList<Project>();
     
+    public static JLabel SetLoadingTable(int sW, int sH){
+        JLabel loadingLabel = new JLabel("Loading....");
+        loadingLabel.setFont(FONTTITLE);
+        loadingLabel.setSize(200,50);
+        loadingLabel.setOpaque(true);
+        loadingLabel.setBackground(Color.BLACK);
+        loadingLabel.setForeground(Color.WHITE);
+        
+//        loadingLabel.setLocation((int)((this.getBounds().getWidth()/2) - loadingLabel.getSize().getWidth()),
+//                (int)((this.getBounds().getHeight() / 2) - loadingLabel.getSize().getHeight()));
+        
+        loadingLabel.setLocation((int)((sW/2) - loadingLabel.getSize().getWidth()),
+                (int)((sH / 2) - loadingLabel.getSize().getHeight()));
+        loadingLabel.setVisible(true);
+        return loadingLabel;
+    }
     public static ImageIcon ResizeImageToButton(ImageIcon imgIcon, int imageW, int imageH){
         int margin = 5;
         Image img = imgIcon.getImage();
