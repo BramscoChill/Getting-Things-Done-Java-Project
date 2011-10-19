@@ -156,6 +156,44 @@ public class Controller implements Observer {
         buttons[2].addActionListener(new ActionListener() {
  
             public void actionPerformed(ActionEvent e)
+            {                
+                //een scherm kan niet 2x geopent worden
+                if(projectsFrame == null){
+
+                    projectsFrame = new ProjectsFrame();
+                    projectsFrame.addWindowListener(new WindowAdapter(){
+                   public void windowOpened( WindowEvent e ){
+                        //thoughtsFrame.requestFocus();
+                     }
+                       public void windowClosing( WindowEvent e ){
+                           //mainMenuFrame.setEnabled(true);
+                           //projectsFrame.dispose();
+                           e.getWindow().dispose();
+                           System.gc();
+                           projectsFrame = null;
+                           DoReopenMainMenuFrame();
+
+                       }
+                    });
+
+                    projectsFrame.previousButton.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e)
+                        {
+                           projectsFrame.dispose();
+                           projectsFrame = null;
+                           DoReopenMainMenuFrame();
+
+                        }
+                    });
+                }
+                
+            }
+        });
+        
+        //history
+        buttons[3].addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
             {
                 
                     //een scherm kan niet 2x geopent worden
@@ -188,42 +226,7 @@ public class Controller implements Observer {
                 
             }
         });
-        
-        //history
-        buttons[3].addActionListener(new ActionListener() {
- 
-            public void actionPerformed(ActionEvent e)
-            {                
-                //een scherm kan niet 2x geopent worden
-                if(projectsFrame == null){
-
-                    projectsFrame = new ProjectsFrame();
-                    projectsFrame.addWindowListener(new WindowAdapter(){
-                   public void windowOpened( WindowEvent e ){
-                        //thoughtsFrame.requestFocus();
-                     }
-                       public void windowClosing( WindowEvent e ){
-                           //mainMenuFrame.setEnabled(true);
-                           projectsFrame.dispose();
-                           projectsFrame = null;
-                           DoReopenMainMenuFrame();
-
-                       }
-                    });
-
-                    projectsFrame.previousButton.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e)
-                        {
-                           projectsFrame.dispose();
-                           projectsFrame = null;
-                           DoReopenMainMenuFrame();
-
-                        }
-                    });
-                }
-                
-            }
-        });
+            
         
         //haalt het optionsmenuitem op uit de het mainMenu en koppelt hier weer een actionlistener aan
         mainMenuFrame.GetOptionsMenuItem().addActionListener(new ActionListener() {

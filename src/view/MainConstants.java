@@ -73,6 +73,7 @@ public class MainConstants {
     public static final String ACTIONMENUTITLE = MAINTITLE + " Actie: ";
     
     public static final String PROJECTSMENUTITLE = MAINTITLE + " Projecten - " + "V" + MAINVERSION;
+    public static final int PROJECTSMENUMARGIN = 30;
     
     public static final String HISTORYMENUTITLE = MAINTITLE + " Geschiedenis - " + "V" + MAINVERSION;
     
