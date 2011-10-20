@@ -11,7 +11,7 @@ package model;
 public class NameItem {
     
     private int ID = -1;
-    private String name;
+    private String name = "";
 
     public NameItem(int id, String name){
         this(id);

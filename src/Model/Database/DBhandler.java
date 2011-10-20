@@ -6,6 +6,7 @@ package Model.Database;
  */
 
 
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import java.util.Date;
 import java.sql.Timestamp;
 import java.util.List;
@@ -346,6 +347,8 @@ public class DBhandler {
         try {
             MakeConnection(); //maakt database connectie indien nodig
             
+            System.out.println("project ID:" + ((action.getProject() != null) ? "" + action.getProject().getID() : " is NULL"));
+            
             //voegt changed ding toe
             action.setStatusChanged(new Timestamp(new Date().getTime()));
             
@@ -357,9 +360,9 @@ public class DBhandler {
                         ,Statement.RETURN_GENERATED_KEYS);
                 preparedStatement.setString(1, action.getDescription());
                 preparedStatement.setString(2, action.getNote());
-                if(action.getStatus() != null){preparedStatement.setInt(3, (action.getStatus().getID()));} else {preparedStatement.setNull(3, java.sql.Types.NULL);}
-                if(action.getContext() != null){preparedStatement.setInt(4, (action.getContext().getID()));} else {preparedStatement.setNull(4, java.sql.Types.NULL);}
-                if(action.getProject() != null){preparedStatement.setInt(5, (action.getProject().getID()));} else {preparedStatement.setNull(5, java.sql.Types.NULL);}
+                if(action.getStatus() != null && action.getStatus().getID() != -1){preparedStatement.setInt(3, (action.getStatus().getID()));} else {preparedStatement.setNull(3, java.sql.Types.INTEGER);}
+                if(action.getContext() != null && action.getContext().getID() != -1){preparedStatement.setInt(4, (action.getContext().getID()));} else {preparedStatement.setNull(4, java.sql.Types.INTEGER);}
+                if(action.getProject() != null && action.getProject().getID() != -1){preparedStatement.setInt(5, (action.getProject().getID()));} else {preparedStatement.setNull(5, java.sql.Types.INTEGER);}
                 preparedStatement.setTimestamp(6, action.getDatumTijd());
                 preparedStatement.setTimestamp(7, action.getStatusChanged());
                 preparedStatement.setBoolean(8, action.isDone());
@@ -371,9 +374,9 @@ public class DBhandler {
                 preparedStatement.setString(1, action.getDescription());
                 preparedStatement.setString(2, action.getNote());
                 
-                if(action.getStatus() != null){preparedStatement.setInt(3, (action.getStatus().getID()));} else {preparedStatement.setNull(3, java.sql.Types.NULL);}
-                if(action.getContext() != null){preparedStatement.setInt(4, (action.getContext().getID()));} else {preparedStatement.setNull(4, java.sql.Types.NULL);}
-                if(action.getProject() != null){preparedStatement.setInt(5, (action.getProject().getID()));} else {preparedStatement.setNull(5, java.sql.Types.NULL);}
+                if(action.getStatus() != null && action.getStatus().getID() != -1){preparedStatement.setInt(3, (action.getStatus().getID()));} else {preparedStatement.setNull(3, java.sql.Types.INTEGER);}
+                if(action.getContext() != null && action.getContext().getID() != -1){preparedStatement.setInt(4, (action.getContext().getID()));} else {preparedStatement.setNull(4, java.sql.Types.INTEGER);}
+                if(action.getProject() != null && action.getProject().getID() != -1){preparedStatement.setInt(5, (action.getProject().getID()));} else {preparedStatement.setNull(5, java.sql.Types.INTEGER);}
                 
                 preparedStatement.setTimestamp(6, action.getDatumTijd());
                 preparedStatement.setTimestamp(7, action.getStatusChanged());
@@ -382,8 +385,10 @@ public class DBhandler {
                 //System.out.println("so far so good 1");
             }
             
+            System.out.println("Da query add action: " + preparedStatement);
             //voert de query daadwerkelijk uit
             int affectedRows = preparedStatement.executeUpdate();
+            
             //System.out.println("AddAction affectedRows: " + affectedRows);
             
             //als het niet om een update gaat, maar om een nieuwe invoer!
@@ -782,7 +787,7 @@ public class DBhandler {
         }
     }
     
-    public Boolean DeleteContext(Context context) throws ThingsException, DatabaseException{
+    public Boolean DeleteContext(Context context) throws ThingsException, DatabaseException, MySQLIntegrityConstraintViolationException{
         try {
             MakeConnection(); //maakt database connectie indien nodig
             if(context.getID() > -1){
@@ -801,13 +806,39 @@ public class DBhandler {
             }
             
         } catch (SQLException ex) {
-            Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
             ex.printStackTrace();
+            if(ex.getErrorCode() == 1451){
+                //System.out.println("O NOES, its a: MySQLIntegrityConstraintViolationException");
+                throw new MySQLIntegrityConstraintViolationException();
+            }
+            Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
+            
             CloseConnection();
             throw new ThingsException("", new Context(), ThingsException.ThingsWhat.DELETE);
         }
         
         return false;
+    }
+    
+     public Boolean DeleteContextAndRemoveDependencies(Context context) throws ThingsException, DatabaseException, MySQLIntegrityConstraintViolationException{
+            MakeConnection(); //maakt database connectie indien nodig
+                CloseConnectionAfterDatabaseAction = false;
+                Action[] actions = GetAllActions();
+                for(int i = 0; i < actions.length; i++){
+//                    System.out.println("is action null: " + (actions[i].getContext() == null ) + ", using context: " + 
+//                            context.getName() + ", actions contect: " + actions[i].getContext().getName());
+                    if(actions[i].getContext() != null && 
+                            actions[i].getContext().getName().equalsIgnoreCase(context.getName()) ){
+                        actions[i].setContext(null);
+                        AddAction(actions[i]);
+                    }
+                }
+                
+                
+                CloseConnectionAfterDatabaseAction = true;
+                CloseConnection();
+                
+                return DeleteContext(context);
     }
     //</editor-fold>
     
@@ -918,7 +949,7 @@ public class DBhandler {
     }
     
     
-    public Boolean DeleteProject(Project project) throws ThingsException, DatabaseException{
+    public Boolean DeleteProject(Project project) throws ThingsException, DatabaseException, MySQLIntegrityConstraintViolationException{
         try {
             MakeConnection(); //maakt database connectie indien nodig
             if(project.getID() > -1){
@@ -935,15 +966,43 @@ public class DBhandler {
                 
                 return (affectedRows == 1); //eigenlijk onnodig
             }
-            
+          
+        } catch (MySQLIntegrityConstraintViolationException ex){
+            throw new MySQLIntegrityConstraintViolationException();
         } catch (SQLException ex) {
+            //System.out.println("SQLException error code: " + ex.getErrorCode());
+            //als het project afhangkelijkheden heeft in acties!
+            if(ex.getErrorCode() == 1451){
+                //System.out.println("O NOES, its a: MySQLIntegrityConstraintViolationException");
+                throw new MySQLIntegrityConstraintViolationException();
+            }
             Logger.getLogger(DBhandler.class.getName()).log(Level.SEVERE, null, ex);
             ex.printStackTrace();
             CloseConnection();
             throw new ThingsException("", new Project(), ThingsException.ThingsWhat.DELETE);
-        }
+        } 
         
         return false;
+    }
+    
+    public Boolean DeleteProjectAndRemoveDependencies(Project project) throws ThingsException, DatabaseException, MySQLIntegrityConstraintViolationException{
+            MakeConnection(); //maakt database connectie indien nodig
+                CloseConnectionAfterDatabaseAction = false;
+                Action[] actions = GetAllActions();
+                for(int i = 0; i < actions.length; i++){
+                    if(actions[i].getProject() != null && 
+                            actions[i].getProject().getName().equalsIgnoreCase(project.getName()) && 
+                            actions[i].getProject().getNote().equalsIgnoreCase(project.getNote())){
+                        actions[i].setProject(null);
+                        AddAction(actions[i]);
+                    }
+                }
+                
+                
+                CloseConnectionAfterDatabaseAction = true;
+                CloseConnection();
+                
+                return DeleteProject(project);
     }
     //</editor-fold>
     

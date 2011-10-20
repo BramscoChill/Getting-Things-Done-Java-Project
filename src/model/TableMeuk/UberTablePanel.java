@@ -281,7 +281,7 @@ RowFilter<TableModel, Object> filter =
                 
               //System.out.println("columnIndex: " + columnIndex);
                 //voor de case insensitive check
-              rfs.set(columnIndex,RowFilter.regexFilter("(?i)^" + input, columnIndex));
+              rfs.set(columnIndex,RowFilter.regexFilter("(?i)" + input, columnIndex));
             } else {
               rfs.set(columnIndex,RowFilter.regexFilter("", columnIndex)); 
             }

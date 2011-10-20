@@ -4,6 +4,7 @@
  */
 package view;
 
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import javax.swing.JDialog;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -338,10 +339,14 @@ public class OneActionFrame extends JFrame {
         {
             public void valueChanged(ListSelectionEvent evt) {
                 //System.out.println("Selection changed actionProjectLIST: " + actionProjectLIST.getSelectedValue().toString());
-                if(SetProject(actionProjectLIST.getSelectedValue().toString())){
-                    actionProjectLIST.setBackground(Color.WHITE);
+                if(actionProjectLIST.getSelectedValue() != null){
+                    if(SetProject(actionProjectLIST.getSelectedValue().toString())){
+                        actionProjectLIST.setBackground(Color.WHITE);
+                    } else {
+                        actionProjectLIST.setBackground(Color.RED);
+                    }
                 } else {
-                    actionProjectLIST.setBackground(Color.RED);
+                    SetProject(null);
                 }
             }
         });
@@ -357,7 +362,8 @@ public class OneActionFrame extends JFrame {
                         actionContextLIST.setBackground(Color.RED);
                     }
                 } else {
-                        actionContextLIST.setBackground(Color.RED);
+                    //actionContextLIST.setBackground(Color.RED);
+                    SetContext(null);
                 }
             }
         });
@@ -639,14 +645,16 @@ public class OneActionFrame extends JFrame {
     }
     
     private Boolean SetProject(String str){
-       
-        for(Project pr : projects){
-             System.out.println("SetProject str: " + str + ", pr: " + pr.getName());
-            if(pr.getName().trim().toLowerCase().equals(str.trim().toLowerCase())){
-                daAction.setProject(pr);
-                return true;
+       if(str != null){
+            for(Project pr : projects){
+                 System.out.println("SetProject str: " + str + ", pr: " + pr.getName());
+                if(pr.getName().trim().toLowerCase().equals(str.trim().toLowerCase())){
+                    daAction.setProject(pr);
+                    return true;
+                }
             }
-        }
+       }
+        daAction.setProject(null);
         return false;
     }
     
@@ -655,12 +663,15 @@ public class OneActionFrame extends JFrame {
     }
     
     private Boolean SetContext(String str){
-        for(Context daContext : contexts){
-            if(daContext.getName().trim().equals(str.trim())){
-                daAction.setContext(daContext);
-                return true;
+        if(str != null){
+            for(Context daContext : contexts){
+                if(daContext.getName().trim().equals(str.trim())){
+                    daAction.setContext(daContext);
+                    return true;
+                }
             }
         }
+        daAction.setContext(null);
         return false;
     }
     
@@ -675,6 +686,7 @@ public class OneActionFrame extends JFrame {
                 return true;
             }
         }
+        daAction.setStatus(null);
         return false;
     }
     
@@ -798,10 +810,29 @@ public class OneActionFrame extends JFrame {
                 Boolean removeSucceded = controller.GetModel().DeleteContext(contextToRemove);
                 if(removeSucceded){
                     actionContextMODEL.removeElement(contextToRemove.getName());
+                    actionContextLIST.clearSelection();
                 } else {
                     DoErrorCurrentScreen("FOUT: laden context!",
                         "FOUT BIJ HET LADEN VAN DE CONTEXT, verbinding is in orde,"
                         + "\n NULL gereturnt van de database, neem contact op met de maker!");
+                }
+            } catch (MySQLIntegrityConstraintViolationException ex) {
+                int okClicked = DoAskCurrentScreen("FOUT: verwijderen Context!",
+                "FOUT BIJ HET VERWIJDEREN VAN DE CONTEXT, verbinding is in orde,"
+                + "\n De context wordt gebruikt in bepaalde acties, wil je bij deze acties de context weghalen?!");
+                if(okClicked == 0){
+                    try{
+                        
+                        if(controller.GetModel().DeleteContextAndRemoveDependencies(contextToRemove)){
+                            actionContextMODEL.removeElement(contextToRemove.getName());
+                        }
+                    } catch (Exception exRealFaal){
+                        exRealFaal.printStackTrace();
+                        DoErrorCurrentScreen("FOUT: verwijderen Context!",
+                "FOUT BIJ HET VERWIJDEREN VAN HET CONTEXT, verbinding is in orde,"
+                + "\n Acties konde niet geupdate worden in de database!");
+                    }
+                    
                 }
             } catch (ThingsException ex) {
             ex.printStackTrace();
@@ -888,6 +919,10 @@ public class OneActionFrame extends JFrame {
     }
     
     private int DoYesNoCurrentScreen(String title, String message){
+        return MessageBox.DoYesNoQuestionMessage(this, title, message);
+    }
+    
+    private int DoAskCurrentScreen(String title, String message){
         return MessageBox.DoYesNoQuestionMessage(this, title, message);
     }
 

@@ -4,6 +4,9 @@
  */
 package view;
 
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.DocumentEvent;
@@ -45,7 +48,7 @@ public class ProjectsFrame extends JFrame {
     private JList prOverviewLIST;
     private DefaultListModel prOverviewMODEL;
     private JScrollPane prOverviewSCROLL;
-    private JButton prOverviewAddBTN;
+    private JButton prOverviewAddBTN, prOverviewDeleteBTN;
     
     private JLabel prNameLBL;
     private JTextField prNameTXT;
@@ -95,7 +98,8 @@ public class ProjectsFrame extends JFrame {
         prOverviewLIST.setFont(FONTBUTTONS);
         prOverviewSCROLL = new JScrollPane(prOverviewLIST);
         prOverviewAddBTN = new JButton("Toevoegen");
-        
+        prOverviewDeleteBTN = new JButton("Verwijderen");
+                
         prNameLBL = new JLabel("Naam:");
         prNameLBL.setFont(FONTBUTTONS);
 //        prNameLBL.setOpaque(true);
@@ -125,6 +129,7 @@ public class ProjectsFrame extends JFrame {
         add(prOverviewSCROLL);
         add(prOverviewLBL);
         add(prOverviewAddBTN);
+        add(prOverviewDeleteBTN);
         add(prNameTXT);
         add(prNameLBL);
         add(prNoteLBL);
@@ -179,10 +184,17 @@ public class ProjectsFrame extends JFrame {
             }
         });
         prOverviewAddBTN.addActionListener(new ActionListener() {
- 
             public void actionPerformed(ActionEvent e)
             {
                 DoAddNewProject();
+            }
+        });
+        
+        prOverviewDeleteBTN.addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                DoRemoveProject();
             }
         });
         
@@ -240,10 +252,12 @@ public class ProjectsFrame extends JFrame {
                     SetProjectToSelectedIndex();
                     prNameTXT.setEnabled(true);
                     prNoteTXT.setEnabled(true);
+                    prOverviewDeleteBTN.setEnabled(true);
                 } else {
                         //prOverviewLIST.setBackground(Color.RED);
                         prNameTXT.setEnabled(false);
                         prNoteTXT.setEnabled(false);
+                        prOverviewDeleteBTN.setEnabled(false);
                 }
             }
         });
@@ -283,6 +297,11 @@ public class ProjectsFrame extends JFrame {
         prOverviewAddBTN.setBounds((int)(prOverviewSCROLL.getLocation().getX()), 
                 (int)(prOverviewSCROLL.getLocation().getY() + prOverviewSCROLL.getSize().getHeight() + spaceBetweenObjectAndButton),
                 (int)(prOverviewSCROLL.getSize().getWidth()),
+                (int)(btnHeight));
+        
+        prOverviewDeleteBTN.setBounds((int)(prOverviewAddBTN.getLocation().getX()), 
+                (int)(prOverviewAddBTN.getLocation().getY() + prOverviewAddBTN.getSize().getHeight() + spaceBetweenObjectAndButton),
+                (int)(prOverviewAddBTN.getSize().getWidth()),
                 (int)(btnHeight));
         
         prNameLBL.setLocation((int)(prOverviewSCROLL.getLocation().getX() + prOverviewSCROLL.getSize().getWidth() + (PROJECTSMENUMARGIN / 2)),
@@ -360,6 +379,10 @@ public class ProjectsFrame extends JFrame {
         MessageBox.DoOkErrorMessageBox(this, title, message);
     }
     
+    private int DoAskCurrentScreen(String title, String message){
+        return MessageBox.DoYesNoQuestionMessage(this, title, message);
+    }
+    
     private void LoadContextsStatusesProjects(){
         ( new Thread() {
  
@@ -421,7 +444,7 @@ public class ProjectsFrame extends JFrame {
     private void DoAddNewProject(){
         Project proj = new Project();
         int newNameINT = prOverviewMODEL.getSize();
-        System.out.println("amount projects - DoAddNewProject: " + newNameINT);
+        //System.out.println("amount projects - DoAddNewProject: " + newNameINT);
         proj.setName("project " + (newNameINT + 1));
         proj = controller.GetModel().AddProjectInternal(proj);
         if (proj != null){
@@ -434,6 +457,66 @@ public class ProjectsFrame extends JFrame {
         } else {
             System.out.println("DoAddNewProject is null!!!");
         }
+    }
+    private void DoRemoveProject() {
+        ( new Thread() {
+ 
+        public void run() {
+            DoLoading(true);
+            try {
+                if(controller.GetModel().DeleteProject(controller.GetModel().GetProjectInternal(currentSelectedProjectINT))){
+                    prOverviewLIST.clearSelection();
+                    SetCurrentProjectsToListBox();
+                } else {
+                    DoErrorCurrentScreen("FOUT: verwijderen Project!",
+                    "FOUT BIJ HET VERWIJDEREN VAN HET PROJECT, verbinding is in orde,"
+                    + "\n Iets faalt er - foutcode 8438434!");
+                }
+                
+                
+                
+            } catch (ThingsException ex) {
+            ex.printStackTrace();
+                DoErrorCurrentScreen("FOUT: verwijderen Project!",
+                "FOUT BIJ HET VERWIJDEREN VAN HET PROJECT, verbinding is in orde,"
+                + "\n Meuk kon niet verwijderd worden uit de database!");
+                //DoExit();
+                //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            } catch (MySQLIntegrityConstraintViolationException ex) {
+                int okClicked = DoAskCurrentScreen("FOUT: verwijderen Project!",
+                "FOUT BIJ HET VERWIJDEREN VAN HET PROJECT, verbinding is in orde,"
+                + "\n Het project wordt gebruikt in bepaalde acties, wil je bij deze acties het project weghalen?!");
+                if(okClicked == 0){
+                    try{
+//                        Project proTMP = controller.GetModel().GetProjectInternal(currentSelectedProjectINT);
+//                        System.out.println("currentSelectedProjectINT: " + currentSelectedProjectINT + ", proTMP is null: " + 
+//                                (proTMP == null));
+                        
+                        if(controller.GetModel().DeleteProjectAndRemoveDependencies(controller.GetModel().GetProjectInternal(currentSelectedProjectINT))){
+
+                            prOverviewLIST.clearSelection();
+                            SetCurrentProjectsToListBox();
+                        }
+                    } catch (Exception exRealFaal){
+                        exRealFaal.printStackTrace();
+                        DoErrorCurrentScreen("FOUT: verwijderen Project!",
+                "FOUT BIJ HET VERWIJDEREN VAN HET PROJECT, verbinding is in orde,"
+                + "\n Acties konde niet geupdate worden in de database!");
+                    }
+                    
+                }
+                    
+            } catch (DatabaseException ex) {
+                ex.printStackTrace();
+                DoErrorCurrentScreen("FOUT: verwijderen Project!",
+                "FOUT BIJ HET VERWIJDEREN VAN HET PROJECT, \ncontrolleer de verbinding!");
+            //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            }
+            DoLoading(false);
+        }
+        }
+        ).start();
+        
     }
     
     private void DoSaveAll(){

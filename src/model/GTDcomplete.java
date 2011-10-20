@@ -5,6 +5,7 @@
 package model;
 
 import Model.Database.DBhandler;
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Observable;
@@ -210,9 +211,43 @@ public class GTDcomplete extends Observable {
         return AddProject(project);
     }
     
-    public Boolean DeleteProject(Project project) throws ThingsException, DatabaseException{
-        return dbHandler.DeleteProject(project);
+    public Boolean DeleteProject(Project project) throws ThingsException, DatabaseException, MySQLIntegrityConstraintViolationException{
+        if(project.getID() != -1){
+            Boolean gelukt = dbHandler.DeleteProject(project);
+            if(! gelukt){
+                return null;
+            }
+        }
+        projects.remove(project);
+        for(int i = 0; i < actions.size(); i++){
+            if(actions.get(i).getProject() == project){
+               Action newAction = actions.get(i);
+               newAction.setProject(null);
+                actions.set(i, newAction);
+            }
+        }
+        return true;
     }
+    
+    public Boolean DeleteProjectAndRemoveDependencies(Project project) throws ThingsException, DatabaseException, MySQLIntegrityConstraintViolationException{
+        if(project.getID() != -1){
+            Boolean gelukt = dbHandler.DeleteProjectAndRemoveDependencies(project);
+            if(! gelukt){
+                return null;
+            }
+        }
+        projects.remove(project);
+        for(int i = 0; i < actions.size(); i++){
+            if(actions.get(i).getProject() == project){
+               Action newAction = actions.get(i);
+               newAction.setProject(null);
+                actions.set(i, newAction);
+            }
+        }
+        return true;
+    }
+    
+    
     
     public Project[] GetProjectsFromDB() throws ThingsException, DatabaseException{
         return dbHandler.GetAllProjects();
@@ -222,7 +257,9 @@ public class GTDcomplete extends Observable {
         return (Project[]) projects.toArray(new Project[projects.size()]);
     }
     
+    //haalt een project op aan de hand van de index in de lijst, dus NIET het ID
     public Project GetProjectInternal(int index){
+        System.out.println("projects size: " + projects.size());
         if(index > -1 && index < projects.size()){
             return projects.get(index);
         }
@@ -278,8 +315,40 @@ public class GTDcomplete extends Observable {
         return AddContext(context);
     }
     
-    public Boolean DeleteContext(Context context) throws ThingsException, DatabaseException{
-        return dbHandler.DeleteContext(context);
+    public Boolean DeleteContext(Context context) throws ThingsException, DatabaseException, MySQLIntegrityConstraintViolationException{
+        if(context.getID() != -1){
+            Boolean gelukt = dbHandler.DeleteContext(context);
+            if(! gelukt){
+                return null;
+            }
+        }
+        contexts.remove(context);
+        for(int i = 0; i < actions.size(); i++){
+            if(actions.get(i).getContext() == context){
+               Action newAction = actions.get(i);
+               newAction.setContext(null);
+                actions.set(i, newAction);
+            }
+        }
+        return true; 
+    }
+    
+    public Boolean DeleteContextAndRemoveDependencies(Context context) throws ThingsException, DatabaseException, MySQLIntegrityConstraintViolationException{
+        if(context.getID() != -1){
+            Boolean gelukt = dbHandler.DeleteContextAndRemoveDependencies(context);
+            if(! gelukt){
+                return null;
+            }
+        }
+        contexts.remove(context);
+        for(int i = 0; i < actions.size(); i++){
+            if(actions.get(i).getContext() == context){
+               Action newAction = actions.get(i);
+               newAction.setContext(null);
+                actions.set(i, newAction);
+            }
+        }
+        return true;
     }
     
     public Context[] GetContextsFromDB() throws ThingsException, DatabaseException{

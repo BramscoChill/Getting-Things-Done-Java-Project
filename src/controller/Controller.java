@@ -225,7 +225,7 @@ public class Controller implements Observer {
  
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("menu opties3");
+                //System.out.println("menu opties3");
                 //laat het options scherm en schakelt het hoofdscherm uit
                 optionsMenuFrame = new OptionsFrame();
                 mainMenuFrame.setEnabled(false);
