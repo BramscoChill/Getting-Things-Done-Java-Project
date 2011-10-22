@@ -22,10 +22,10 @@ import model.Options;
  * @author Bram Klein
  */
 public class MainConstants {
-    public static final String MYSQL_SERVER = "databases.aii.avans.nl";
-    public static final String MYSQL_USERNAME = "bklein";
-    public static final String MYSQL_PASSWORD = "jF4TJid5";
-    public static final String DB_NAME = "bklein_db2";
+    public static String MYSQL_SERVER = "databases.aii.avans.nl";
+    public static String MYSQL_USERNAME = "bklein";
+    public static String MYSQL_PASSWORD = "jF4TJid5";
+    public static String DB_NAME = "bklein_db2";
     
     public static final String TABLE_THOUGHT = "thought";
     public static final String TABLE_STATUS = "status";

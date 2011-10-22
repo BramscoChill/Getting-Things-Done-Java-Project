@@ -41,6 +41,10 @@ public class OptionsFrame extends JFrame {
     private JTextField googleUsername, googlePassword;
     private JComboBox startupScreen, gcSyncOptions;
     
+    private JLabel dbUsernameLBL, dbPasswordLBL, dbServerNameLBL, dbDatabaseNameLBL;
+    private JTextField dbUsernameTXT, dbPasswordTXT, dbServerNameTXT, dbDatabaseNameTXT;
+    private JButton dbCheckBTN;
+    
     //om ervoor te zorgen dat alle instellingen opgeslagen worden als het scherm gesloten wordt
     private Boolean doSave = true;
     
@@ -66,8 +70,8 @@ public class OptionsFrame extends JFrame {
     }
     
     private void AddComponents(){
-        setMinimumSize(new Dimension(600,450));
-        setMaximumSize(new Dimension(900,500));
+        setMinimumSize(new Dimension(600,600));
+        //setMaximumSize(new Dimension(900,500));
         
         saveButton = new JButton("Opslaan");
         cancelButton = new JButton("Annuleren");
@@ -77,8 +81,6 @@ public class OptionsFrame extends JFrame {
         errorMessageLBL = new JLabel();
         errorMessageLBL.setFont(FONTBUTTONS);
         errorMessageLBL.setForeground(Color.RED);
-//        errorMessageLBL.setOpaque(true);
-//        errorMessageLBL.setBackground(Color.GREEN);
         gcSyncOptions = new JComboBox();
         gcSyncOptions.setBackground(Color.WHITE);
         previousButton = new JButton();
@@ -110,6 +112,30 @@ public class OptionsFrame extends JFrame {
         googlePasswordLBL = new JLabel("Google Wachtwoord");
         startupScreenLBL = new JLabel("Opstart scherm");
         
+        dbServerNameLBL = new JLabel("Database Server Naam");
+        dbServerNameLBL.setFont(FONTBUTTONS);
+        dbServerNameTXT = new JTextField();
+        dbServerNameTXT.setFont(FONTBUTTONS);
+        
+        dbUsernameLBL = new JLabel("Database Gebruikersnaam");
+        dbUsernameLBL.setFont(FONTBUTTONS);
+//        dbUsernameLBL.setOpaque(true);
+//        dbUsernameLBL.setBackground(Color.GREEN);
+        
+        dbPasswordLBL = new JLabel("Database Wachtwoord");
+        dbPasswordLBL.setFont(FONTBUTTONS);
+        dbUsernameTXT = new JTextField();
+        dbUsernameTXT.setFont(FONTBUTTONS);
+        dbPasswordTXT = new JTextField();
+        dbPasswordTXT.setFont(FONTBUTTONS);
+        
+        dbDatabaseNameLBL = new JLabel("Database Naam");
+        dbDatabaseNameLBL.setFont(FONTBUTTONS);
+        dbDatabaseNameTXT = new JTextField();
+        dbDatabaseNameTXT.setFont(FONTBUTTONS);
+        
+        dbCheckBTN = new JButton("Check Database en Tabellen");
+        
         add(optionsTitle);
         add(googleUsernameLBL);
         add(googlePasswordLBL);
@@ -125,6 +151,15 @@ public class OptionsFrame extends JFrame {
         add(gcSyncOptionsLBL);
         add(gcSyncOptions);
         add(errorMessageLBL);
+        add(dbServerNameLBL);
+        add(dbServerNameTXT);
+        add(dbUsernameLBL);
+        add(dbUsernameTXT);
+        add(dbPasswordLBL);
+        add(dbPasswordTXT);
+        add(dbCheckBTN);
+        add(dbDatabaseNameLBL);
+        add(dbDatabaseNameTXT);
         
         previousButton.setIcon(PREVIOUSBUTTONIMAGEICON); // NOI18N
     }
@@ -180,35 +215,49 @@ public class OptionsFrame extends JFrame {
                 cancelButton.setBounds((int)(frameW - bWidth - margin - 5),(int) (frameH - (bHeight * 2.5)),bWidth,bHeight);
                 //System.out.println(" --- Resized " + "fW: " + frameW + "fH: " + frameH + ", optX: " + optionsX);  
                 
+                dbServerNameLBL.setBounds((int)(gULx),(int) (startupScreen.getLocation().getY() + margin + startupScreen.getSize().getHeight()),(int)(textfieldsWith),bHeight);
+                dbServerNameTXT.setBounds((int)(gULx),(int) (dbServerNameLBL.getLocation().getY() + startupScreen.getSize().getHeight()),(int)(textfieldsWith),bHeight);
                 
-                errorMessageLBL.setBounds((int)(gULx),(int) (startupScreen.getLocation().getY() + margin + startupScreen.getSize().getHeight()),(int)(frameW - (margin * 3)),bHeight);
+                dbDatabaseNameLBL.setBounds((int)(dbServerNameLBL.getBounds().getX() + dbServerNameLBL.getSize().getWidth() + margin),(int) (dbServerNameLBL.getLocation().getY()),(int)(textfieldsWith),bHeight);
+                dbDatabaseNameTXT.setBounds((int)(dbDatabaseNameLBL.getBounds().getX()),(int) (dbDatabaseNameLBL.getLocation().getY() + dbDatabaseNameLBL.getSize().getHeight()),(int)(textfieldsWith),bHeight);
+                        
+                dbUsernameLBL.setBounds((int)(gULx),(int) (dbServerNameTXT.getLocation().getY() + margin + dbServerNameTXT.getSize().getHeight()),(int)(textfieldsWith),bHeight);
+                dbUsernameTXT.setBounds((int)(gULx),(int) (dbUsernameLBL.getLocation().getY() + dbUsernameLBL.getSize().getHeight()),(int)(textfieldsWith),bHeight);
+                
+                dbPasswordLBL.setBounds((int)(dbUsernameLBL.getBounds().getX() + dbUsernameLBL.getSize().getWidth() + margin),(int) (dbUsernameLBL.getLocation().getY()),(int)(textfieldsWith),bHeight);
+                dbPasswordTXT.setBounds((int)(dbPasswordLBL.getBounds().getX()),(int) (dbPasswordLBL.getLocation().getY() + dbPasswordLBL.getSize().getHeight()),(int)(textfieldsWith),bHeight);
+                
+                dbCheckBTN.setBounds((int)(gULx),(int) (dbPasswordTXT.getLocation().getY() + dbPasswordTXT.getSize().getHeight() + margin),(int)(frameW - (margin * 3)),bHeight);
+                        
+                errorMessageLBL.setBounds((int)(gULx),(int) (saveButton.getLocation().getY() - margin - saveButton.getSize().getHeight()),(int)(frameW - (margin * 3)),bHeight);
+                
                 
                 //zit een bug in setMaximumSize, dit is de workarround
-                Robot robbie;
-                try
-                {
-                    robbie = new Robot() ;
-                }
-                catch (AWTException ex) // not supported on all platforms
-                {
-                    robbie = null ;
-                }
-                Point loc = this.getLocationOnScreen();
-                Point mouse = MouseInfo.getPointerInfo().getLocation();
-                int MAX_X = (int)this.getMaximumSize().getWidth();
-                int MAX_Y = (int)this.getMaximumSize().getHeight();
-                                    
-                if (robbie != null){
-                   robbie.mouseMove( (int)Math.min( mouse.getX(),loc.getX()+MAX_X ),
-                                 (int)Math.min( mouse.getY(),loc.getY()+MAX_Y ) ) ;
-                   setSize( Math.min(MAX_X, getWidth()), 
-                          Math.min(MAX_Y, getHeight()) );
-                }else{
-                   setSize( Math.min(MAX_X, getWidth()), 
-                          Math.min(MAX_Y, getHeight()) );
-                }
-                
-                revalidate();
+//                Robot robbie;
+//                try
+//                {
+//                    robbie = new Robot() ;
+//                }
+//                catch (AWTException ex) // not supported on all platforms
+//                {
+//                    robbie = null ;
+//                }
+//                Point loc = this.getLocationOnScreen();
+//                Point mouse = MouseInfo.getPointerInfo().getLocation();
+//                int MAX_X = (int)this.getMaximumSize().getWidth();
+//                int MAX_Y = (int)this.getMaximumSize().getHeight();
+//                                    
+//                if (robbie != null){
+//                   robbie.mouseMove( (int)Math.min( mouse.getX(),loc.getX()+MAX_X ),
+//                                 (int)Math.min( mouse.getY(),loc.getY()+MAX_Y ) ) ;
+//                   setSize( Math.min(MAX_X, getWidth()), 
+//                          Math.min(MAX_Y, getHeight()) );
+//                }else{
+//                   setSize( Math.min(MAX_X, getWidth()), 
+//                          Math.min(MAX_Y, getHeight()) );
+//                }
+//                
+//                revalidate();
     }
     
     private void AddListeners(){
@@ -232,6 +281,14 @@ public class OptionsFrame extends JFrame {
             public void componentShown(ComponentEvent e) {
                 //System.out.println(e.getComponent().getClass().getName() + " --- Shown");
 
+            }
+        });
+        
+        dbPasswordTXT.addActionListener(new ActionListener() {
+ 
+            public void actionPerformed(ActionEvent e)
+            {
+                
             }
         });
         
@@ -271,6 +328,10 @@ public class OptionsFrame extends JFrame {
     private void SetOptionsValues(){
        OPTIONS.setGCUsername(googleUsername.getText());
        OPTIONS.setGCPassword(googlePassword.getText());
+       OPTIONS.setDbServerName(dbServerNameTXT.getText());
+       OPTIONS.setDbDatabaseName(dbDatabaseNameTXT.getText());
+       OPTIONS.setDbUsername(dbUsernameTXT.getText());
+       OPTIONS.setDbPassword(dbPasswordTXT.getText());
        
        //System.out.println(OPTIONSMENUSCREENVALUES.get((String)startupScreen.getSelectedItem()));
        OPTIONS.setLastOpenedScreen(OPTIONSMENUSCREENVALUES.get((String)startupScreen.getSelectedItem()));
@@ -280,10 +341,15 @@ public class OptionsFrame extends JFrame {
     private void LoadOptions(){
         googleUsername.setText(OPTIONS.getGCUsername());
         googlePassword.setText(OPTIONS.getGCPassword());
+        dbServerNameTXT.setText(OPTIONS.getDbServerName());
+        dbDatabaseNameTXT.setText(OPTIONS.getDbDatabaseName());
+        dbUsernameTXT.setText(OPTIONS.getDbUsername());
+        dbPasswordTXT.setText(OPTIONS.getDbPassword());
+        
         for (Map.Entry<String,MenuScreen> entry : OPTIONSMENUSCREENVALUES.entrySet()) {
             if(entry.getValue() == OPTIONS.getLastOpenedScreen()){
                 startupScreen.setSelectedItem(entry.getKey());
-                System.out.println("selected item: " + OPTIONS.getLastOpenedScreen().name() + ", " + OPTIONSMENUSCREENVALUES.get(entry.getKey()));
+                //System.out.println("selected item: " + OPTIONS.getLastOpenedScreen().name() + ", " + OPTIONSMENUSCREENVALUES.get(entry.getKey()));
                 break;
             }
         }

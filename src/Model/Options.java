@@ -19,6 +19,12 @@ import static view.MainConstants.*;
 public class Options {
     private String gcUsername = "";
     private String gcPassword = "";
+    
+    private String dbServerName = "databases.aii.avans.nl";
+    private String dbDatabaseName = "bklein_db2";
+    private String dbUsername = "bklein";
+    private String dbPassword = "jF4TJid5";
+    
     private MenuScreen lastOpenedScreen = MenuScreen.MAIN;
     private String gcSynxType = OPTIONSGCSYNCTYPRVALUES[0];
 
@@ -35,6 +41,12 @@ public class Options {
                 properties.load(new FileInputStream(optionsPath));
                 setGCUsername(properties.getProperty("gcUsername"));
                 setGCPassword(properties.getProperty("gcPassword"));
+                
+                setDbServerName(properties.getProperty("dbServerName"));
+                setDbDatabaseName(properties.getProperty("dbDatabaseName"));
+                setDbUsername(properties.getProperty("dbUsername"));
+                setDbPassword(properties.getProperty("dbPassword"));
+                
                 try{
                     setLastOpenedScreen(MenuScreen.valueOf(properties.getProperty("LOS")));
                 } catch (Exception ex){
@@ -50,6 +62,8 @@ public class Options {
                 //System.out.println("" + lastOpenedScreen.name());
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (Exception e){
+                CreateDefaultOptionsFile();
             }
         } else {
             CreateDefaultOptionsFile();
@@ -58,6 +72,10 @@ public class Options {
     
     public void SaveOptions(){
         try {
+            properties.setProperty("dbServerName", getDbServerName());
+            properties.setProperty("dbDatabaseName", getDbDatabaseName());
+            properties.setProperty("dbUsername", getDbUsername());
+            properties.setProperty("dbPassword", getDbPassword());
             properties.setProperty("gcUsername", getGCUsername());
             properties.setProperty("gcPassword", getGCPassword());
             properties.setProperty("LOS", getLastOpenedScreen().name());
@@ -125,4 +143,42 @@ public class Options {
     public void setGcSynxType(String gcSynxType) {
         this.gcSynxType = gcSynxType;
     }
+    
+    public String getDbPassword() {
+        return dbPassword;
+    }
+
+    public void setDbPassword(String dbPassword) {
+        this.dbPassword = dbPassword;
+        MYSQL_PASSWORD = dbPassword;
+    }
+
+    public String getDbServerName() {
+        return dbServerName;
+    }
+
+    public void setDbServerName(String dbServerName) {
+        this.dbServerName = dbServerName;
+        MYSQL_SERVER = dbServerName;
+    }
+
+    public String getDbUsername() {
+        return dbUsername;
+    }
+    
+    public void setDbUsername(String dbUsername) {
+        this.dbUsername = dbUsername;
+        MYSQL_USERNAME = dbUsername;
+    }
+    
+    public String getDbDatabaseName() {
+        return dbDatabaseName;
+    }
+    
+    public void setDbDatabaseName(String dbDatabaseName) {
+        this.dbDatabaseName = dbDatabaseName;
+        DB_NAME = dbDatabaseName;
+    }
+    
+    
 }
