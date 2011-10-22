@@ -33,6 +33,14 @@ public class MainConstants {
     public static final String TABLE_PROJECT = "project";
     public static final String TABLE_ACTION = "action";
     
+    //om de database te checken op juistheid
+    public static final String[] DBCHECKER_THOUGHT = {TABLE_THOUGHT.toUpperCase(),"int", "text", "timestamp"};
+    public static final String[] DBCHECKER_STATUS = {TABLE_STATUS.toUpperCase(),"int", "varchar"};
+    public static final String[] DBCHECKER_CONTEXT = {TABLE_CONTEXT.toUpperCase(),"int", "varchar"};
+    public static final String[] DBCHECKER_PROJECT = {TABLE_PROJECT.toUpperCase(),"int", "varchar", "text"};
+    public static final String[] DBCHECKER_ACTION = {TABLE_ACTION.toUpperCase(),"int","varchar", "text", "int", "int", "int", "datetime", "datetime", "tinyint"};
+    public static final String[][] DBCHECKER_TOTAL = {DBCHECKER_THOUGHT, DBCHECKER_STATUS,DBCHECKER_CONTEXT,DBCHECKER_PROJECT,DBCHECKER_ACTION};
+    
     public static final String MAINTITLE = "GTDne";
     public static final String MAINVERSION = "1.001";
     public static final String CURRENTDIR = System.getProperty("user.dir");

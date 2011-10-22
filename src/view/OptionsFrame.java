@@ -5,6 +5,8 @@
 package view;
 
 import java.awt.Font;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.GoogleCalendar;
 import java.util.Map;
 import java.awt.event.ActionEvent;
@@ -26,8 +28,11 @@ import javax.swing.JButton;
 import model.Options;
 import java.util.Random;
 import javax.swing.JFrame;
-import static view.MainConstants.*;
 
+import model.exceptions.DatabaseException;
+import static view.MainConstants.*;
+import static controller.Main.*; 
+        
 /**
  *
  * @author Administrator
@@ -284,11 +289,12 @@ public class OptionsFrame extends JFrame {
             }
         });
         
-        dbPasswordTXT.addActionListener(new ActionListener() {
+        
+        dbCheckBTN.addActionListener(new ActionListener() {
  
             public void actionPerformed(ActionEvent e)
             {
-                
+                DoValidateDatabase();
             }
         });
         
@@ -354,6 +360,14 @@ public class OptionsFrame extends JFrame {
             }
         }
         gcSyncOptions.setSelectedItem(OPTIONS.getGcSynxType());
+    }
+    
+    private void DoValidateDatabase() {
+        try {
+            controller.GetModel().ValidateDatabase();
+        } catch (DatabaseException ex) {
+            Logger.getLogger(OptionsFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void SetErrorMessage(String txt, Boolean isError){

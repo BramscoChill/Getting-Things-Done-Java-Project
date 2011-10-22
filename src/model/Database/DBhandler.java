@@ -1008,9 +1008,66 @@ public class DBhandler {
     
     //@TODO ValidateDatabase afmaken
     //checkt of de database valide is
-    public Boolean ValidateDatabase() throws ThingsException, DatabaseException{
-        return true;
+    public Boolean ValidateDatabase() throws DatabaseException{
+        try {
+            MakeConnection(); //maakt database connectie indien nodig
+            for(int i = 0; i < DBCHECKER_TOTAL.length; i++){
+                String tableNaam = DBCHECKER_TOTAL[i][0];
+                PreparedStatement preparedStatement = (PreparedStatement) connection.prepareStatement("SHOW COLUMNS FROM " + tableNaam + ";");
+                ResultSet result = preparedStatement.executeQuery();
+                ResultSetMetaData rsMetaData = (ResultSetMetaData) result.getMetaData();
+                int amountColums = rsMetaData.getColumnCount();
+
+                if(amountColums == DBCHECKER_TOTAL[i].length){
+                    int counter = 0;
+                    while(result.next()){
+                        //String fieldName = result.getString(1);
+                        String type = result.getString(2);
+                        if(type.trim().compareToIgnoreCase(DBCHECKER_TOTAL[i][counter].trim()) == 0){
+                            
+                        }
+                        //System.out.println(fieldName + ": " + type);
+                        //System.out.println("type is int: " + type.toLowerCase().startsWith("int"));
+                        
+                        counter++;
+                    }
+                }
+                preparedStatement.close();
+//                for(int j = 1; j < DBCHECKER_TOTAL[i].length; j++){
+//                    
+//                }
+            }
+            PreparedStatement preparedStatement = (PreparedStatement) connection.prepareStatement("SHOW COLUMNS FROM ACTION;");
+            //preparedStatement.setString(1, action.getDescription());
+            //preparedStatement.setInt(2, action.getID());
+
+            //voert de query daadwerkelijk uit
+//            ResultSet result = preparedStatement.executeQuery();
+//            ResultSetMetaData rsMetaData = (ResultSetMetaData) result.getMetaData();
+//            int amountColums = rsMetaData.getColumnCount();
+//            System.out.println("Amount columns: " + amountColums);
+//            
+//            while(result.next()){
+//                String fieldName = result.getString(1);
+//                String type = result.getString(2);
+//
+//                System.out.println(fieldName + ": " + type);
+//                System.out.println("type is int: " + type.toLowerCase().startsWith("int"));
+//            }
+//            preparedStatement.close();
+            CloseConnection();
+
+            return true; //(affectedRows == 1); //eigenlijk onnodig
+            
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return false;
     }
+    
+
     
     //@TODO ResetDatabase afmaken
     //reset de database naar zijn begin tabellen

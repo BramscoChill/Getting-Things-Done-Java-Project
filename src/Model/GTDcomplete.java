@@ -351,6 +351,10 @@ public class GTDcomplete extends Observable {
         return true;
     }
     
+    public Boolean ValidateDatabase() throws DatabaseException{
+        return dbHandler.ValidateDatabase();
+    }
+    
     public Context[] GetContextsFromDB() throws ThingsException, DatabaseException{
         return dbHandler.GetAllContexts();
     }
