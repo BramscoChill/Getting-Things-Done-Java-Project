@@ -10,6 +10,7 @@ package model.exceptions;
  */
 public class DatabaseException extends Exception {
     String exception;
+    
     public DatabaseException(){
         super();
         exception = "Unknown";

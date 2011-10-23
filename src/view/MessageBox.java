@@ -4,6 +4,7 @@
  */
 package view;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -29,14 +30,14 @@ public class MessageBox {
         return n;
     }
     
-    private static String DoInputDialog(JFrame frame,String title, String message, Object[] options){
+    private static String DoInputDialog(JFrame frame,String title, String message, Object[] options, ImageIcon icon){
         Object[] possibilities = options; //{"ham", "spam", "yam"};
         String s = (String)JOptionPane.showInputDialog(
                     frame,
                     message,
                     title,
                     JOptionPane.PLAIN_MESSAGE,
-                    null,
+                    icon,
                     possibilities,
                     null);
         return s;
@@ -108,11 +109,15 @@ public class MessageBox {
     }
     
     public static String DoStaticOptionsInputDialog(JFrame frame,String title, String message, Object[] options){
-        return DoInputDialog(frame, title, message, options);
+        return DoInputDialog(frame, title, message, options, null);
     }
     
     public static String DoEnterTextInputDialog(JFrame frame,String title, String message){
-        return DoInputDialog(frame, title, message, null);
+        return DoInputDialog(frame, title, message, null, null);
+    }
+    
+    public static String DoEnterTextInputDialogWithIcon(JFrame frame,String title, String message, ImageIcon icon){
+        return DoInputDialog(frame, title, message, null, icon);
     }
     
 }

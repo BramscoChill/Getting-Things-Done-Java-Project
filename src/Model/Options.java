@@ -19,6 +19,7 @@ import static view.MainConstants.*;
 public class Options {
     private String gcUsername = "";
     private String gcPassword = "";
+    private String gcAuthToken = "";
     
     private String dbServerName = "databases.aii.avans.nl";
     private String dbDatabaseName = "bklein_db2";
@@ -41,6 +42,7 @@ public class Options {
                 properties.load(new FileInputStream(optionsPath));
                 setGCUsername(properties.getProperty("gcUsername"));
                 setGCPassword(properties.getProperty("gcPassword"));
+                setGcAuthToken(properties.getProperty("gcAuthToken"));
                 
                 setDbServerName(properties.getProperty("dbServerName"));
                 setDbDatabaseName(properties.getProperty("dbDatabaseName"));
@@ -72,6 +74,7 @@ public class Options {
     
     public void SaveOptions(){
         try {
+            System.gc();
             properties.setProperty("dbServerName", getDbServerName());
             properties.setProperty("dbDatabaseName", getDbDatabaseName());
             properties.setProperty("dbUsername", getDbUsername());
@@ -80,9 +83,11 @@ public class Options {
             properties.setProperty("gcPassword", getGCPassword());
             properties.setProperty("LOS", getLastOpenedScreen().name());
             properties.setProperty("gcSyncType",getGcSynxType());
+            properties.setProperty("gcAuthToken",getGcAuthToken());
+            
             properties.store(new FileOutputStream(optionsPath), null);
         } catch (IOException e) {
-            System.out.println(optionsPath);
+            System.out.println("Failed saving: " + optionsPath);
             e.printStackTrace();
         }
     }
@@ -134,6 +139,14 @@ public class Options {
 
     public void setGcPersonalURL(String gcPersonalURL) {
         this.gcPersonalURL = gcPersonalURL;
+    }
+    
+    public void setGcAuthToken(String str){
+        gcAuthToken = str;
+    }
+    
+    public String getGcAuthToken(){
+        return gcAuthToken;
     }
     
     public String getGcSynxType() {

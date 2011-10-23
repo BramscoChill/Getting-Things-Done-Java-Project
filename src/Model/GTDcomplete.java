@@ -5,7 +5,9 @@
 package model;
 
 import Model.Database.DBhandler;
+import Model.exceptions.WrongDatabaseException;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Observable;
@@ -351,7 +353,7 @@ public class GTDcomplete extends Observable {
         return true;
     }
     
-    public Boolean ValidateDatabase() throws DatabaseException{
+    public Boolean ValidateDatabase() throws DatabaseException, WrongDatabaseException, SQLException{
         return dbHandler.ValidateDatabase();
     }
     

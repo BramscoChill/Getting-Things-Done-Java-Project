@@ -72,8 +72,9 @@ public class UberTableModel extends AbstractTableModel {
             this.data[i][4] = (data[i].getProject() != null && data[i].getProject().getID() != -1) ? data[i].getProject().getName() : "";
             //this.data[i][5] = data[i].getDatumTijd().toString();
             this.data[i][5] = (MakeStringTimestampOfTimestamp(data[i].getDatumTijd()));
-            //System.out.println("getDatumTijd().toString(): " + data[i].getDatumTijd().getYear());
+            System.out.println("getDatumTijd().toString(): " + data[i].getDatumTijd().getYear());
             this.data[i][6] = (data[i].getStatusChanged() != null) ? (MakeStringTimestampOfTimestamp(data[i].getStatusChanged())) : "";
+            System.out.println("data[i].getStatusChanged(): " + data[i].getStatusChanged().getYear());
             //this.data[i][7] = data[i].isDone();
         }
         

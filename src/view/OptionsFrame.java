@@ -4,6 +4,14 @@
  */
 package view;
 
+import model.exceptions.ThingsException;
+import Model.exceptions.GoogleCaptachaAuthenticationError;
+import java.awt.Component;
+import com.google.gdata.util.ServiceException;
+import java.io.IOException;
+import javax.swing.JDialog;
+import java.sql.SQLException;
+import Model.exceptions.WrongDatabaseException;
 import java.awt.Font;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,6 +47,9 @@ import static controller.Main.*;
  */
 public class OptionsFrame extends JFrame {
     
+    private GoogleCalendar gcTransferer = new GoogleCalendar();
+    private JLabel loadingLabel;
+    
     public JButton gcSyncActions,gcCheckConnectionDB, previousButton;
     
     private JButton saveButton, cancelButton;
@@ -55,6 +66,7 @@ public class OptionsFrame extends JFrame {
     
     public OptionsFrame(){
         super(OPTIONSMENUTITLE);
+        //this.setTitle(OPTIONSMENUTITLE);
         setLayout(null);
         this.setResizable(true);
         setBounds(100,new Random().nextInt(200)+50,700,399);
@@ -63,6 +75,8 @@ public class OptionsFrame extends JFrame {
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
+        SetLoadingLabel();
+        
         AddComponents();
         
         AddListeners(); 
@@ -85,6 +99,8 @@ public class OptionsFrame extends JFrame {
         gcSyncOptionsLBL = new JLabel("Google Calandar synchronisatie type:");
         errorMessageLBL = new JLabel();
         errorMessageLBL.setFont(FONTBUTTONS);
+//        errorMessageLBL.setOpaque(true);
+//        errorMessageLBL.setBackground(Color.YELLOW);
         errorMessageLBL.setForeground(Color.RED);
         gcSyncOptions = new JComboBox();
         gcSyncOptions.setBackground(Color.WHITE);
@@ -234,7 +250,7 @@ public class OptionsFrame extends JFrame {
                 
                 dbCheckBTN.setBounds((int)(gULx),(int) (dbPasswordTXT.getLocation().getY() + dbPasswordTXT.getSize().getHeight() + margin),(int)(frameW - (margin * 3)),bHeight);
                         
-                errorMessageLBL.setBounds((int)(gULx),(int) (saveButton.getLocation().getY() - margin - saveButton.getSize().getHeight()),(int)(frameW - (margin * 3)),bHeight);
+                errorMessageLBL.setBounds((int)(gULx),(int) (saveButton.getLocation().getY()),(int)(frameW - (frameW - (saveButton.getLocation().getX() - gULx - margin))),bHeight);
                 
                 
                 //zit een bug in setMaximumSize, dit is de workarround
@@ -294,7 +310,14 @@ public class OptionsFrame extends JFrame {
  
             public void actionPerformed(ActionEvent e)
             {
-                DoValidateDatabase();
+                ( new Thread() {
+                    public void run() {
+                        DoLoading(true);
+                        DoValidateDatabase();
+                        DoLoading(false);
+                    }
+                }).start();
+                
             }
         });
         
@@ -316,6 +339,43 @@ public class OptionsFrame extends JFrame {
             }
         });
 
+        gcSyncActions.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                ( new Thread() {
+                    public void run() {
+                        DoLoading(true);
+                        DoSynchActions();
+                        DoLoading(false);
+                    }
+                }).start();
+                
+//                int n = DoYesNoQuestionMessage(
+//                    "Kalender Synchronisatie",
+//                    "Weet u zeker dat u de acties met uw google kalender wilt synchroniseren?"
+//                    );
+//
+//
+//                    if(n == 0){
+//                        System.out.println("Sync acties google calandar");
+//                    }
+            }
+        });
+                
+        //knop uit het opties menu om de verbinding met google calander te controleren
+        gcCheckConnectionDB.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                ( new Thread() {
+                    public void run() {
+                        DoLoading(true);
+                        DoCheckConnectionGC();
+                        DoLoading(false);
+                    }
+                }).start();
+
+            }
+        });
         
     }
     
@@ -365,14 +425,167 @@ public class OptionsFrame extends JFrame {
     private void DoValidateDatabase() {
         try {
             controller.GetModel().ValidateDatabase();
+            SetErrorMessage("Database en rechten zijn in orde!", false);
+            //MessageBox.DoOkErrorMessageBox((JFrame)(this.getContentPane()), "ERROR in Database!", "Database is niet valide of de rechten zijn niet in orde! Maak de database met het bijbehorend SQL bestand opnieuw aan!");
+        } catch (WrongDatabaseException ex){
+            //JFrame newFrame = (JFrame)this.getContentPane();
+            SetErrorMessage("Database is niet valide of de rechten zijn niet in orde! Maak de database met het bijbehorend SQL bestand opnieuw aan!", true);
+            //MessageBox.DoOkErrorMessageBox((JFrame)(this.getContentPane()), "ERROR in Database!", "Database is niet valide of de rechten zijn niet in orde! Maak de database met het bijbehorend SQL bestand opnieuw aan!");
+            //System.out.println();
         } catch (DatabaseException ex) {
-            Logger.getLogger(OptionsFrame.class.getName()).log(Level.SEVERE, null, ex);
+            SetErrorMessage("Database is niet valide of de rechten zijn niet in orde!", true);
+            //MessageBox.DoOkErrorMessageBox(this, "ERROR in Database!", "De rechten zijn niet in orde!");
+        } catch (SQLException ex) {
+            SetErrorMessage("Kon geen verbinding met de database maken, check je verbinding / server / gebruikersnaam / wachtwoord!", true);
+            //MessageBox.DoOkErrorMessageBox(this, "ERROR in Database!", "Kon geen verbinding met de database maken, check je verbinding / server / gebruikersnaam / wachtwoord!");
         }
     }
     
+    private void DoCheckConnectionGC(){
+        try{  
+        if(gcTransferer.CheckCalendarExists()){
+            SetErrorMessage("Connectie en kalender zijn orde!", false);
+        } else {
+            int n = DoYesNoQuestionMessage("Kalender niet gevonden!",
+                "De kalender GTD is niet gevonden, "
+                + "wilt u deze aanmaken?");
+        if(n == 0){
+            //System.out.println("" + n);
+            if(gcTransferer.CreateCalendar()){
+                SetErrorMessage("Connectie en kalender zijn orde!", false);
+            } else {
+                SetErrorMessage("Fout bij het aanmaken van de kalender", true);
+            }
+        } else {
+            SetErrorMessage("Kalender niet aangemaakt!", true);
+        }
+        }
+    } catch (IOException iOException) {
+        iOException.printStackTrace();
+        SetErrorMessage("FOUT: Controlleer uw verbinding!", true);
+    } catch (ServiceException serviceException) {
+        if(serviceException instanceof com.google.gdata.util.InvalidEntryException){
+            System.out.println("URL klopt niet waarmee verbinding wordt gemaakt!");
+            SetErrorMessage("FOUT: Interne applicatie error 1024!", true);
+        } else if(serviceException instanceof com.google.gdata.client.GoogleService.InvalidCredentialsException){
+            System.out.println("Gebruikersnaam en/of wachtwoord klopt niet!");
+            SetErrorMessage("FOUT: Controlleer uw gebruikersnaam en/of wachtwoord!", true);
+        } else {
+            //verbindingsproblemen
+            SetErrorMessage("FOUT: Controlleer uw verbinding!", true);
+        }
+        serviceException.printStackTrace();
+    } catch (GoogleCaptachaAuthenticationError ex){
+        SetErrorMessage(ex.getMessage(), true);
+    } catch (Exception ex){
+        ex.printStackTrace();
+        SetErrorMessage("FOUT: Controlleer uw verbinding!", true);
+    }
+    }
+    
+    
+    private void DoSynchActions(){
+        
+        //gcTransferer.GettAllActionEntrys();
+        //gcTransferer.InsertActions(LoadAllActions()[0]);
+( new Thread() {
+ 
+        public void run() {
+            DoLoading(true);
+            //LoadContextsStatusesProjects();
+            try {
+                CloseConnectionAfterDatabaseAction = false;
+                controller.GetModel().SetAllActions();
+                gcTransferer.InsertActions(controller.GetModel().GetAllActionsAsArray(), (String)gcSyncOptions.getSelectedItem());
+                //gcTransferer.DeleteAllEntrysWithExtendedPropertyDaID();
+                CloseConnectionAfterDatabaseAction = true;
+                
+            } catch (ThingsException ex) {
+            ex.printStackTrace();
+                DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
+                "FOUT BIJ HET OPSLAAN VAN DE laden Projecten, Contexten en Statussen, verbinding is in orde,"
+                + "\n Meuk kon niet opgehaald worden van de database!\nDit scherm zal nu sluiten!");
+                DoExit();
+                //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            } catch (DatabaseException ex) {
+                ex.printStackTrace();
+                DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
+                "FOUT BIJ HET LADEN VAN DE laden Projecten, Contexten en Statussen, \ncontrolleer de verbinding!\nDit scherm zal nu sluiten!");
+                DoExit();
+            //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            }
+            DoLoading(false);
+        }
+        }
+        ).start();
+        
+    }
     public void SetErrorMessage(String txt, Boolean isError){
         errorMessageLBL.setText(txt);
         errorMessageLBL.setForeground((isError) ? Color.RED : new Color(1,153,1));
+    }
+    
+    private int DoYesNoQuestionMessage(String title, String message){
+        return MessageBox.DoYesNoQuestionMessage(this, title, message);
+    }
+    
+    private void DoErrorCurrentScreen(String title, String message){
+        MessageBox.DoOkErrorMessageBox(this, title, message);
+    }
+    
+    //zet de loading tabel alvast neer, zodat andere shit later geladen kan worden
+    private void SetLoadingLabel() {
+        loadingLabel = MainConstants.SetLoadingTable((int)getBounds().getWidth(), (int)getBounds().getHeight());
+        loadingLabel.setVisible(false);
+        add(loadingLabel);
+    }
+    
+    private void DoLoading(Boolean isLoading){
+        if(isLoading){
+            for(Component c : this.getContentPane().getComponents()){
+                c.setVisible(false);
+            }
+            setEnabled(false);
+            loadingLabel.setVisible(true);
+        } else {
+            for(Component c : this.getContentPane().getComponents()){
+                c.setVisible(true);
+            }
+            setEnabled(true);
+            loadingLabel.setVisible(false);
+        }
+    }
+    
+    private model.Action[] LoadAllActions(){
+
+            DoLoading(true);
+            //LoadContextsStatusesProjects();
+            try {
+                CloseConnectionAfterDatabaseAction = false;
+                controller.GetModel().SetAllActions();
+                CloseConnectionAfterDatabaseAction = true;
+                    //controller.GetModel().GetAllActionsDoneAsArray();
+                return controller.GetModel().GetAllActionsNotDoneAsArray();
+
+                
+
+                
+            } catch (ThingsException ex) {
+            ex.printStackTrace();
+                DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
+                "FOUT BIJ HET OPSLAAN VAN DE laden Projecten, Contexten en Statussen, verbinding is in orde,"
+                + "\n Meuk kon niet opgehaald worden van de database!\nDit scherm zal nu sluiten!");
+                DoExit();
+                //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            } catch (DatabaseException ex) {
+                ex.printStackTrace();
+                DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
+                "FOUT BIJ HET LADEN VAN DE laden Projecten, Contexten en Statussen, \ncontrolleer de verbinding!\nDit scherm zal nu sluiten!");
+                DoExit();
+            //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
+            }
+
+            return null;
     }
 
 }

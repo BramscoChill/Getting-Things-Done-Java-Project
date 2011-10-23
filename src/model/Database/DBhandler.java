@@ -6,6 +6,7 @@ package Model.Database;
  */
 
 
+import Model.exceptions.WrongDatabaseException;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import java.util.Date;
 import java.sql.Timestamp;
@@ -293,7 +294,7 @@ public class DBhandler {
                     actions[resultCounter].setDone(resultSet.getBoolean(9));
                     
                     
-                    actions[resultCounter].PrintAll();
+                    //actions[resultCounter].PrintAll();
                     resultCounter++;
                 }
                 
@@ -347,10 +348,20 @@ public class DBhandler {
         try {
             MakeConnection(); //maakt database connectie indien nodig
             
-            System.out.println("project ID:" + ((action.getProject() != null) ? "" + action.getProject().getID() : " is NULL"));
+            //System.out.println("project ID:" + ((action.getProject() != null) ? "" + action.getProject().getID() : " is NULL"));
             
+            Date currDate = new Date();
             //voegt changed ding toe
-            action.setStatusChanged(new Timestamp(new Date().getTime()));
+            Timestamp currentStamp = new Timestamp(0);
+            currentStamp.setDate(currDate.getDate());
+            currentStamp.setMonth(currDate.getMonth());
+            currentStamp.setYear(currDate.getYear() + 1900); //wazige shit! check javadoc!
+            currentStamp.setHours(currDate.getHours());
+            currentStamp.setMinutes(currDate.getMinutes());
+            currentStamp.setSeconds(currDate.getSeconds());
+            action.setStatusChanged(currentStamp);
+            
+            System.out.println("action.getDatumTijd:" + action.getDatumTijd().getYear() + "action.setStatusChanged:" + action.getStatusChanged().getYear());
             
             PreparedStatement preparedStatement;
             if(action.getID() == -1){
@@ -1008,23 +1019,39 @@ public class DBhandler {
     
     //@TODO ValidateDatabase afmaken
     //checkt of de database valide is
-    public Boolean ValidateDatabase() throws DatabaseException{
-        try {
+    public Boolean ValidateDatabase() throws DatabaseException, WrongDatabaseException, SQLException{
+
             MakeConnection(); //maakt database connectie indien nodig
             for(int i = 0; i < DBCHECKER_TOTAL.length; i++){
                 String tableNaam = DBCHECKER_TOTAL[i][0];
                 PreparedStatement preparedStatement = (PreparedStatement) connection.prepareStatement("SHOW COLUMNS FROM " + tableNaam + ";");
                 ResultSet result = preparedStatement.executeQuery();
+                
+                
                 ResultSetMetaData rsMetaData = (ResultSetMetaData) result.getMetaData();
                 int amountColums = rsMetaData.getColumnCount();
 
-                if(amountColums == DBCHECKER_TOTAL[i].length){
-                    int counter = 0;
+                int rowCounter = 0;
+                while(result.next()){
+                    rowCounter++;
+                }
+                
+                while(result.previous()){
+                }
+                
+                System.out.println("\n " + DBCHECKER_TOTAL[i][0] + ", len amountColums: " + amountColums + ", len DBCHECKER_TOTAL[i].length:" +  DBCHECKER_TOTAL[i].length +
+                        ", result size: " + rowCounter);
+                
+                if(rowCounter == (DBCHECKER_TOTAL[i].length - 1)){
+                    int counter = 1;
                     while(result.next()){
                         //String fieldName = result.getString(1);
                         String type = result.getString(2);
-                        if(type.trim().compareToIgnoreCase(DBCHECKER_TOTAL[i][counter].trim()) == 0){
-                            
+                        //System.out.println(type.trim() + " same as " + DBCHECKER_TOTAL[i][counter].trim());
+                        if(type.trim().toLowerCase().startsWith(DBCHECKER_TOTAL[i][counter].trim().toLowerCase())){
+                            System.out.println(type.trim() + " same as " + DBCHECKER_TOTAL[i][counter].trim());
+                        } else {
+                            throw new WrongDatabaseException("Database is niet valide of bestaat niet!");
                         }
                         //System.out.println(fieldName + ": " + type);
                         //System.out.println("type is int: " + type.toLowerCase().startsWith("int"));
@@ -1058,13 +1085,6 @@ public class DBhandler {
             CloseConnection();
 
             return true; //(affectedRows == 1); //eigenlijk onnodig
-            
-            
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        
-        return false;
     }
     
 

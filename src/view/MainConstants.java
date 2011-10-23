@@ -9,12 +9,17 @@ import model.Status;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import model.Options;
 
 /**
@@ -53,6 +58,7 @@ public class MainConstants {
     public static enum MenuScreen{MAIN, LASTOPENED, THOUGHTS, PROJECTS, ACTIONS, HISTORY, OPTIONS}
     public static final String[] OPTIONSSTARTUPSCREENVALUES = {"Hoofdscherm","Laatst Geopend","Gedachten", "Projecten","Acties","History"};
     public static final String[] OPTIONSGCSYNCTYPRVALUES = {"Alles","Alleen acties in het heden"};
+    public static final String EXTENDEDPROPERTYGCIDENTRY = "daID";
     public static final HashMap<String,MenuScreen> OPTIONSMENUSCREENVALUES = new HashMap<String, MenuScreen>() {
 
         {
@@ -142,5 +148,36 @@ public class MainConstants {
         String min = (("" + stamp.getMinutes()).length() == 1) ? "0" + stamp.getMinutes() : "" + stamp.getMinutes();
         
         return dd + "-" + mm + "-" + yyyy + " " + hh + ":" + min;
+    }
+    
+    public static BufferedImage LoadImage(final String url) {
+                long start = System.currentTimeMillis();
+                BufferedImage image = null;// = new BufferedImage();
+                
+                    try {
+                        URL daUrl = new URL(url);
+                        image = ImageIO.read(daUrl);
+                    } catch(IOException e) {
+                        System.out.println("read error for: " +
+                                            url + ": " +
+                                            e.getMessage());
+                    }
+                
+                long end = System.currentTimeMillis();
+                double time = (end - start)/1000.0;
+//                String s = "Images loaded in " + time + " seconds";
+//                JOptionPane.showMessageDialog(null, s,
+//                                              "images loaded", -1);
+                return image;
+/*
+                JPanel panel = new JPanel(new GridLayout(2,0));
+                JScrollPane scrollPane = new JScrollPane(panel);
+                scrollPane.setPreferredSize(new Dimension(500,500));
+                for(int i = 0; i < images.length; i++) {
+                    panel.add(new JLabel(new ImageIcon(images[i])));
+                }
+                JOptionPane.showMessageDialog(null, scrollPane,
+                                              "images", -1);
+*/
     }
 }

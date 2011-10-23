@@ -56,7 +56,7 @@ public class ActionsFrame extends JFrame {
         
         this.isHistory = isHistory;
         
-        SetLoadingTable();
+        SetLoadingLabel();
         
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
@@ -504,7 +504,7 @@ public class ActionsFrame extends JFrame {
     }
 
     //zet de loading tabel alvast neer, zodat andere shit later geladen kan worden
-    private void SetLoadingTable() {
+    private void SetLoadingLabel() {
         loadingLabel = MainConstants.SetLoadingTable((int)getBounds().getWidth(), (int)getBounds().getHeight());
         add(loadingLabel);
     }
