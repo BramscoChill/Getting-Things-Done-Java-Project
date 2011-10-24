@@ -3,13 +3,20 @@
  */
 package view;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import model.Context;
 import model.Project;
 import model.Status;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Timestamp;
@@ -45,6 +52,16 @@ public class MainConstants {
     public static final String[] DBCHECKER_PROJECT = {TABLE_PROJECT.toUpperCase(),"int", "varchar", "text"};
     public static final String[] DBCHECKER_ACTION = {TABLE_ACTION.toUpperCase(),"int","varchar", "text", "int", "int", "int", "datetime", "datetime", "tinyint"};
     public static final String[][] DBCHECKER_TOTAL = {DBCHECKER_THOUGHT, DBCHECKER_STATUS,DBCHECKER_CONTEXT,DBCHECKER_PROJECT,DBCHECKER_ACTION};
+    
+    public static final Image MENUSBACKGROUND = Toolkit.getDefaultToolkit().getImage(MainConstants.class .getResource("/resources/buttonicons/background.jpg"));
+    public static final BufferedImage MENUSBACKGROUNDBI(){
+        try {
+            return ImageIO.read(MainConstants.class .getResource("/resources/buttonicons/background.jpg"));
+        } catch (IOException ex) {
+            Logger.getLogger(MainConstants.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
     
     public static final String MAINTITLE = "GTDne";
     public static final String MAINVERSION = "1.001";
@@ -179,5 +196,56 @@ public class MainConstants {
                 JOptionPane.showMessageDialog(null, scrollPane,
                                               "images", -1);
 */
+    }
+    
+    public static BufferedImage getScaledInstance(BufferedImage img,
+                                           int targetWidth,
+                                           int targetHeight,
+                                           Object hint,
+                                           boolean higherQuality)
+    {
+        int type = (img.getTransparency() == Transparency.OPAQUE) ?
+            BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
+        BufferedImage ret = (BufferedImage)img;
+        int w, h;
+        if (higherQuality) {
+            // Use multi-step technique: start with original size, then
+            // scale down in multiple passes with drawImage()
+            // until the target size is reached
+            w = img.getWidth();
+            h = img.getHeight();
+        } else {
+            // Use one-step technique: scale directly from original
+            // size to target size with a single drawImage() call
+            w = targetWidth;
+            h = targetHeight;
+        }
+        
+        do {
+            if (higherQuality && w > targetWidth) {
+                w /= 2;
+                if (w < targetWidth) {
+                    w = targetWidth;
+                }
+            }
+
+            if (higherQuality && h > targetHeight) {
+                h /= 2;
+                if (h < targetHeight) {
+                    h = targetHeight;
+                }
+            }
+
+            BufferedImage tmp = new BufferedImage(w, h, type);
+            Graphics2D g2 = tmp.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
+            
+            g2.drawImage(ret, 0, 0, w, h, null);
+            g2.dispose();
+
+            ret = tmp;
+        } while (w != targetWidth || h != targetHeight);
+
+        return ret;
     }
 }

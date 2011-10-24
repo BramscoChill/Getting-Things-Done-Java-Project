@@ -4,7 +4,18 @@
  */
 package view;
 
+import java.awt.Color;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import java.awt.font.FontRenderContext;
+import java.awt.Font;
+import java.awt.image.BufferedImage;
+import java.awt.RenderingHints;
+import java.awt.Graphics2D;
+import java.awt.Graphics;
+import javax.swing.JPanel;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
 import javax.swing.KeyStroke;
@@ -32,6 +43,9 @@ public class MainMenuFrame extends JFrame {
     private JMenuBar menuBar;
     private JMenu mFile, mExtra;
     private JMenuItem miOptions, miExit;
+    
+    private BufferedImage image = MENUSBACKGROUNDBI();
+    private JLabel imageBackLBL;
     //private JRadioButtonMenuItem rbMenuItem;
     //private JCheckBoxMenuItem cbMenuItem;
 
@@ -41,7 +55,10 @@ public class MainMenuFrame extends JFrame {
         setLayout(null);
         this.setResizable(true);
         setBounds(100,new Random().nextInt(200)+50,500,500);
-
+        
+        //AddImageBack();
+        
+        imageBackLBL = new JLabel();
         mainButtons[0] = new JButton("Gedachten");
         mainButtons[1] = new JButton("Acties");
         mainButtons[2] = new JButton("Projecten");
@@ -54,7 +71,9 @@ public class MainMenuFrame extends JFrame {
         add(mainButtons[1]);
         add(mainButtons[2]);
         add(mainButtons[3]);
+        add(imageBackLBL);
         
+        //this.setBackground(Color.BLACK);
         AddListeners();
         
         CreateMenuBar();
@@ -64,7 +83,10 @@ public class MainMenuFrame extends JFrame {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         setMinimumSize(new Dimension(350,350));
+        
+        
     }
+    
     
     private void AddListeners(){
         this.addComponentListener(new ComponentAdapter(){
@@ -91,6 +113,9 @@ public class MainMenuFrame extends JFrame {
                 double bH = (frameH / 2) - (margin * 2) - (menuBar.getBounds().getHeight() / 1.5);
                 
                 //System.out.println(e.getComponent().getClass().getName() + " --- Resized " + "fW: " + frameW + ", bW: " + bW);  
+//                Image img = getScaledInstance(MENUSBACKGROUNDBI(),(int) frameW, (int) frameH, RenderingHints.VALUE_INTERPOLATION_BILINEAR , false);
+//                imageBackLBL.setBounds(0, 0,(int) frameW, (int)frameH);
+//                imageBackLBL.setIcon(new ImageIcon(img));
                 
                 for(int i = 0; i < mainButtons.length; i++){
                     mainButtons[i].setBounds((int)posX,(int)posY,(int)bW,(int)bH);

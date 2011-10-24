@@ -46,23 +46,26 @@ public class Controller implements Observer {
     //private ThoughtsFrame thoughtsFrame = new ThoughtsFrame();
     private GTDcomplete gtd = new GTDcomplete();
     
-    private MainMenuFrame mainMenuFrame;
+    private MainMenuFrame mainMenuFrame = new MainMenuFrame();;
     private OptionsFrame optionsMenuFrame;
     private ThoughtsFrame thoughtsFrame;
     private ActionsFrame actionFrame;
     private ProjectsFrame projectsFrame;
     
+    private JButton[] buttons = mainMenuFrame.GetButtons();
+    
     public Controller(){
         //thoughtsFrame.setVisible(false);
         //mainMenu.setVisible(false);
-        mainMenuFrame = new MainMenuFrame();
         
+        //laad alle opties in
+        OPTIONS.LoadOptions();
         
         //voiegt listeners toe
         AddMainMenuListeners();
         
-        //laad alle opties in
-        OPTIONS.LoadOptions();
+        DoCheckStartupScreen();
+        
         
         gtd.addObserver(this);
         
@@ -70,7 +73,8 @@ public class Controller implements Observer {
     
     //voegt de actionlisteners toe aan het mainframe en andere JFrames
     private void AddMainMenuListeners(){
-        JButton[] buttons = mainMenuFrame.GetButtons();
+        
+        
         //thoughts scherm buttons
         buttons[0].addActionListener(new ActionListener() {
  
@@ -84,6 +88,7 @@ public class Controller implements Observer {
                     if(thoughtsFrame == null){
                         gtd.SetAllThoughts();
                         thoughtsFrame = new ThoughtsFrame(gtd.GetAllThoughtsAsArray());
+                        OPTIONS.setLastOpenedScreen(MenuScreen.THOUGHTS);
                         thoughtsFrame.addWindowListener(new WindowAdapter(){
                                public void windowOpened( WindowEvent e ){
                                     //thoughtsFrame.requestFocus();
@@ -120,8 +125,9 @@ public class Controller implements Observer {
                 
                     //een scherm kan niet 2x geopent worden
                     if(actionFrame == null){
-                        
+                        //de false is ervoor dat het GEEN history frame is
                         actionFrame = new ActionsFrame(false);
+                        OPTIONS.setLastOpenedScreen(MenuScreen.ACTIONS); //stelt het laatst geopende scherm in
                         actionFrame.addWindowListener(new WindowAdapter(){
                        public void windowOpened( WindowEvent e ){
                             //thoughtsFrame.requestFocus();
@@ -158,6 +164,7 @@ public class Controller implements Observer {
                 if(projectsFrame == null){
 
                     projectsFrame = new ProjectsFrame();
+                    OPTIONS.setLastOpenedScreen(MenuScreen.PROJECTS); //stelt het laatst geopende scherm in
                     projectsFrame.addWindowListener(new WindowAdapter(){
                    public void windowOpened( WindowEvent e ){
                         //thoughtsFrame.requestFocus();
@@ -189,6 +196,7 @@ public class Controller implements Observer {
                     if(actionFrame == null){
                         
                         actionFrame = new ActionsFrame(false);
+                        OPTIONS.setLastOpenedScreen(MenuScreen.HISTORY); //stelt het laatst geopende scherm in
                         actionFrame.addWindowListener(new WindowAdapter(){
                        public void windowOpened( WindowEvent e ){
                             //thoughtsFrame.requestFocus();
@@ -226,7 +234,7 @@ public class Controller implements Observer {
                 //laat het options scherm en schakelt het hoofdscherm uit
                 optionsMenuFrame = new OptionsFrame();
                 mainMenuFrame.setEnabled(false);
-                
+                OPTIONS.setLastOpenedScreen(MenuScreen.OPTIONS); //stelt het laatst geopende scherm in
                 //de listener voor het optionsMenu (Ander JFrame) om ervoor te zorgen
                 //dat als het options scherm sluit, je het main scherm weer kan bewerken
                 optionsMenuFrame.addWindowListener(new WindowAdapter(){
@@ -270,48 +278,6 @@ public class Controller implements Observer {
 
     }
     
-    private void OpenWindow(MenuScreen windowType){
-        //@TODO OpenWindow afmaken
-        switch(windowType){
-            case ACTIONS:
-                break;
-            case OPTIONS:
-                break;
-            case LASTOPENED:
-                break;
-            case THOUGHTS:
-                break;
-            case PROJECTS:
-                break;
-            case HISTORY:
-                break;
-            default: //MAIN
-                break;
-        }
-    }
-    
-    private void CloseWindow(MenuScreen windowType){
-        //@TODO CloseWindow afmaken
-        switch(windowType){
-            case ACTIONS:
-                break;
-            case OPTIONS:
-                break;
-            case LASTOPENED:
-                break;
-            case THOUGHTS:
-                break;
-            case PROJECTS:
-                break;
-            case HISTORY:
-                break;
-            default: //MAIN
-                break;
-        }
-        
-        //check all windows closed, exit app
-    }
-    
     public GTDcomplete GetModel(){
         return gtd;
     }
@@ -346,6 +312,34 @@ public class Controller implements Observer {
         if(optionsMenuFrame == null && thoughtsFrame == null && actionFrame == null && projectsFrame == null && mainMenuFrame.isVisible() == false){
             System.exit(0);
         }
+    }
+
+    private void DoCheckStartupScreen() {
+        MenuScreen prefferedOpened = OPTIONS.getPrefferedOpenedScreen();
+        MenuScreen lastOpened = OPTIONS.getLastOpenedScreen();
+        
+        MenuScreen screenToOpen = (prefferedOpened == MenuScreen.LASTOPENED) ? lastOpened : prefferedOpened;
+        
+        switch(screenToOpen){
+            case MAIN:
+                break;
+            case ACTIONS:
+                buttons[1].getActionListeners()[0].actionPerformed(null);
+                break;
+            case HISTORY:
+                buttons[3].getActionListeners()[0].actionPerformed(null);
+                break;
+            case OPTIONS:
+                mainMenuFrame.GetOptionsMenuItem().getActionListeners()[0].actionPerformed(null);
+                break;
+            case PROJECTS:
+                buttons[2].getActionListeners()[0].actionPerformed(null);
+                break;
+            case THOUGHTS:
+                buttons[0].getActionListeners()[0].actionPerformed(null);
+                break;
+        }
+        
     }
     
 }

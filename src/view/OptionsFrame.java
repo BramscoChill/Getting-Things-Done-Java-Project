@@ -4,6 +4,10 @@
  */
 package view;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import javax.swing.JCheckBox;
+import javax.swing.JPasswordField;
 import model.exceptions.ThingsException;
 import Model.exceptions.GoogleCaptachaAuthenticationError;
 import java.awt.Component;
@@ -61,6 +65,8 @@ public class OptionsFrame extends JFrame {
     private JTextField dbUsernameTXT, dbPasswordTXT, dbServerNameTXT, dbDatabaseNameTXT;
     private JButton dbCheckBTN;
     
+    private JCheckBox showPasswordsCHECK;
+    
     //om ervoor te zorgen dat alle instellingen opgeslagen worden als het scherm gesloten wordt
     private Boolean doSave = true;
     
@@ -107,8 +113,9 @@ public class OptionsFrame extends JFrame {
         previousButton = new JButton();
         googleUsername = new JTextField();
         googleUsername.setFont(OPTIONSMENUFONTTEXTFIELDS);
-        googlePassword = new JTextField();
+        googlePassword = new JPasswordField();
         googlePassword.setFont(OPTIONSMENUFONTTEXTFIELDS);
+        ((JPasswordField)googlePassword).setEchoChar('*');
         startupScreen = new JComboBox();
         startupScreen.setBackground(Color.WHITE);
         
@@ -147,7 +154,9 @@ public class OptionsFrame extends JFrame {
         dbPasswordLBL.setFont(FONTBUTTONS);
         dbUsernameTXT = new JTextField();
         dbUsernameTXT.setFont(FONTBUTTONS);
-        dbPasswordTXT = new JTextField();
+        dbPasswordTXT = new JPasswordField();
+        ((JPasswordField)dbPasswordTXT).setEchoChar('*');
+        //((JPasswordField)dbPasswordTXT).setEchoChar((char)0);
         dbPasswordTXT.setFont(FONTBUTTONS);
         
         dbDatabaseNameLBL = new JLabel("Database Naam");
@@ -156,6 +165,10 @@ public class OptionsFrame extends JFrame {
         dbDatabaseNameTXT.setFont(FONTBUTTONS);
         
         dbCheckBTN = new JButton("Check Database en Tabellen");
+        
+        showPasswordsCHECK = new JCheckBox("Laat wachtwoorden zien");
+        showPasswordsCHECK.setFont(FONTBUTTONS);
+        showPasswordsCHECK.setSelected(false);
         
         add(optionsTitle);
         add(googleUsernameLBL);
@@ -181,7 +194,7 @@ public class OptionsFrame extends JFrame {
         add(dbCheckBTN);
         add(dbDatabaseNameLBL);
         add(dbDatabaseNameTXT);
-        
+        add(showPasswordsCHECK);
         previousButton.setIcon(PREVIOUSBUTTONIMAGEICON); // NOI18N
     }
     
@@ -226,6 +239,7 @@ public class OptionsFrame extends JFrame {
                 startupScreenLBL.setBounds(gULx,(int) (googlePassword.getLocation().y + margin + labelsHeight),labelsWidth, labelsHeight);
                 startupScreen.setBounds(gULx,(int) (startupScreenLBL.getLocation().y + labelsHeight),(int)(labelsWidth / 1.5), labelsHeight);
                 
+                showPasswordsCHECK.setBounds((int)(textfieldsWith + (margin * 2)),(int) (startupScreen.getLocation().y),textfieldsWith, labelsHeight);
                 
                 gcCheckConnectionDB.setBounds((int)(textfieldsWith + (margin * 2)),(int) (googlePassword.getLocation().y),250, labelsHeight);
                 gcSyncActions.setBounds((int)(textfieldsWith + (margin * 2)),(int) (gcCheckConnectionDB.getLocation().y - labelsHeight - (margin / 2)),250, labelsHeight);
@@ -342,23 +356,7 @@ public class OptionsFrame extends JFrame {
         gcSyncActions.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                ( new Thread() {
-                    public void run() {
-                        DoLoading(true);
-                        DoSynchActions();
-                        DoLoading(false);
-                    }
-                }).start();
-                
-//                int n = DoYesNoQuestionMessage(
-//                    "Kalender Synchronisatie",
-//                    "Weet u zeker dat u de acties met uw google kalender wilt synchroniseren?"
-//                    );
-//
-//
-//                    if(n == 0){
-//                        System.out.println("Sync acties google calandar");
-//                    }
+                DoSynchActions();
             }
         });
                 
@@ -376,6 +374,20 @@ public class OptionsFrame extends JFrame {
 
             }
         });
+        
+        showPasswordsCHECK.addItemListener(new ItemListener() {
+        public void itemStateChanged(ItemEvent e) {
+            //System.out.println("Checked? " + showPasswordsCHECK.isSelected());
+            if(showPasswordsCHECK.isSelected()){
+                ((JPasswordField)dbPasswordTXT).setEchoChar((char)0);
+                ((JPasswordField)googlePassword).setEchoChar((char)0);
+            } else {
+                ((JPasswordField)dbPasswordTXT).setEchoChar('*');
+                ((JPasswordField)googlePassword).setEchoChar('*');
+            }
+        }
+        });
+
         
     }
     
@@ -400,7 +412,7 @@ public class OptionsFrame extends JFrame {
        OPTIONS.setDbPassword(dbPasswordTXT.getText());
        
        //System.out.println(OPTIONSMENUSCREENVALUES.get((String)startupScreen.getSelectedItem()));
-       OPTIONS.setLastOpenedScreen(OPTIONSMENUSCREENVALUES.get((String)startupScreen.getSelectedItem()));
+       OPTIONS.sePrefferedOpenedScreen(OPTIONSMENUSCREENVALUES.get((String)startupScreen.getSelectedItem()));
        OPTIONS.setGcSynxType((String)gcSyncOptions.getSelectedItem());
     }
     
@@ -413,9 +425,9 @@ public class OptionsFrame extends JFrame {
         dbPasswordTXT.setText(OPTIONS.getDbPassword());
         
         for (Map.Entry<String,MenuScreen> entry : OPTIONSMENUSCREENVALUES.entrySet()) {
-            if(entry.getValue() == OPTIONS.getLastOpenedScreen()){
+            if(entry.getValue() == OPTIONS.getPrefferedOpenedScreen()){
                 startupScreen.setSelectedItem(entry.getKey());
-                //System.out.println("selected item: " + OPTIONS.getLastOpenedScreen().name() + ", " + OPTIONSMENUSCREENVALUES.get(entry.getKey()));
+                //System.out.println("selected item: " + OPTIONS.getPrefferedOpenedScreen().name() + ", " + OPTIONSMENUSCREENVALUES.get(entry.getKey()));
                 break;
             }
         }
@@ -488,32 +500,12 @@ public class OptionsFrame extends JFrame {
         
         //gcTransferer.GettAllActionEntrys();
         //gcTransferer.InsertActions(LoadAllActions()[0]);
-( new Thread() {
+    ( new Thread() {
  
         public void run() {
             DoLoading(true);
-            //LoadContextsStatusesProjects();
-            try {
-                CloseConnectionAfterDatabaseAction = false;
-                controller.GetModel().SetAllActions();
-                gcTransferer.InsertActions(controller.GetModel().GetAllActionsAsArray(), (String)gcSyncOptions.getSelectedItem());
-                //gcTransferer.DeleteAllEntrysWithExtendedPropertyDaID();
-                CloseConnectionAfterDatabaseAction = true;
-                
-            } catch (ThingsException ex) {
-            ex.printStackTrace();
-                DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
-                "FOUT BIJ HET OPSLAAN VAN DE laden Projecten, Contexten en Statussen, verbinding is in orde,"
-                + "\n Meuk kon niet opgehaald worden van de database!\nDit scherm zal nu sluiten!");
-                DoExit();
-                //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
-            } catch (DatabaseException ex) {
-                ex.printStackTrace();
-                DoErrorCurrentScreen("FOUT: laden Projecten, Contexten en Statussen!",
-                "FOUT BIJ HET LADEN VAN DE laden Projecten, Contexten en Statussen, \ncontrolleer de verbinding!\nDit scherm zal nu sluiten!");
-                DoExit();
-            //this.processWindowEvent( new WindowEvent(this, WindowEvent.WINDOW_CLOSING) );
-            }
+            gcTransferer.InsertActions(LoadAllActions(), (String)gcSyncOptions.getSelectedItem());
+            SetErrorMessage("Alle acties zijn in google calandar gezet!", false);
             DoLoading(false);
         }
         }

@@ -26,7 +26,9 @@ public class Options {
     private String dbUsername = "bklein";
     private String dbPassword = "jF4TJid5";
     
+    private MenuScreen preferredOpenedScreen = MenuScreen.MAIN;
     private MenuScreen lastOpenedScreen = MenuScreen.MAIN;
+    
     private String gcSynxType = OPTIONSGCSYNCTYPRVALUES[0];
 
     public static String gcLink = "https://www.google.com/calendar/feeds/default/owncalendars/full";
@@ -48,6 +50,12 @@ public class Options {
                 setDbDatabaseName(properties.getProperty("dbDatabaseName"));
                 setDbUsername(properties.getProperty("dbUsername"));
                 setDbPassword(properties.getProperty("dbPassword"));
+                
+                try{
+                    sePrefferedOpenedScreen(MenuScreen.valueOf(properties.getProperty("POS")));
+                } catch (Exception ex){
+                    sePrefferedOpenedScreen(MenuScreen.MAIN);
+                }
                 
                 try{
                     setLastOpenedScreen(MenuScreen.valueOf(properties.getProperty("LOS")));
@@ -81,6 +89,7 @@ public class Options {
             properties.setProperty("dbPassword", getDbPassword());
             properties.setProperty("gcUsername", getGCUsername());
             properties.setProperty("gcPassword", getGCPassword());
+            properties.setProperty("POS", getPrefferedOpenedScreen().name());
             properties.setProperty("LOS", getLastOpenedScreen().name());
             properties.setProperty("gcSyncType",getGcSynxType());
             properties.setProperty("gcAuthToken",getGcAuthToken());
@@ -125,12 +134,21 @@ public class Options {
         //System.out.println("gcUuser: " + gmailUsername);
     }
 
+    public MenuScreen getPrefferedOpenedScreen() {
+        return preferredOpenedScreen;
+    }
+
+    public void sePrefferedOpenedScreen(MenuScreen prefferedOpenedScreen) {
+        this.preferredOpenedScreen = prefferedOpenedScreen;
+    }
+    
     public MenuScreen getLastOpenedScreen() {
         return lastOpenedScreen;
     }
 
     public void setLastOpenedScreen(MenuScreen lastOpenedScreen) {
         this.lastOpenedScreen = lastOpenedScreen;
+        this.SaveOptions();
     }
     
     public String getGcPersonalURL() {
