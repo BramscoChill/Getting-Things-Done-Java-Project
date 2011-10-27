@@ -195,7 +195,7 @@ public class Controller implements Observer {
                     //een scherm kan niet 2x geopent worden
                     if(actionFrame == null){
                         
-                        actionFrame = new ActionsFrame(false);
+                        actionFrame = new ActionsFrame(true);
                         OPTIONS.setLastOpenedScreen(MenuScreen.HISTORY); //stelt het laatst geopende scherm in
                         actionFrame.addWindowListener(new WindowAdapter(){
                        public void windowOpened( WindowEvent e ){
