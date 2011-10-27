@@ -637,7 +637,7 @@ public class OneActionFrame extends JFrame {
     
     private void SetNote(String str){
         daAction.setNote(str);
-        System.out.println("GetNote(): " + GetNote());
+        //System.out.println("GetNote(): " + GetNote());
     }
     
     private String GetProject(){
@@ -647,7 +647,7 @@ public class OneActionFrame extends JFrame {
     private Boolean SetProject(String str){
        if(str != null){
             for(Project pr : projects){
-                 System.out.println("SetProject str: " + str + ", pr: " + pr.getName());
+                 //System.out.println("SetProject str: " + str + ", pr: " + pr.getName());
                 if(pr.getName().trim().toLowerCase().equals(str.trim().toLowerCase())){
                     daAction.setProject(pr);
                     return true;
@@ -732,6 +732,7 @@ public class OneActionFrame extends JFrame {
         datumTijd = (datumTijd == null) ? new Timestamp(0) : datumTijd;
         
         String[] date = str.split("-");
+        //System.out.println(date[0] + "-" + date[1] + "-" + date[2]);
         if(date.length == 3){
             try{
                 int dd = Integer.parseInt(date[0]);
@@ -740,19 +741,31 @@ public class OneActionFrame extends JFrame {
                 
                 
                 
-                if(dd > -1 && dd < 25 && mm > -1 && mm < 13 && yyyy > 1600 && yyyy < 3000){
-                    System.out.println("Datum ints: " + ("" + dd + "-" + mm + "-" + yyyy));
+                if(dd > -1 && dd < 32 && mm > -1 && mm < 13 && yyyy > 1600 && yyyy < 9000){
+                    //System.out.println("Datum ints: " + ("" + dd + "-" + mm + "-" + yyyy));
                     datumTijd.setDate(dd);
                     datumTijd.setMonth(mm);
                     datumTijd.setYear(yyyy);
                     
+                    Date currDate = new Date();
+                    currDate.setYear(currDate.getYear()+1900);
+                    currDate.setDate(currDate.getDate()-1);
+                    //System.out.println("curr date: " + currDate.getTime() + ", selected: " + datumTijd.getTime());
+                    
+                    //checkt of de datum in het verleden ligt
+                    if(datumTijd.getTime() < currDate.getTime()){
+                        System.out.println("IN HET VERLEDEN!");
+                        //zo ja dan is het niet goed
+                        return false;
+                    }
                     daAction.setDatumTijd(datumTijd);
-                    //System.out.println("Datum: " + ("" + datumTijd.getDate() + "-" + datumTijd.getMonth() + "-" + datumTijd.getYear()));
+                    System.out.println("Datum: " + ("" + datumTijd.getDate() + "-" + datumTijd.getMonth() + "-" + datumTijd.getYear()));
+                    System.out.println("Curr date: " + ("" + currDate.getDate() + "-" + currDate.getMonth() + "-" + currDate.getYear()));
                     
                     return true;
                 }
             } catch (Exception ex){
-                
+                System.out.println();
             }
         }
         return false;
