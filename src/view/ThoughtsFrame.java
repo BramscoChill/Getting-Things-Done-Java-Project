@@ -40,6 +40,8 @@ public class ThoughtsFrame extends JFrame {
     
     private JLabel loadingLabel;
     
+    public JButton btnOpenActionFrame;
+    
     private Thought currentSelectedThought = null;
     
     public ThoughtsFrame(Thought[] thoughts){
@@ -84,6 +86,9 @@ public class ThoughtsFrame extends JFrame {
 
         thoughtNoteLBL = new JLabel("Gedachte:");
         thoughtNoteLBL.setFont(FONTBUTTONS);
+        
+        btnOpenActionFrame = new JButton("Open Acties Scherm");
+        deleteThoughtBTN.setFont(FONTBUTTONS);
 //        thoughtNoteLBL.setOpaque(true);
 //        thoughtNoteLBL.setBackground(Color.GREEN);
         
@@ -93,6 +98,7 @@ public class ThoughtsFrame extends JFrame {
         add(newThoughtBTN);
         add(thoughtNoteTXT);
         add(tablePanel);
+        add(btnOpenActionFrame);
     }
     
     private void AddListeners(){
@@ -181,8 +187,8 @@ public class ThoughtsFrame extends JFrame {
     private void UpdateScreenBounds(){
         int btnHeight = 50;
         tablePanel.UpdateSize(THOUGHTSMENUMARGIN,THOUGHTSMENUMARGIN,(int)(this.getSize().getWidth() - (2.5 * THOUGHTSMENUMARGIN)), 
-                (int)(this.getSize().getHeight() - 400));
-        thoughtNoteLBL.setBounds(THOUGHTSMENUMARGIN,(int)(tablePanel.getLocation().getY() + tablePanel.getSize().getHeight() + THOUGHTSMENUMARGIN),
+                (int)(this.getSize().getHeight() - 440));
+        thoughtNoteLBL.setBounds(THOUGHTSMENUMARGIN,(int)(tablePanel.getLocation().getY() + tablePanel.getSize().getHeight() + (THOUGHTSMENUMARGIN / 2)),
                 (int)(this.getSize().getWidth() - (2.5 * THOUGHTSMENUMARGIN)),30);
         thoughtNoteTXT.setBounds(THOUGHTSMENUMARGIN,(int)(thoughtNoteLBL.getLocation().getY() + thoughtNoteLBL.getSize().getHeight()),
                 (int)(this.getSize().getWidth() - (2.5 * THOUGHTSMENUMARGIN)),100);
@@ -195,6 +201,9 @@ public class ThoughtsFrame extends JFrame {
                 THOUGHTSMENUMARGIN)) - (1.5 * THOUGHTSMENUMARGIN)),btnHeight);
         deleteThoughtBTN.setBounds(THOUGHTSMENUMARGIN,(int)(newThoughtBTN.getLocation().getY() + 
                 newThoughtBTN.getSize().getHeight() + (THOUGHTSMENUMARGIN / 2)),
+                (int)((this.getSize().getWidth()) - (2.5 * THOUGHTSMENUMARGIN)),btnHeight);
+        btnOpenActionFrame.setBounds(THOUGHTSMENUMARGIN,(int)(deleteThoughtBTN.getLocation().getY() + 
+                deleteThoughtBTN.getSize().getHeight() + (THOUGHTSMENUMARGIN / 2)),
                 (int)((this.getSize().getWidth()) - (2.5 * THOUGHTSMENUMARGIN)),btnHeight);
     }
     

@@ -102,6 +102,14 @@ public class Controller implements Observer {
 
                                }
                        });
+                        thoughtsFrame.btnOpenActionFrame.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e)
+                            {
+                               if(buttons[1].getActionListeners().length > 0){
+                                   buttons[1].getActionListeners()[0].actionPerformed(e);
+                               }
+                            }
+                        });
                     }
                 } catch (ThingsException ex) {
                 ex.printStackTrace();
