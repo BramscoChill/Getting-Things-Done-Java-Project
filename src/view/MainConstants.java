@@ -93,6 +93,8 @@ public class MainConstants {
     public static final ImageIcon PREVIOUSBUTTONIMAGEICON = new ImageIcon(MainConstants.class .getResource("/resources/buttonicons/Actions-go-previous-icon2.png"));
     public static final ImageIcon PLUSBUTTONIMAGEICON = new ImageIcon(MainConstants.class .getResource("/resources/buttonicons/Plus-icon-128.png"));
     public static final ImageIcon MINUSBUTTONIMAGEICON = new ImageIcon(MainConstants.class .getResource("/resources/buttonicons/Minus-icon-128.png"));
+    public static final ImageIcon MAINICON = new ImageIcon(MainConstants.class .getResource("/resources/buttonicons/things.png"));
+    
     public static final int PREVIOUSBUTTONSIZE = 55;
     
     public static final String OPTIONSMENUTITLE = MAINTITLE + " Options - V" + MAINVERSION;

@@ -47,6 +47,7 @@ public class ThoughtsFrame extends JFrame {
     public ThoughtsFrame(Thought[] thoughts){
         super(THOUGHTSMENUTITLE);
         setLayout(null);
+        this.setIconImage(MAINICON.getImage());
         this.setResizable(true);
         setLocation(100,new Random().nextInt(200)+50);
         setMinimumSize(new Dimension(700,600));
@@ -67,6 +68,8 @@ public class ThoughtsFrame extends JFrame {
         AddListeners();
 
         UpdateScreenBounds();
+        
+        SetButtonsSavedDeleted();
     }
     
     private void AddComponents(){
@@ -88,7 +91,7 @@ public class ThoughtsFrame extends JFrame {
         thoughtNoteLBL.setFont(FONTBUTTONS);
         
         btnOpenActionFrame = new JButton("Open Acties Scherm");
-        deleteThoughtBTN.setFont(FONTBUTTONS);
+        btnOpenActionFrame.setFont(FONTBUTTONS);
 //        thoughtNoteLBL.setOpaque(true);
 //        thoughtNoteLBL.setBackground(Color.GREEN);
         
@@ -300,12 +303,17 @@ public class ThoughtsFrame extends JFrame {
         newThoughtBTN.setEnabled(false);
         deleteThoughtBTN.setEnabled(true);
         saveThoughtBTN.setEnabled(true);
+        thoughtNoteTXT.setEnabled(true);
+        thoughtNoteTXT.setBackground(Color.WHITE);
     }
     
     private void SetButtonsSavedDeleted(){
         newThoughtBTN.setEnabled(true);
         deleteThoughtBTN.setEnabled(false);
         saveThoughtBTN.setEnabled(false);
+        thoughtNoteTXT.setEnabled(false);
+        thoughtNoteTXT.setBackground(Color.GRAY);
+        thoughtNoteTXT.setText("");
     }
     
 //    private void LoadThoughts(){

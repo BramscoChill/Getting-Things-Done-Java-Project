@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
+import java.util.Arrays;
 import javax.swing.JScrollPane;
 import model.Action;
 import model.Thought;
@@ -59,6 +60,8 @@ public class UberTablePanel extends JPanel {
         setLayout(null);
         setBounds(0,0,p_w,p_h);
         
+        String[] containedItems;
+        
         //checkt welke data het panel moet gaan weergeven
         //en stelt het juisten aantal comboboxen in
         if(data instanceof Action[]){
@@ -73,6 +76,7 @@ public class UberTablePanel extends JPanel {
             rfs = new ArrayList<RowFilter<Object,Object>>(2);
             
         } else {
+            
             //System.out.println("Verkeerde info doorgestuurt naar uber table! - klasseinfo: " + this.toString());
         }
         
@@ -81,12 +85,76 @@ public class UberTablePanel extends JPanel {
         //stelt de bounds in van de het scrollpane
         scrollpaneTable.setBounds(0,HEIGHTOFCOMBOBOXESTABLE,(int)getBounds().getWidth(),(int)getBounds().getHeight()-(HEIGHTOFCOMBOBOXESTABLE));
         
-        int posx = 0;
+        
         for(int i = 0; i < filterBoxes.length; i++){
             //int comboWidth = table.getTableHeader().getColumnModel().getColumn(i).getWidth()*2;
             filterBoxes[i] = new JComboBox();
             filterBoxes[i].setBackground(Color.WHITE);
             filterBoxes[i].setEditable(true);
+            
+            
+        if(data instanceof Action[]){
+            for(int j = 0; j < data.length; j++){
+                Action tmpAction = (Action)data[j];
+                int num = filterBoxes[i].getItemCount();
+                String[] tmpObjects = new String[num];
+                
+                for (int k = 0; k < num; k++) {
+                    tmpObjects[k] = ((String)filterBoxes[i].getItemAt(k)).trim();
+                }
+                
+                if(i == 0){
+                    filterBoxes[i].addItem(tmpAction.getDescription());
+                } else if(i == 1){
+                    if(! Arrays.asList(tmpObjects).contains(tmpAction.getStatus().getName())){
+                        filterBoxes[i].addItem(tmpAction.getStatus().getName().trim());
+                    }
+                } else if(i == 2){
+                    if(! Arrays.asList(tmpObjects).contains(tmpAction.getContext().getName())){
+                        filterBoxes[i].addItem(tmpAction.getContext().getName().trim());
+                    }
+                } else if(i == 3){
+                    if(! Arrays.asList(tmpObjects).contains(tmpAction.getProject().getName())){
+                        filterBoxes[i].addItem(tmpAction.getProject().getName().trim());
+                    }
+                } else if(i == 4){
+                    if(! Arrays.asList(tmpObjects).contains(MakeStringTimestampOfTimestamp(tmpAction.getDatumTijd()))){
+                        filterBoxes[i].addItem(MakeStringTimestampOfTimestamp(tmpAction.getDatumTijd()).trim());
+                    }
+                } else if(i == 5){
+                    if(! Arrays.asList(tmpObjects).contains(MakeStringTimestampOfTimestamp(tmpAction.getStatusChanged()))){
+                        filterBoxes[i].addItem(MakeStringTimestampOfTimestamp(tmpAction.getStatusChanged()).trim());
+                    }
+                }
+                
+            }
+            filterBoxes[i].setSelectedIndex(-1);
+        } else if(data instanceof Thought[]){
+            for(int j = 0; j < data.length; j++){
+                Thought tmpThought = (Thought)data[j];
+                int num = filterBoxes[i].getItemCount();
+                String[] tmpObjects = new String[num];
+                
+                for (int k = 0; k < num; k++) {
+                    tmpObjects[k] = ((String)filterBoxes[i].getItemAt(k)).trim();
+                }
+                
+                if(i == 0){
+                    filterBoxes[i].addItem(tmpThought.GetNote().trim());
+                } else if(i == 1){
+                    if(! Arrays.asList(tmpObjects).contains(MakeStringTimestampOfTimestamp(tmpThought.GetTimestamp()).trim())){
+                        filterBoxes[i].addItem(MakeStringTimestampOfTimestamp(tmpThought.GetTimestamp()).trim());
+                    }
+                }
+                
+            }
+            filterBoxes[i].setSelectedIndex(-1);
+            
+        } else {
+            //System.out.println("Verkeerde info doorgestuurt naar uber table! - klasseinfo: " + this.toString());
+        }
+            
+            
             rfs.add(RowFilter.regexFilter("", i));
             final int finalI = i;
             JTextComponent comboEditorComponent = (JTextComponent)filterBoxes[i].getEditor().getEditorComponent();
@@ -275,7 +343,7 @@ RowFilter<TableModel, Object> filter =
     RowFilter.regexFilter(Pattern.compile("",Pattern.CASE_INSENSITIVE).toString(),0,1);
 
             //de input moet geen wazige tekens bevatten, anders crasht ie
-            if(! input.isEmpty() && input.matches("([a-zA-Z_\\-0-9]*)")){
+            if(! input.isEmpty() && input.matches("([a-zA-Z_\\-0-9\\s\\:]*)")){
                 
               //System.out.println("columnIndex: " + columnIndex);
                 //voor de case insensitive check

@@ -44,7 +44,7 @@ public class MainMenuFrame extends JFrame {
     private JMenu mFile, mExtra;
     private JMenuItem miOptions, miExit;
     
-    private BufferedImage image = MENUSBACKGROUNDBI();
+    //private BufferedImage image = MENUSBACKGROUNDBI();
     private JLabel imageBackLBL;
     //private JRadioButtonMenuItem rbMenuItem;
     //private JCheckBoxMenuItem cbMenuItem;
@@ -57,6 +57,8 @@ public class MainMenuFrame extends JFrame {
         setBounds(100,new Random().nextInt(200)+50,500,500);
         
         //AddImageBack();
+        
+        this.setIconImage(MAINICON.getImage());
         
         imageBackLBL = new JLabel();
         mainButtons[0] = new JButton("Gedachten");

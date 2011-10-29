@@ -68,6 +68,7 @@ public class ProjectsFrame extends JFrame {
     public ProjectsFrame(){
         super(PROJECTSMENUTITLE);
         setLayout(null);
+        this.setIconImage(MAINICON.getImage());
         this.setResizable(true);
         setBounds(100,new Random().nextInt(200)+50,700,399);
         setMinimumSize(new Dimension(400,350));
@@ -86,6 +87,7 @@ public class ProjectsFrame extends JFrame {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
         LoadContextsStatusesProjects();
+        
     }
 
     private void AddComponents() {

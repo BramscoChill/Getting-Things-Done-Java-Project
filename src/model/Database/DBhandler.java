@@ -139,7 +139,9 @@ public class DBhandler {
                 
                 int resultCounter = 0;
                 while(resultSet.next()){
-                    thoughts[resultCounter] = new Thought(resultSet.getInt(1), resultSet.getString(2), resultSet.getTimestamp(3));
+                    Timestamp daStamp = resultSet.getTimestamp(3);
+                    daStamp.setYear(daStamp.getYear() + 1900);
+                    thoughts[resultCounter] = new Thought(resultSet.getInt(1), resultSet.getString(2), daStamp);
                     //thoughts[resultCounter].PrintThought();
                     resultCounter++;
                 }

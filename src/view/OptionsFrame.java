@@ -74,6 +74,7 @@ public class OptionsFrame extends JFrame {
         super(OPTIONSMENUTITLE);
         //this.setTitle(OPTIONSMENUTITLE);
         setLayout(null);
+        this.setIconImage(MAINICON.getImage());
         this.setResizable(true);
         setBounds(100,new Random().nextInt(200)+50,700,399);
         
@@ -91,6 +92,7 @@ public class OptionsFrame extends JFrame {
         UpdateScreenBounds();
         
         LoadOptions();
+        
         
     }
     
@@ -178,7 +180,7 @@ public class OptionsFrame extends JFrame {
         add(cancelButton);
         add(gcCheckConnectionDB);
         add(gcSyncActions);
-        add(previousButton);
+        //add(previousButton);
         add(googleUsername);
         add(googlePassword);
         add(startupScreen);
@@ -195,7 +197,7 @@ public class OptionsFrame extends JFrame {
         add(dbDatabaseNameLBL);
         add(dbDatabaseNameTXT);
         add(showPasswordsCHECK);
-        previousButton.setIcon(PREVIOUSBUTTONIMAGEICON); // NOI18N
+        //previousButton.setIcon(PREVIOUSBUTTONIMAGEICON); // NOI18N
     }
     
     private void UpdateScreenBounds(){
@@ -218,7 +220,7 @@ public class OptionsFrame extends JFrame {
                 
                 
                 int previousButXpos = (int) (frameW - margin - PREVIOUSBUTTONSIZE);
-                previousButton.setBounds(previousButXpos - 5, (int)(margin/2), PREVIOUSBUTTONSIZE, PREVIOUSBUTTONSIZE);
+                //previousButton.setBounds(previousButXpos - 5, (int)(margin/2), PREVIOUSBUTTONSIZE, PREVIOUSBUTTONSIZE);
                 
                 //googleUsername.setBounds(null);
                 

@@ -24,6 +24,7 @@ import javax.swing.JFrame;
 
 import model.exceptions.DatabaseException;
 import model.exceptions.ThingsException;
+
 import static view.MainConstants.*;
 import static javaapplication5.daMain.*;
 
@@ -46,10 +47,11 @@ public class ActionsFrame extends JFrame {
     
     private Boolean isHistory;
     
-    
     public ActionsFrame(Boolean isHistory){
         super(ACTIONSMENUTITLE);
         setLayout(null);
+        this.setIconImage(MAINICON.getImage());
+        
         this.setResizable(true);
         setLocation(100,new Random().nextInt(200)+50);
         setMinimumSize(new Dimension(1000,600));
@@ -104,6 +106,7 @@ public class ActionsFrame extends JFrame {
         
         previousButton.setIcon(PREVIOUSBUTTONIMAGEICON);
         
+        //this.setIconImage(MAINICON.getImage());
 
         
         add(tablePanel);

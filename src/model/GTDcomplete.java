@@ -56,7 +56,7 @@ public class GTDcomplete extends Observable {
     
     public Boolean AddThought(Thought thought) throws ThingsException, DatabaseException{
         Thought newThought = dbHandler.AddThought(thought);
-        if(newThought != null)
+        if(newThought != null && thought.GetID() == -1)
         {
             thoughts.add(newThought);
         }

@@ -95,6 +95,8 @@ public class OneActionFrame extends JFrame {
         daAction = actie;
         
         setLayout(null);
+        this.setIconImage(MAINICON.getImage());
+        
         this.setResizable(true);
         setLocation(100,new Random().nextInt(200)+50);
         setMinimumSize(new Dimension(400,500));
