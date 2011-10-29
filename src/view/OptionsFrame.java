@@ -9,13 +9,13 @@ import java.awt.event.ItemListener;
 import javax.swing.JCheckBox;
 import javax.swing.JPasswordField;
 import model.exceptions.ThingsException;
-import Model.exceptions.GoogleCaptachaAuthenticationError;
+import model.exceptions.GoogleCaptachaAuthenticationError;
 import java.awt.Component;
 import com.google.gdata.util.ServiceException;
 import java.io.IOException;
 import javax.swing.JDialog;
 import java.sql.SQLException;
-import Model.exceptions.WrongDatabaseException;
+import model.exceptions.WrongDatabaseException;
 import java.awt.Font;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,7 +43,7 @@ import javax.swing.JFrame;
 
 import model.exceptions.DatabaseException;
 import static view.MainConstants.*;
-import static controller.Main.*; 
+import static javaapplication5.daMain.*; 
         
 /**
  *

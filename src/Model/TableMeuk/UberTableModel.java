@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package Model.TableMeuk;
+package model.TableMeuk;
 
 import model.Action;
 import model.Thought;

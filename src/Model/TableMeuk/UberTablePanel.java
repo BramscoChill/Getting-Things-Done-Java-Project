@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package Model.TableMeuk;
+package model.TableMeuk;
 
 import java.util.regex.Pattern;
 import javax.swing.event.ListSelectionListener;
@@ -23,8 +23,6 @@ import java.awt.event.MouseAdapter;
 import javax.swing.JScrollPane;
 import model.Action;
 import model.Thought;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
@@ -34,7 +32,7 @@ import javax.swing.event.TableColumnModelListener;
 import net.miginfocom.swing.MigLayout;
 
 import static view.MainConstants.*;
-import static controller.Main.*;
+import static javaapplication5.daMain.*;
 
 /**
  *

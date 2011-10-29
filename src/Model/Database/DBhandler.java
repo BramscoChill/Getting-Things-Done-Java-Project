@@ -1,4 +1,4 @@
-package Model.Database;
+package model.Database;
 
 /*
  * To change this template, choose Tools | Templates
@@ -6,7 +6,7 @@ package Model.Database;
  */
 
 
-import Model.exceptions.WrongDatabaseException;
+import model.exceptions.WrongDatabaseException;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import java.util.Date;
 import java.sql.Timestamp;

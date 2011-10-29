@@ -1,18 +1,17 @@
 
-package controller;
+package javaapplication5;
 
-import java.sql.Timestamp;
-import java.util.Date;
-import model.*;
-import model.Database.*;
+import controller.Controller;
 
 
-public class Main {
+public class daMain {
     
     public static final Controller controller = new Controller();
     
     public static void main(String[] args) {
-        
+        System.out.println("started");
+                System.out.println("java class path: " + System.getProperty("java.class.path"));
+        System.out.println("java lib path: " + System.getProperty("java.library.path"));
         //DBhandler test = new DBhandler();
         //test.GetAllThoughts();
         //test.DeleteThought(test.AddThought("dddddddddddddddd"));

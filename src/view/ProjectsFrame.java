@@ -33,7 +33,7 @@ import java.awt.Dimension;
 import java.util.Random;
 import javax.swing.JFrame;
 
-import static controller.Main.*;
+import static javaapplication5.daMain.*;
 import static view.MainConstants.*;
 
 /**

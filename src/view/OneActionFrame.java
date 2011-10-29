@@ -49,7 +49,7 @@ import model.Action;
 import model.exceptions.DatabaseException;
 import model.exceptions.ThingsException;
 import static view.MainConstants.*;
-import static controller.Main.*;
+import static javaapplication5.daMain.*;
 
 /**
  *

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.text.SimpleDateFormat;
 import com.google.gdata.client.GoogleAuthTokenFactory.UserToken;
-import Model.exceptions.GoogleCaptachaAuthenticationError;
+import model.exceptions.GoogleCaptachaAuthenticationError;
 import javax.swing.ImageIcon;
 import java.awt.Toolkit;
 import view.MessageBox;

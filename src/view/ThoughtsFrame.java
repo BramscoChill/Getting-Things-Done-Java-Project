@@ -19,14 +19,14 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.Dimension;
 import java.util.Random;
-import Model.TableMeuk.UberTablePanel;
+import model.TableMeuk.UberTablePanel;
 import model.Thought;
 import javax.swing.JFrame;
 
 import model.exceptions.DatabaseException;
 import model.exceptions.ThingsException;
 import static view.MainConstants.*;
-import static controller.Main.*;
+import static javaapplication5.daMain.*;
 
 /**
  *

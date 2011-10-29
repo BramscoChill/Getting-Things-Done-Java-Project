@@ -4,8 +4,8 @@
  */
 package model;
 
-import Model.Database.DBhandler;
-import Model.exceptions.WrongDatabaseException;
+import model.Database.DBhandler;
+import model.exceptions.WrongDatabaseException;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import java.sql.SQLException;
 import java.util.ArrayList;
